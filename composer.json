@@ -1,0 +1,26 @@
+{
+    "name": "overtrue/socialite",
+    "description": "Weibo,QQ,WeChat OAuth login provider for laravel/socialite.",
+    "autoload": {
+        "psr-4": {
+            "Overtrue\\Socialite\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=5.4.0",
+        "guzzlehttp/guzzle": "~5.0|~6.0",
+        "symfony/http-foundation": "v2.*.*"
+    },
+    "require-dev": {
+        "mockery/mockery": "~0.9",
+        "phpunit/phpunit": "~4.0"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "overtrue",
+            "email": "anzhengchao@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev"
+}
