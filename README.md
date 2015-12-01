@@ -1,6 +1,6 @@
 # Socialite
 
-Socialite is a collection of OAuth 2 packages that extracts from [laravel/socialite](https://github.com/laravel/socialite).
+Socialite is a collection of OAuth 2 packages that extracts from [laravel/socialite](https://github.com/laravel/socialite), You can easily use it without Laravel.
 
 # Install
 
