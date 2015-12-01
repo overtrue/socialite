@@ -29,7 +29,9 @@ $config = [
 
 $socialite = new SocialiteManager($config);
 
-$socialite->driver('weibo')->redirect()->response();
+$response = $socialite->driver('weibo')->redirect();
+
+echo $response;// or $response->send();
 ```
 
 `callback.php`:
@@ -46,6 +48,38 @@ var_dump($user);
 // 'name' => string '安正超' (length=9)
 // 'email' => null
 // 'avatar' => string 'http://tp1.sinaimg.cn/2193182644/180/40068307042/1' (length=50)
+```
+
+### Scope
+
+Before redirecting the user, you may also set "scopes" on the request using the scope method. This method will overwrite all existing scopes:
+
+```php
+$response = $socialite->driver('github')
+                ->scopes(['scope1', 'scope2'])->redirect();
+
+```
+
+### Additional parameters
+
+To include any optional parameters in the request, call the with method with an associative array:
+
+```php
+$response = $socialite->driver('google')
+                    ->with(['hd' => 'example.com'])->redirect();
+```
+
+### User interface
+
+```php
+
+$user = $socialite->driver('weibo')->user();
+
+$user->getId();
+$user->getNickname();
+$user->getName();
+$user->getEmail();
+$user->getAvatar();
 ```
 
 # License
