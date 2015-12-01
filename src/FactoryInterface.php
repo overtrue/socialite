@@ -18,7 +18,7 @@ interface FactoryInterface
      *
      * @param string $driver
      *
-     * @return \Overtrue\Socialite\Provider
+     * @return \Overtrue\Socialite
      */
     public function driver($driver = null);
 }

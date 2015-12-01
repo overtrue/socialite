@@ -31,7 +31,7 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
      *
      * @var string
      */
-    protected $baseUrl = 'https://graph.qq.com';
+    protected $baseUrl = 'https://api.weixin.qq.com/sns';
 
     /**
      * {@inheritdoc}.
@@ -81,7 +81,7 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getTokenUrl()
     {
-        return 'https://api.weixin.qq.com/sns/oauth2/access_token';
+        return $this->baseUrl.'/oauth2/access_token';
     }
 
     /**
@@ -89,7 +89,7 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getUserByToken(AccessTokenInterface $token)
     {
-        $response = $this->getHttpClient()->get('https://api.weixin.qq.com/sns/userinfo', [
+        $response = $this->getHttpClient()->get($this->baseUrl.'/userinfo', [
             'query' => [
                 'access_token' => $token->getToken(),
                 'openid'       => $token['openId'],

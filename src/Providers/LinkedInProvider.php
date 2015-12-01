@@ -15,6 +15,9 @@ use Overtrue\Socialite\AccessTokenInterface;
 use Overtrue\Socialite\ProviderInterface;
 use Overtrue\Socialite\User;
 
+/**
+ * Class LinkedInProvider.
+ */
 class LinkedInProvider extends AbstractProvider implements ProviderInterface
 {
     /**

@@ -14,10 +14,14 @@ namespace Overtrue\Socialite\Providers;
 use GuzzleHttp\ClientInterface;
 use Overtrue\Socialite\AccessToken;
 use Overtrue\Socialite\AccessTokenInterface;
+use Overtrue\Socialite\InvalidStateException;
 use Overtrue\Socialite\ProviderInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * Class AbstractProvider.
+ */
 abstract class AbstractProvider implements ProviderInterface
 {
     /**
@@ -172,7 +176,8 @@ abstract class AbstractProvider implements ProviderInterface
     protected function getCodeFields($state = null)
     {
         $fields = [
-            'client_id'     => $this->clientId, 'redirect_uri' => $this->redirectUrl,
+            'client_id'     => $this->clientId,
+            'redirect_uri'  => $this->redirectUrl,
             'scope'         => $this->formatScopes($this->scopes, $this->scopeSeparator),
             'response_type' => 'code',
         ];
@@ -258,8 +263,10 @@ abstract class AbstractProvider implements ProviderInterface
     protected function getTokenFields($code)
     {
         return [
-            'client_id' => $this->clientId, 'client_secret' => $this->clientSecret,
-            'code'      => $code, 'redirect_uri' => $this->redirectUrl,
+            'client_id'     => $this->clientId,
+            'client_secret' => $this->clientSecret,
+            'code'          => $code,
+            'redirect_uri'  => $this->redirectUrl,
         ];
     }
 

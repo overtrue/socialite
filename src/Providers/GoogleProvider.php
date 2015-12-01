@@ -15,6 +15,9 @@ use GuzzleHttp\ClientInterface;
 use Overtrue\Socialite\AccessTokenInterface;
 use Overtrue\Socialite\ProviderInterface;
 
+/**
+ * Class GoogleProvider.
+ */
 class GoogleProvider extends AbstractProvider implements ProviderInterface
 {
     /**

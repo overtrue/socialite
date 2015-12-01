@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 /**
  * Class SocialiteManager.
  */
-class SocialiteManager
+class SocialiteManager implements FactoryInterface
 {
     /**
      * The configuration.

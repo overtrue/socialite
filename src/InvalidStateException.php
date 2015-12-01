@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Overtrue\Socialite\Providers;
+namespace Overtrue\Socialite;
 
 class InvalidStateException extends \InvalidArgumentException
 {

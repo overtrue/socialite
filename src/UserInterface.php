@@ -11,6 +11,9 @@
 
 namespace Overtrue\Socialite;
 
+/**
+ * Interface UserInterface.
+ */
 interface UserInterface
 {
     /**

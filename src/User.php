@@ -13,6 +13,9 @@ namespace Overtrue\Socialite;
 
 use ArrayAccess;
 
+/**
+ * Class User.
+ */
 class User implements ArrayAccess, UserInterface
 {
     use AttributeTrait;
@@ -25,10 +28,17 @@ class User implements ArrayAccess, UserInterface
     public $token;
 
     /**
+     * The user attributes.
+     *
      * @var array
      */
     protected $attributes;
 
+    /**
+     * User constructor.
+     *
+     * @param array $attributes
+     */
     public function __construct(array $attributes)
     {
         $this->attributes = $attributes;

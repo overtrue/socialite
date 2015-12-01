@@ -132,9 +132,13 @@ class QQProvider extends AbstractProvider implements ProviderInterface
 
         $this->openId = json_decode($this->removeCallback($response->getBody()->getContents()), true)['openid'];
 
-        $response = $this->getHttpClient()->get(
-            $this->baseUrl."/user/get_user_info?access_token={$token->getToken()}&openid={$this->openId}&oauth_consumer_key={$this->clientId}"
-        );
+        $queries = [
+            'access_token'       => $token->getToken(),
+            'openid'             => $this->openId,
+            'oauth_consumer_key' => $this->clientId,
+        ];
+
+        $response = $this->getHttpClient()->get($this->baseUrl."/user/get_user_info?".http_build_query($queries));
 
         return json_decode($this->removeCallback($response->getBody()->getContents()), true);
     }
