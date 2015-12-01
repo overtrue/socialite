@@ -48,7 +48,13 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getAuthUrl($state)
     {
-        return $this->buildAuthUrlFromBase('https://open.weixin.qq.com/connect/oauth2/authorize', $state);
+        $path = 'authorize';
+
+        if (in_array('snsapi_login', $this->scopes)) {
+            $path = 'qrconnect';
+        }
+
+        return $this->buildAuthUrlFromBase("https://open.weixin.qq.com/connect/oauth2/{$path}", $state);
     }
 
     /**

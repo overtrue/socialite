@@ -52,7 +52,7 @@ class OAuthTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Overtrue\Socialite\Providers\InvalidStateException
+     * @expectedException Overtrue\Socialite\InvalidStateException
      */
     public function testExceptionIsThrownIfStateIsInvalid()
     {
@@ -64,7 +64,7 @@ class OAuthTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Overtrue\Socialite\Providers\InvalidStateException
+     * @expectedException Overtrue\Socialite\InvalidStateException
      */
     public function testExceptionIsThrownIfStateIsNotSet()
     {

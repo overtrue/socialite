@@ -54,7 +54,8 @@ class SocialiteManager implements FactoryInterface
             'linkedin' => 'Linkedin',
             'weibo'    => 'Weibo',
             'qq'       => 'QQ',
-            'WeChat'   => 'WeChat',
+            'wechat'   => 'WeChat',
+            'douban'   => 'Douban',
     ];
 
     /**
