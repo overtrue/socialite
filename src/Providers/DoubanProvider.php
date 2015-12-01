@@ -19,7 +19,7 @@ use Overtrue\Socialite\User;
 /**
  * Class DoubanProvider.
  */
-class DoubanProvider
+class DoubanProvider extends AbstractProvider implements ProviderInterface
 {
     /**
      * {@inheritdoc}.
