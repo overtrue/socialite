@@ -24,7 +24,7 @@ class SocialiteManager implements FactoryInterface
     /**
      * The configuration.
      *
-     * @var array
+     * @var \Overtrue\Socialite\Config
      */
     protected $config;
 

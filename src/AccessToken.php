@@ -24,11 +24,12 @@ namespace Overtrue\Socialite;
 
 use ArrayAccess;
 use InvalidArgumentException;
+use JsonSerializable;
 
 /**
  * Class AccessToken.
  */
-class AccessToken implements AccessTokenInterface, ArrayAccess
+class AccessToken implements AccessTokenInterface, ArrayAccess, JsonSerializable
 {
     use AttributeTrait;
 
@@ -42,7 +43,7 @@ class AccessToken implements AccessTokenInterface, ArrayAccess
      *
      * @param array $attributes
      */
-    public function __construct(array $attributes = [])
+    public function __construct(array $attributes)
     {
         if (empty($attributes['access_token'])) {
             throw new InvalidArgumentException('The key "access_token" could not be empty.');
@@ -67,5 +68,13 @@ class AccessToken implements AccessTokenInterface, ArrayAccess
     public function __toString()
     {
         return strval($this->getAttribute('access_token', ''));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    function jsonSerialize()
+    {
+        return $this->getToken();
     }
 }

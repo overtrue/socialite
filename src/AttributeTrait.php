@@ -32,6 +32,8 @@ trait AttributeTrait
      *
      * @param string $name
      * @param null   $default
+     *
+     * @return mixed
      */
     public function getAttribute($name, $default = null)
     {
