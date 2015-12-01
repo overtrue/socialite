@@ -16,9 +16,9 @@ use Overtrue\Socialite\ProviderInterface;
 use Overtrue\Socialite\User;
 
 /**
- * Class LinkedInProvider.
+ * Class LinkedinProvider.
  */
-class LinkedInProvider extends AbstractProvider implements ProviderInterface
+class LinkedinProvider extends AbstractProvider implements ProviderInterface
 {
     /**
      * The scopes being requested.
