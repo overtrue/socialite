@@ -11,6 +11,7 @@
 
 namespace Overtrue\Socialite\Providers;
 
+use Overtrue\Socialite\AccessToken;
 use Overtrue\Socialite\AccessTokenInterface;
 use Overtrue\Socialite\ProviderInterface;
 use Overtrue\Socialite\User;
@@ -95,7 +96,7 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
         $response = $this->getHttpClient()->get($this->baseUrl.'/userinfo', [
             'query' => [
                 'access_token' => $token->getToken(),
-                'openid'       => $token['openId'],
+                'openid'       => $token['openid'],
                 'lang'         => 'zh_CN',
             ],
         ]);
