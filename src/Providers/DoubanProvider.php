@@ -18,6 +18,8 @@ use Overtrue\Socialite\User;
 
 /**
  * Class DoubanProvider.
+ *
+ * @link http://developers.douban.com/wiki/?title=oauth2 [使用 OAuth 2.0 访问豆瓣 API]
  */
 class DoubanProvider extends AbstractProvider implements ProviderInterface
 {
