@@ -8,6 +8,11 @@
 
 Socialite is a package of OAuth 2 Authentication that extracts from [laravel/socialite](https://github.com/laravel/socialite). You can easily use it without Laravel.
 
+# Requirement
+
+```
+PHP >= 5.4
+```
 # Install
 
 ```shell
