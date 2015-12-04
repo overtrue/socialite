@@ -40,7 +40,7 @@ $config = [
 
 $socialite = new SocialiteManager($config);
 
-$response = $socialite->driver('weibo')->redirect();
+$response = $socialite->driver('github')->redirect();
 
 echo $response;// or $response->send();
 ```
@@ -51,7 +51,7 @@ echo $response;// or $response->send();
 <?php
 
 // ...
-$user = $socialite->driver('google')->user();
+$user = $socialite->driver('github')->user();
 
 $user->getId();        // 1472352
 $user->getNickname();  // "overtrue"
