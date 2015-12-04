@@ -28,6 +28,16 @@ namespace Overtrue\Socialite;
 trait AttributeTrait
 {
     /**
+     * Return the attributes.
+     *
+     * @return array
+     */
+    public function getAttributes()
+    {
+        return $this->attributes;
+    }
+
+    /**
      * Return the extra attribute.
      *
      * @param string $name

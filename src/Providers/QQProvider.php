@@ -150,10 +150,10 @@ class QQProvider extends AbstractProvider implements ProviderInterface
     {
         return new User([
             'id'       => $this->openId,
-            'nickname' => $user['nickname'],
-            'name'     => $user['nickname'],
-            'email'    => null,
-            'avatar'   => $user['figureurl_qq_2'],
+            'nickname' => $this->arrayItem($user, 'nickname'),
+            'name'     => $this->arrayItem($user, 'nickname'),
+            'email'    => $this->arrayItem($user, 'email'),
+            'avatar'   => $this->arrayItem($user, 'figureurl_qq_2'),
         ]);
     }
 

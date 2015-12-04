@@ -93,12 +93,12 @@ class LinkedinProvider extends AbstractProvider implements ProviderInterface
     protected function mapUserToObject(array $user)
     {
         return new User([
-            'id'              => $user['id'],
-            'nickname'        => null,
-            'name'            => array_get($user, 'formattedName'),
-            'email'           => array_get($user, 'emailAddress'),
-            'avatar'          => array_get($user, 'pictureUrl'),
-            'avatar_original' => array_get($user, 'pictureUrls.values.0'),
+            'id'              => $this->arrayItem($user, 'id'),
+            'nickname'        => $this->arrayItem($user, 'formattedName'),
+            'name'            => $this->arrayItem($user, 'formattedName'),
+            'email'           => $this->arrayItem($user, 'emailAddress'),
+            'avatar'          => $this->arrayItem($user, 'pictureUrl'),
+            'avatar_original' => $this->arrayItem($user, 'pictureUrls.values.0'),
         ]);
     }
 

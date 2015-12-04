@@ -110,11 +110,11 @@ class GoogleProvider extends AbstractProvider implements ProviderInterface
     protected function mapUserToObject(array $user)
     {
         return new User([
-            'id'       => $user['id'],
-            'nickname' => array_get($user, 'nickname'),
-            'name'     => $user['displayName'],
-            'email'    => $user['emails'][0]['value'],
-            'avatar'   => array_get($user, 'image')['url'],
+            'id'       => $this->arrayItem($user, 'id'),
+            'nickname' => $this->arrayItem($user, 'nickname'),
+            'name'     => $this->arrayItem($user, 'displayName'),
+            'email'    => $this->arrayItem($user, 'emails.0.value'),
+            'avatar'   => $this->arrayItem($user, 'image.url'),
         ]);
     }
 }

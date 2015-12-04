@@ -13,6 +13,7 @@ namespace Overtrue\Socialite\Providers;
 
 use Exception;
 use Overtrue\Socialite\AccessTokenInterface;
+use Overtrue\Socialite\ProviderInterface;
 use Overtrue\Socialite\User;
 
 /**
@@ -95,11 +96,11 @@ class GitHubProvider extends AbstractProvider implements ProviderInterface
     protected function mapUserToObject(array $user)
     {
         return new User([
-            'id'       => $user['id'],
-            'nickname' => $user['login'],
-            'name'     => array_get($user, 'name'),
-            'email'    => array_get($user, 'email'),
-            'avatar'   => $user['avatar_url'],
+            'id'       => $this->arrayItem($user, 'id'),
+            'nickname' => $this->arrayItem($user, 'login'),
+            'name'     => $this->arrayItem($user, 'name'),
+            'email'    => $this->arrayItem($user, 'email'),
+            'avatar'   => $this->arrayItem($user, 'avatar_url'),
         ]);
     }
 

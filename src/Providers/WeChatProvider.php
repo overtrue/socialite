@@ -110,10 +110,10 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
     protected function mapUserToObject(array $user)
     {
         return new User([
-            'id'       => $user['openid'],
-            'nickname' => $user['nickname'],
-            'avatar'   => $user['headimgurl'],
-            'name'     => $user['nickname'],
+            'id'       => $this->arrayItem($user, 'openid'),
+            'name'     => $this->arrayItem($user, 'nickname'),
+            'nickname' => $this->arrayItem($user, 'nickname'),
+            'avatar'   => $this->arrayItem($user, 'headimgurl'),
             'email'    => null,
         ]);
     }

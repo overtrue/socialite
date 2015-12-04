@@ -12,11 +12,12 @@
 namespace Overtrue\Socialite;
 
 use ArrayAccess;
+use JsonSerializable;
 
 /**
  * Class User.
  */
-class User implements ArrayAccess, UserInterface
+class User implements ArrayAccess, UserInterface, JsonSerializable
 {
     use AttributeTrait;
 
@@ -116,5 +117,13 @@ class User implements ArrayAccess, UserInterface
     public function getToken()
     {
         return $this->token;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function jsonSerialize()
+    {
+        return array_merge($this->attributes, ['_token' => $this->token->getAttributes()]);
     }
 }
