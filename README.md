@@ -6,7 +6,7 @@
 [![Total Downloads](https://poser.pugx.org/overtrue/socialite/downloads)](https://packagist.org/packages/overtrue/socialite)
 [![License](https://poser.pugx.org/overtrue/socialite/license)](https://packagist.org/packages/overtrue/socialite)
 
-Socialite is an OAuth2 Authentication tool, and it extends from [laravel/socialite](https://github.com/laravel/socialite). You can easily use it without Laravel.
+Socialite is an OAuth2 Authentication tool. It extends from [laravel/socialite](https://github.com/laravel/socialite), You can easily use it without Laravel.
 
 # Requirement
 
