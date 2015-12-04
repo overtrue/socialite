@@ -82,16 +82,68 @@ $response = $socialite->driver('google')
 
 ### User interface
 
+#### Standard user api:
+
 ```php
 
 $user = $socialite->driver('weibo')->user();
+```
 
+```json
+{
+  "id": 1472352,
+  "nickname": "overtrue",
+  "name": "安正超",
+  "email": "anzhengchao@gmail.com",
+  "avatar": "https://avatars.githubusercontent.com/u/1472352?v=3",
+  "original": {
+    "login": "overtrue",
+    "id": 1472352,
+    "avatar_url": "https://avatars.githubusercontent.com/u/1472352?v=3",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/overtrue",
+    "html_url": "https://github.com/overtrue",
+    ...
+  },
+  "token": {
+    "access_token": "5b1dc56d64fffbd052359f032716cc4e0a1cb9a0",
+    "token_type": "bearer",
+    "scope": "user:email"
+  }
+}
+```
+
+You can fetch the user attribute as a array key like this:
+
+```php
+$user['id'];        // 1472352
+$user['nickname'];  // "overtrue"
+$user['name'];      // "安正超"
+$user['email'];     // "anzhengchao@gmail.com"
+...
+```
+
+Or using method:
+
+```php
 $user->getId();
 $user->getNickname();
 $user->getName();
 $user->getEmail();
 $user->getAvatar();
+$user->getOriginal();
+$user->getToken();
 ```
+
+#### Get original response from OAuth API
+
+the `$user->getOriginal()` method will return the API raw response array.
+
+#### Get access token Object
+
+You can get the access token instance of current session by call `$user->getToken` or `$user->getAccessToken()` or `$user['token']` .
+
+Enjoy it!
 
 # Reference
 
