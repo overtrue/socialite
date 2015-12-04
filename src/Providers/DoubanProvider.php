@@ -51,7 +51,7 @@ class DoubanProvider extends AbstractProvider implements ProviderInterface
             ],
         ]);
 
-        return json_decode($this->removeCallback($response->getBody()->getContents()), true);
+        return json_decode($response->getBody()->getContents(), true);
     }
 
     /**
@@ -86,23 +86,5 @@ class DoubanProvider extends AbstractProvider implements ProviderInterface
         ]);
 
         return $this->parseAccessToken($response->getBody()->getContents());
-    }
-
-    /**
-     * Remove the fucking callback parentheses.
-     *
-     * @param mixed $response
-     *
-     * @return string
-     */
-    protected function removeCallback($response)
-    {
-        if (strpos($response, 'callback') !== false) {
-            $lpos = strpos($response, '(');
-            $rpos = strrpos($response, ')');
-            $response = substr($response, $lpos + 1, $rpos - $lpos - 1);
-        }
-
-        return $response;
     }
 }
