@@ -13,6 +13,7 @@
 namespace Overtrue\Socialite\Providers;
 
 use Overtrue\Socialite\AccessTokenInterface;
+use Overtrue\Socialite\ProviderInterface;
 use Overtrue\Socialite\User;
 
 
