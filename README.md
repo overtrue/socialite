@@ -51,14 +51,13 @@ echo $response;// or $response->send();
 <?php
 
 // ...
-$user = $socialite->driver('weibo')->user();
+$user = $socialite->driver('google')->user();
 
-var_dump($user);
-// 'id' => int 2193182644
-// 'nickname' => null
-// 'name' => string '安正超' (length=9)
-// 'email' => null
-// 'avatar' => string 'http://tp1.sinaimg.cn/2193182644/180/40068307042/1' (length=50)
+$user->getId();        // 1472352
+$user->getNickname();  // "overtrue"
+$user->getName();      // "安正超"
+$user->getEmail();     // "anzhengchao@gmail.com"
+...
 ```
 
 ### Scope
@@ -137,13 +136,13 @@ $user->getToken();
 
 #### Get original response from OAuth API
 
-the `$user->getOriginal()` method will return the API raw response array.
+The `$user->getOriginal()` method will return an array of the API raw response.
 
 #### Get access token Object
 
 You can get the access token instance of current session by call `$user->getToken` or `$user->getAccessToken()` or `$user['token']` .
 
-Enjoy it!
+Enjoy it! :heart:
 
 # Reference
 
