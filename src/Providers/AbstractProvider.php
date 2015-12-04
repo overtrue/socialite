@@ -211,9 +211,11 @@ abstract class AbstractProvider implements ProviderInterface
             throw new InvalidStateException();
         }
 
-        $user = $this->mapUserToObject($this->getUserByToken(
+        $user = $this->getUserByToken(
             $token = $this->getAccessToken($this->getCode())
-        ));
+        );
+
+        $user = $this->mapUserToObject($user)->merge(['original' => $user]);
 
         return $user->setToken($token);
     }

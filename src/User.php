@@ -22,13 +22,6 @@ class User implements ArrayAccess, UserInterface, JsonSerializable
     use AttributeTrait;
 
     /**
-     * The user's access token.
-     *
-     * @var string
-     */
-    public $token;
-
-    /**
      * The user attributes.
      *
      * @var array
@@ -102,9 +95,9 @@ class User implements ArrayAccess, UserInterface, JsonSerializable
      *
      * @return $this
      */
-    public function setToken($token)
+    public function setToken(AccessTokenInterface $token)
     {
-        $this->token = $token;
+        $this->setAttribute('token', $token);
 
         return $this;
     }
@@ -112,11 +105,31 @@ class User implements ArrayAccess, UserInterface, JsonSerializable
     /**
      * Get the authorized token.
      *
-     * @return \Overtrue\Socialite\AccessTokenInterface
+     * @return \Overtrue\Socialite\AccessToken
      */
     public function getToken()
     {
+        return $this->getAttribute('token');
+    }
+
+    /**
+     * Alias of getToken()
+     *
+     * @return \Overtrue\Socialite\AccessToken
+     */
+    public function getAccessToken()
+    {
         return $this->token;
+    }
+
+    /**
+     * Get the original attributes.
+     *
+     * @return array
+     */
+    public function getOriginal()
+    {
+        return $this->getAttribute('original');
     }
 
     /**
@@ -124,6 +137,6 @@ class User implements ArrayAccess, UserInterface, JsonSerializable
      */
     public function jsonSerialize()
     {
-        return array_merge($this->attributes, ['_token' => $this->token->getAttributes()]);
+        return array_merge($this->attributes, ['token' => $this->token->getAttributes()]);
     }
 }
