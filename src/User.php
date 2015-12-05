@@ -91,7 +91,7 @@ class User implements ArrayAccess, UserInterface, JsonSerializable
     /**
      * Set the token on the user.
      *
-     * @param string $token
+     * @param \Overtrue\Socialite\AccessTokenInterface $token
      *
      * @return $this
      */
@@ -113,7 +113,7 @@ class User implements ArrayAccess, UserInterface, JsonSerializable
     }
 
     /**
-     * Alias of getToken()
+     * Alias of getToken().
      *
      * @return \Overtrue\Socialite\AccessToken
      */

@@ -41,7 +41,7 @@ trait AttributeTrait
      * Return the extra attribute.
      *
      * @param string $name
-     * @param null   $default
+     * @param string $default
      *
      * @return mixed
      */

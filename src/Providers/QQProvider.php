@@ -134,7 +134,7 @@ class QQProvider extends AbstractProvider implements ProviderInterface
             'oauth_consumer_key' => $this->clientId,
         ];
 
-        $response = $this->getHttpClient()->get($this->baseUrl."/user/get_user_info?".http_build_query($queries));
+        $response = $this->getHttpClient()->get($this->baseUrl.'/user/get_user_info?'.http_build_query($queries));
 
         return json_decode($this->removeCallback($response->getBody()->getContents()), true);
     }
@@ -160,7 +160,7 @@ class QQProvider extends AbstractProvider implements ProviderInterface
     /**
      * Remove the fucking callback parentheses.
      *
-     * @param mixed $response
+     * @param string $response
      *
      * @return string
      */

@@ -276,13 +276,13 @@ abstract class AbstractProvider implements ProviderInterface
     /**
      * Get the access token from the token response body.
      *
-     * @param string $body
+     * @param \Psr\Http\Message\StreamInterface $body
      *
      * @return \Overtrue\Socialite\AccessToken
      */
     protected function parseAccessToken($body)
     {
-        return new AccessToken((array)json_decode($body, true));
+        return new AccessToken((array) json_decode($body, true));
     }
 
     /**
@@ -399,7 +399,7 @@ abstract class AbstractProvider implements ProviderInterface
         }
 
         foreach (explode('.', $key) as $segment) {
-            if (! is_array($array) || ! array_key_exists($segment, $array)) {
+            if (!is_array($array) || !array_key_exists($segment, $array)) {
                 return $default;
             }
 
