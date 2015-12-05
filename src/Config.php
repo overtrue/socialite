@@ -81,9 +81,11 @@ class Config implements ArrayAccess
     public function set($key, $value)
     {
         if (is_null($key)) {
-            return $this->config = $value;
+            throw new InvalidArgumentException("Invalid config key.");
         }
+
         $keys = explode('.', $key);
+
         while (count($keys) > 1) {
             $key = array_shift($keys);
             if (!isset($this->config[$key]) || !is_array($this->config[$key])) {
