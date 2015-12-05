@@ -11,6 +11,7 @@
 
 namespace Overtrue\Socialite\Providers;
 
+use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use Overtrue\Socialite\AccessToken;
 use Overtrue\Socialite\AccessTokenInterface;
@@ -281,7 +282,7 @@ abstract class AbstractProvider implements ProviderInterface
      */
     protected function parseAccessToken($body)
     {
-        return new AccessToken(json_decode($body, true));
+        return new AccessToken((array)json_decode($body, true));
     }
 
     /**
@@ -315,7 +316,7 @@ abstract class AbstractProvider implements ProviderInterface
      */
     protected function getHttpClient()
     {
-        return new \GuzzleHttp\Client();
+        return new Client();
     }
 
     /**
