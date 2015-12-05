@@ -66,7 +66,7 @@ Now we support the following sites:
 
 `facebook`, `github`, `google`, `linkedin`, `weibo`, `qq`, `wechat` and `douban`.
 
-Each drive uses the same configuration keys(`client_id`, `client_secret`, `redirect`):
+Each drive uses the same configuration keys: `client_id`, `client_secret`, `redirect`.
 
 example:
 ```
