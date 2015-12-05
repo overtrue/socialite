@@ -34,11 +34,6 @@ class AccessToken implements AccessTokenInterface, ArrayAccess, JsonSerializable
     use AttributeTrait;
 
     /**
-     * @var array
-     */
-    protected $attributes;
-
-    /**
      * AccessToken constructor.
      *
      * @param array $attributes

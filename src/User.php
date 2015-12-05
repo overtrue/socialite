@@ -22,13 +22,6 @@ class User implements ArrayAccess, UserInterface, JsonSerializable
     use AttributeTrait;
 
     /**
-     * The user attributes.
-     *
-     * @var array
-     */
-    protected $attributes;
-
-    /**
      * User constructor.
      *
      * @param array $attributes

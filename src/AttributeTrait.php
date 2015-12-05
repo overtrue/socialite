@@ -28,6 +28,11 @@ namespace Overtrue\Socialite;
 trait AttributeTrait
 {
     /**
+     * @var array
+     */
+    protected $attributes;
+
+    /**
      * Return the attributes.
      *
      * @return array
