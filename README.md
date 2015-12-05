@@ -68,10 +68,8 @@ Now we support the following sites:
 
 Each drive uses the same configuration key:
 
-```
-
 example:
-
+```
 ...
   'weibo' => [
     'client_id'     => 'your-app-id',
