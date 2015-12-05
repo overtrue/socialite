@@ -69,8 +69,11 @@ Now we support the following sites:
 Each drive uses the same configuration key:
 
 ```
+
+example:
+
 ...
-  [DRIVER NAME] => [
+  'weibo' => [
     'client_id'     => 'your-app-id',
     'client_secret' => 'your-app-secret',
     'redirect'      => 'http://localhost/socialite/callback.php',
