@@ -60,6 +60,24 @@ $user->getEmail();     // "anzhengchao@gmail.com"
 ...
 ```
 
+### Configuration
+
+Now we support the following sites:
+
+`facebook`, `github`, `google`, `linkedin`, `weibo`, `qq`, `wechat` and `douban`.
+
+Each drive uses the same configuration key:
+
+```json
+...
+  [DRIVER NAME] => [
+    'client_id'     => 'your-app-id',
+    'client_secret' => 'your-app-secret',
+    'redirect'      => 'http://localhost/socialite/callback.php',
+  ],
+...
+```
+
 ### Scope
 
 Before redirecting the user, you may also set "scopes" on the request using the scope method. This method will overwrite all existing scopes:
@@ -69,6 +87,10 @@ $response = $socialite->driver('github')
                 ->scopes(['scope1', 'scope2'])->redirect();
 
 ```
+
+> WeChat scopes:
+- `snsapi_base`, `snsapi_userinfo` - Used to Media Platform Authentication.
+- `snsapi_login` - Used to web Authentication.
 
 ### Additional parameters
 
