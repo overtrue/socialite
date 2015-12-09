@@ -26,10 +26,7 @@ $ composer require overtrue/socialite
 
 ```php
 <?php
-
 use Overtrue\Socialite\SocialiteManager;
-
-include __DIR__.'/vendor/autoload.php';
 
 $config = [
     'weibo' => [

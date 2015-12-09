@@ -117,7 +117,7 @@ class WeiboProvider extends AbstractProvider implements ProviderInterface
     {
         return new User([
             'id'       => $this->arrayItem($user, 'id'),
-            'nickname' => $this->arrayItem($user, 'name'),
+            'nickname' => $this->arrayItem($user, 'screen_name'),
             'name'     => $this->arrayItem($user, 'name'),
             'email'    => $this->arrayItem($user, 'email'),
             'avatar'   => $this->arrayItem($user, 'avatar_large'),
