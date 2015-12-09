@@ -29,7 +29,7 @@ $ composer require overtrue/socialite
 use Overtrue\Socialite\SocialiteManager;
 
 $config = [
-    'weibo' => [
+    'github' => [
         'client_id'     => 'your-app-id',
         'client_secret' => 'your-app-secret',
         'redirect'      => 'http://localhost/socialite/callback.php',
