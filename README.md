@@ -14,10 +14,10 @@ Socialite is an OAuth2 Authentication tool. It extends from [laravel/socialite](
 ```
 PHP >= 5.4
 ```
-# Install
+# Installation
 
 ```shell
-$ composer require overtrue/socialite
+$ composer require "overtrue/socialite:~1.0"
 ```
 
 # Usage
