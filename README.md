@@ -9,6 +9,8 @@
 
 Socialite is an OAuth2 Authentication tool. It extends from [laravel/socialite](https://github.com/laravel/socialite), You can easily use it without Laravel.
 
+For Laravel 5: [overtrue/laravel-socialite](https://github.com/overtrue/laravel-socialite)
+
 # Requirement
 
 ```
