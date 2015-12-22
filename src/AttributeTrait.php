@@ -123,4 +123,24 @@ trait AttributeTrait
     {
         return $this->getAttribute($property);
     }
+
+    /**
+     * Return array.
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        return $this->getAttributes();
+    }
+
+    /**
+     * Return JSON.
+     *
+     * @return string
+     */
+    public function toJSON()
+    {
+        return json_encode($this->getAttributes(), JSON_UNESCAPED_UNICODE);
+    }
 }
