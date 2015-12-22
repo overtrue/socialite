@@ -141,7 +141,7 @@ abstract class AbstractProvider implements ProviderInterface
     /**
      * Redirect the user of the application to the provider's authentication screen.
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function redirect()
     {
