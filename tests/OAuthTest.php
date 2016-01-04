@@ -34,6 +34,23 @@ class OAuthTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('http://auth.url', $response->getTargetUrl());
     }
 
+    public function testRedirectUrl()
+    {
+        $request = Request::create('foo', 'GET', ['state' => str_repeat('A', 40), 'code' => 'code']);
+        $request->setSession($session = m::mock('Symfony\Component\HttpFoundation\Session\SessionInterface'));
+
+        $provider = new OAuthTwoTestProviderStub($request, 'client_id', 'client_secret');
+        $this->assertNull($provider->getRedirectUrl());
+
+        $provider = new OAuthTwoTestProviderStub($request, 'client_id', 'client_secret', 'redirect_uri');
+        $this->assertEquals('redirect_uri', $provider->getRedirectUrl());
+        $provider->setRedirectUrl('overtrue.me');
+        $this->assertEquals('overtrue.me', $provider->getRedirectUrl());
+
+        $provider->withRedirectUrl('http://overtrue.me');
+        $this->assertEquals('http://overtrue.me', $provider->getRedirectUrl());
+    }
+
     public function testUserReturnsAUserInstanceForTheAuthenticatedRequest()
     {
         $request = Request::create('foo', 'GET', ['state' => str_repeat('A', 40), 'code' => 'code']);

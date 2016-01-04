@@ -91,17 +91,17 @@ abstract class AbstractProvider implements ProviderInterface
     /**
      * Create a new provider instance.
      *
-     * @param Request $request
-     * @param string  $clientId
-     * @param string  $clientSecret
-     * @param string  $redirectUrl
+     * @param Request     $request
+     * @param string      $clientId
+     * @param string      $clientSecret
+     * @param string|null $redirectUrl
      */
-    public function __construct(Request $request, $clientId, $clientSecret, $redirectUrl)
+    public function __construct(Request $request, $clientId, $clientSecret, $redirectUrl = null)
     {
         $this->request      = $request;
         $this->clientId     = $clientId;
-        $this->redirectUrl  = $redirectUrl;
         $this->clientSecret = $clientSecret;
+        $this->redirectUrl  = $redirectUrl;
     }
 
     /**
@@ -141,11 +141,17 @@ abstract class AbstractProvider implements ProviderInterface
     /**
      * Redirect the user of the application to the provider's authentication screen.
      *
+     * @param string $redirectUrl
+     *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function redirect()
+    public function redirect($redirectUrl = null)
     {
         $state = null;
+
+        if (!is_null($redirectUrl)) {
+            $this->redirectUrl = $redirectUrl;
+        }
 
         if ($this->usesState()) {
             $this->request->getSession()->set('state', $state = md5(time()));
@@ -219,6 +225,44 @@ abstract class AbstractProvider implements ProviderInterface
         $user = $this->mapUserToObject($user)->merge(['original' => $user]);
 
         return $user->setToken($token);
+    }
+
+    /**
+     * Set redirect url.
+     *
+     * @param string $redirectUrl
+     *
+     * @return $this
+     */
+    public function setRedirectUrl($redirectUrl)
+    {
+        $this->redirectUrl = $redirectUrl;
+
+        return $this;
+    }
+
+    /**
+     * Set redirect url.
+     *
+     * @param string $redirectUrl
+     *
+     * @return $this
+     */
+    public function withRedirectUrl($redirectUrl)
+    {
+        $this->redirectUrl = $redirectUrl;
+
+        return $this;
+    }
+
+    /**
+     * Return the redirect url.
+     *
+     * @return string
+     */
+    public function getRedirectUrl()
+    {
+        return $this->redirectUrl;
     }
 
     /**
