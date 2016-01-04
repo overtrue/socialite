@@ -89,6 +89,18 @@ $response = $socialite->driver('github')
 
 ```
 
+### Redirect URL
+
+You may alse want to dynamic set `redirect`，you can use the following methods to change the `redirect` URL:
+
+```php
+$socialite->redirect($url);
+// or
+$socialite->withRedirectUrl($url)->redirect();
+// or
+$socialite->setRedirectUrl($url)->redirect();
+```
+
 > WeChat scopes:
 - `snsapi_base`, `snsapi_userinfo` - Used to Media Platform Authentication.
 - `snsapi_login` - Used to web Authentication.
