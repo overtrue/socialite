@@ -177,6 +177,42 @@ The `$user->getOriginal()` method will return an array of the API raw response.
 
 You can get the access token instance of current session by call `$user->getToken` or `$user->getAccessToken()` or `$user['token']` .
 
+
+### Custom Session or Request instance.
+
+You can set the request with your custom `Request` instance which instanceof `Symfony\Component\HttpFoundation\Request`.
+
+
+```php
+
+$request = new Request(); // or use AnotherCustomRequest.
+
+$socialite = new SocialiteManager($config, $request);
+```
+
+Or set request to `SocialiteManager` instance:
+
+```php
+$socialite->setRequest($request);
+```
+
+You can get the request from `SocialiteManager` instance by `getRequest()`:
+
+```php
+$request = $socialite->getRequest();
+```
+
+#### Set custom session manager.
+
+By default, the `SocialiteManager` use `Symfony\Component\HttpFoundation\Session\Session` instance as session manager, you can change it as following lines:
+
+```php
+$session = new YouCustomSessionManager();
+$socialite->getRequest()->setSession($session);
+```
+
+> Your custom session manager must be implement the `[Symfony\Component\HttpFoundation\Session\SessionInterface](http://api.symfony.com/3.0/Symfony/Component/HttpFoundation/Session/SessionInterface.html)`.
+
 Enjoy it! :heart:
 
 # Reference
