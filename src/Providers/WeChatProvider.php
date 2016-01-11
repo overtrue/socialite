@@ -25,11 +25,11 @@ use Overtrue\Socialite\User;
 class WeChatProvider extends AbstractProvider implements ProviderInterface
 {
     /**
-     * The base url of QQ API.
+     * The base url of WeChat API.
      *
      * @var string
      */
-    protected $baseUrl = 'https://api.weixin.qq.com/sns';
+    protected $baseUrl = 'https://open.weixin.qq.com';
 
     /**
      * {@inheritdoc}.
@@ -46,13 +46,13 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getAuthUrl($state)
     {
-        $path = 'authorize';
+        $path = 'oauth2/authorize';
 
         if (in_array('snsapi_login', $this->scopes)) {
             $path = 'qrconnect';
         }
 
-        return $this->buildAuthUrlFromBase("https://open.weixin.qq.com/connect/oauth2/{$path}", $state);
+        return $this->buildAuthUrlFromBase("https://open.weixin.qq.com/connect/{$path}", $state);
     }
 
     /**
