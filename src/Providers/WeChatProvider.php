@@ -29,7 +29,7 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
      *
      * @var string
      */
-    protected $baseUrl = 'https://open.weixin.qq.com';
+    protected $baseUrl = 'https://api.weixin.qq.com/sns';
 
     /**
      * {@inheritdoc}.
