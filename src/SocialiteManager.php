@@ -164,7 +164,11 @@ class SocialiteManager implements FactoryInterface
     {
         $request = Request::createFromGlobals();
         $session = new Session();
-        $session->start();
+
+        // check session status.
+        if (\PHP_SESSION_ACTIVE !== session_status()) {
+            $session->start();
+        }
 
         $request->setSession($session);
 
