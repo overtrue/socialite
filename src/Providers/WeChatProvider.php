@@ -93,6 +93,12 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getUserByToken(AccessTokenInterface $token)
     {
+        $scopes = explode(',', $token->getAttribute('scope', ''));
+
+        if (in_array('snsapi_base', $scopes)) {
+            return $token->toArray();
+        }
+
         $response = $this->getHttpClient()->get($this->baseUrl.'/userinfo', [
             'query' => [
                 'access_token' => $token->getToken(),
