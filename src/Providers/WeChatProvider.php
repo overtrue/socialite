@@ -60,8 +60,7 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
      */
     protected function buildAuthUrlFromBase($url, $state)
     {
-        $session = $this->request->getSession();
-        $query   = http_build_query($this->getCodeFields($state), '', '&', $this->encodingType);
+        $query = http_build_query($this->getCodeFields($state), '', '&', $this->encodingType);
 
         return $url.'?'.$query.'#wechat_redirect';
     }
