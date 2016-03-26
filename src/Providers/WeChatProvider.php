@@ -70,13 +70,14 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getCodeFields($state = null)
     {
-        return [
+        $fields = [
             'appid'         => $this->clientId,
             'redirect_uri'  => $this->redirectUrl,
             'response_type' => 'code',
             'scope'         => $this->formatScopes($this->scopes, $this->scopeSeparator),
             'state'         => $state,
         ];
+        return array_merge($fields, $this->parameters);
     }
 
     /**
