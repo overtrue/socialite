@@ -183,18 +183,18 @@ abstract class AbstractProvider implements ProviderInterface
      */
     protected function getCodeFields($state = null)
     {
-        $fields = [
+        $fields = array_merge([
             'client_id'     => $this->clientId,
             'redirect_uri'  => $this->redirectUrl,
             'scope'         => $this->formatScopes($this->scopes, $this->scopeSeparator),
             'response_type' => 'code',
-        ];
+        ], $this->parameters);
 
         if ($this->usesState()) {
             $fields['state'] = $state;
         }
 
-        return array_merge($fields, $this->parameters);
+        return $fields;
     }
 
     /**
