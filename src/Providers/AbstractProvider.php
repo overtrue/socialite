@@ -154,7 +154,8 @@ abstract class AbstractProvider implements ProviderInterface
         }
 
         if ($this->usesState()) {
-            $this->request->getSession()->set('state', $state = uniqid());
+            $state = sha1(uniqid(mt_rand(1, 1000000), true));
+            $this->request->getSession()->set('state', $state);
         }
 
         return new RedirectResponse($this->getAuthUrl($state));
@@ -182,18 +183,18 @@ abstract class AbstractProvider implements ProviderInterface
      */
     protected function getCodeFields($state = null)
     {
-        $fields = [
+        $fields = array_merge([
             'client_id'     => $this->clientId,
             'redirect_uri'  => $this->redirectUrl,
             'scope'         => $this->formatScopes($this->scopes, $this->scopeSeparator),
             'response_type' => 'code',
-        ];
+        ], $this->parameters);
 
         if ($this->usesState()) {
             $fields['state'] = $state;
         }
 
-        return array_merge($fields, $this->parameters);
+        return $fields;
     }
 
     /**

@@ -166,7 +166,7 @@ $user->getName();
 $user->getEmail();
 $user->getAvatar();
 $user->getOriginal();
-$user->getToken();
+$user->getToken();// or $user->getAccessToken()
 ```
 
 #### Get original response from OAuth API
@@ -175,7 +175,7 @@ The `$user->getOriginal()` method will return an array of the API raw response.
 
 #### Get access token Object
 
-You can get the access token instance of current session by call `$user->getToken` or `$user->getAccessToken()` or `$user['token']` .
+You can get the access token instance of current session by call `$user->getToken()` or `$user->getAccessToken()` or `$user['token']` .
 
 
 ### Custom Session or Request instance.
