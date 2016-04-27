@@ -23,7 +23,9 @@ interface ProviderInterface
     /**
      * Get the User instance for the authenticated user.
      *
+     * @param \Overtrue\Socialite\AccessTokenInterface $token
+     *
      * @return \Overtrue\Socialite\User
      */
-    public function user();
+    public function user(AccessTokenInterface $token = null);
 }
