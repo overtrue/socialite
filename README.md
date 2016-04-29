@@ -178,6 +178,14 @@ The `$user->getOriginal()` method will return an array of the API raw response.
 You can get the access token instance of current session by call `$user->getToken()` or `$user->getAccessToken()` or `$user['token']` .
 
 
+### Get user with access token
+
+```php
+$accessToken = new AccessToken(['access_token' => $accessToken]);
+$user = $socialite->user($accessToken);
+```
+
+
 ### Custom Session or Request instance.
 
 You can set the request with your custom `Request` instance which instanceof `Symfony\Component\HttpFoundation\Request`.

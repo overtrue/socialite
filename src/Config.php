@@ -23,6 +23,7 @@
 namespace Overtrue\Socialite;
 
 use ArrayAccess;
+use InvalidArgumentException;
 
 /**
  * Class Config.
