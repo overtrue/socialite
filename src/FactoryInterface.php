@@ -11,6 +11,9 @@
 
 namespace Overtrue\Socialite;
 
+/**
+ * Interface FactoryInterface.
+ */
 interface FactoryInterface
 {
     /**
