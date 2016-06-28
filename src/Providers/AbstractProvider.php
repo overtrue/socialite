@@ -162,55 +162,6 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * Get the authentication URL for the provider.
-     *
-     * @param string $url
-     * @param string $state
-     *
-     * @return string
-     */
-    protected function buildAuthUrlFromBase($url, $state)
-    {
-        return $url.'?'.http_build_query($this->getCodeFields($state), '', '&', $this->encodingType);
-    }
-
-    /**
-     * Get the GET parameters for the code request.
-     *
-     * @param string|null $state
-     *
-     * @return array
-     */
-    protected function getCodeFields($state = null)
-    {
-        $fields = array_merge([
-            'client_id'     => $this->clientId,
-            'redirect_uri'  => $this->redirectUrl,
-            'scope'         => $this->formatScopes($this->scopes, $this->scopeSeparator),
-            'response_type' => 'code',
-        ], $this->parameters);
-
-        if ($this->usesState()) {
-            $fields['state'] = $state;
-        }
-
-        return $fields;
-    }
-
-    /**
-     * Format the given scopes.
-     *
-     * @param array  $scopes
-     * @param string $scopeSeparator
-     *
-     * @return string
-     */
-    protected function formatScopes(array $scopes, $scopeSeparator)
-    {
-        return implode($scopeSeparator, $scopes);
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function user(AccessTokenInterface $token = null)
@@ -300,22 +251,6 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * Determine if the current request / session has a mismatching "state".
-     *
-     * @return bool
-     */
-    protected function hasInvalidState()
-    {
-        if ($this->isStateless()) {
-            return false;
-        }
-
-        $state = $this->request->getSession()->get('state');
-
-        return !(strlen($state) > 0 && $this->request->get('state') === $state);
-    }
-
-    /**
      * Set the request instance.
      *
      * @param Request $request
@@ -327,6 +262,16 @@ abstract class AbstractProvider implements ProviderInterface
         $this->request = $request;
 
         return $this;
+    }
+
+    /**
+     * Get the request instance.
+     *
+     * @return Request
+     */
+    public function getRequest()
+    {
+        return $this->request;
     }
 
     /**
@@ -353,6 +298,71 @@ abstract class AbstractProvider implements ProviderInterface
         $this->parameters = $parameters;
 
         return $this;
+    }
+
+    /**
+     * Get the authentication URL for the provider.
+     *
+     * @param string $url
+     * @param string $state
+     *
+     * @return string
+     */
+    protected function buildAuthUrlFromBase($url, $state)
+    {
+        return $url.'?'.http_build_query($this->getCodeFields($state), '', '&', $this->encodingType);
+    }
+
+    /**
+     * Get the GET parameters for the code request.
+     *
+     * @param string|null $state
+     *
+     * @return array
+     */
+    protected function getCodeFields($state = null)
+    {
+        $fields = array_merge([
+            'client_id'     => $this->clientId,
+            'redirect_uri'  => $this->redirectUrl,
+            'scope'         => $this->formatScopes($this->scopes, $this->scopeSeparator),
+            'response_type' => 'code',
+        ], $this->parameters);
+
+        if ($this->usesState()) {
+            $fields['state'] = $state;
+        }
+
+        return $fields;
+    }
+
+    /**
+     * Format the given scopes.
+     *
+     * @param array  $scopes
+     * @param string $scopeSeparator
+     *
+     * @return string
+     */
+    protected function formatScopes(array $scopes, $scopeSeparator)
+    {
+        return implode($scopeSeparator, $scopes);
+    }
+
+    /**
+     * Determine if the current request / session has a mismatching "state".
+     *
+     * @return bool
+     */
+    protected function hasInvalidState()
+    {
+        if ($this->isStateless()) {
+            return false;
+        }
+
+        $state = $this->request->getSession()->get('state');
+
+        return !(strlen($state) > 0 && $this->request->get('state') === $state);
     }
 
     /**

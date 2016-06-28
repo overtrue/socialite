@@ -130,7 +130,8 @@ class SocialiteManager implements FactoryInterface
      */
     protected function createDriver($driver)
     {
-        if ($provider = $this->initialDrivers[$driver]) {
+        if (isset($this->initialDrivers[$driver])) {
+            $provider = $this->initialDrivers[$driver];
             $provider = __NAMESPACE__.'\\Providers\\'.$provider.'Provider';
 
             return $this->buildProvider($provider, $this->formatConfig($this->config->get($driver)));
@@ -250,27 +251,5 @@ class SocialiteManager implements FactoryInterface
     public function __call($method, $parameters)
     {
         return call_user_func_array([$this->driver(), $method], $parameters);
-    }
-
-    /**
-     * Set Request instance.
-     *
-     * @param Request $request
-     */
-    public function setRequest(Request $request)
-    {
-        $this->request = $request;
-
-        return $this;
-    }
-
-    /**
-     * Return the request instance.
-     *
-     * @return \Symfony\Component\HttpFoundation\Request
-     */
-    public function getRequest()
-    {
-        return $this->request;
     }
 }
