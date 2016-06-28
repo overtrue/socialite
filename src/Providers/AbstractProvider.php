@@ -28,7 +28,7 @@ abstract class AbstractProvider implements ProviderInterface
     /**
      * The HTTP request instance.
      *
-     * @var Request
+     * @var \Symfony\Component\HttpFoundation\Request
      */
     protected $request;
 
@@ -91,10 +91,10 @@ abstract class AbstractProvider implements ProviderInterface
     /**
      * Create a new provider instance.
      *
-     * @param Request     $request
-     * @param string      $clientId
-     * @param string      $clientSecret
-     * @param string|null $redirectUrl
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param string                                    $clientId
+     * @param string                                    $clientSecret
+     * @param string|null                               $redirectUrl
      */
     public function __construct(Request $request, $clientId, $clientSecret, $redirectUrl = null)
     {
@@ -162,55 +162,6 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * Get the authentication URL for the provider.
-     *
-     * @param string $url
-     * @param string $state
-     *
-     * @return string
-     */
-    protected function buildAuthUrlFromBase($url, $state)
-    {
-        return $url.'?'.http_build_query($this->getCodeFields($state), '', '&', $this->encodingType);
-    }
-
-    /**
-     * Get the GET parameters for the code request.
-     *
-     * @param string|null $state
-     *
-     * @return array
-     */
-    protected function getCodeFields($state = null)
-    {
-        $fields = array_merge([
-            'client_id'     => $this->clientId,
-            'redirect_uri'  => $this->redirectUrl,
-            'scope'         => $this->formatScopes($this->scopes, $this->scopeSeparator),
-            'response_type' => 'code',
-        ], $this->parameters);
-
-        if ($this->usesState()) {
-            $fields['state'] = $state;
-        }
-
-        return $fields;
-    }
-
-    /**
-     * Format the given scopes.
-     *
-     * @param array  $scopes
-     * @param string $scopeSeparator
-     *
-     * @return string
-     */
-    protected function formatScopes(array $scopes, $scopeSeparator)
-    {
-        return implode($scopeSeparator, $scopes);
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function user(AccessTokenInterface $token = null)
@@ -267,22 +218,6 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * Determine if the current request / session has a mismatching "state".
-     *
-     * @return bool
-     */
-    protected function hasInvalidState()
-    {
-        if ($this->isStateless()) {
-            return false;
-        }
-
-        $state = $this->request->getSession()->get('state');
-
-        return !(strlen($state) > 0 && $this->request->get('state') === $state);
-    }
-
-    /**
      * Get the access token for the given code.
      *
      * @param string $code
@@ -299,6 +234,135 @@ abstract class AbstractProvider implements ProviderInterface
         ]);
 
         return $this->parseAccessToken($response->getBody());
+    }
+
+    /**
+     * Set the scopes of the requested access.
+     *
+     * @param array $scopes
+     *
+     * @return $this
+     */
+    public function scopes(array $scopes)
+    {
+        $this->scopes = $scopes;
+
+        return $this;
+    }
+
+    /**
+     * Set the request instance.
+     *
+     * @param Request $request
+     *
+     * @return $this
+     */
+    public function setRequest(Request $request)
+    {
+        $this->request = $request;
+
+        return $this;
+    }
+
+    /**
+     * Get the request instance.
+     *
+     * @return Request
+     */
+    public function getRequest()
+    {
+        return $this->request;
+    }
+
+    /**
+     * Indicates that the provider should operate as stateless.
+     *
+     * @return $this
+     */
+    public function stateless()
+    {
+        $this->stateless = true;
+
+        return $this;
+    }
+
+    /**
+     * Set the custom parameters of the request.
+     *
+     * @param array $parameters
+     *
+     * @return $this
+     */
+    public function with(array $parameters)
+    {
+        $this->parameters = $parameters;
+
+        return $this;
+    }
+
+    /**
+     * Get the authentication URL for the provider.
+     *
+     * @param string $url
+     * @param string $state
+     *
+     * @return string
+     */
+    protected function buildAuthUrlFromBase($url, $state)
+    {
+        return $url.'?'.http_build_query($this->getCodeFields($state), '', '&', $this->encodingType);
+    }
+
+    /**
+     * Get the GET parameters for the code request.
+     *
+     * @param string|null $state
+     *
+     * @return array
+     */
+    protected function getCodeFields($state = null)
+    {
+        $fields = array_merge([
+            'client_id'     => $this->clientId,
+            'redirect_uri'  => $this->redirectUrl,
+            'scope'         => $this->formatScopes($this->scopes, $this->scopeSeparator),
+            'response_type' => 'code',
+        ], $this->parameters);
+
+        if ($this->usesState()) {
+            $fields['state'] = $state;
+        }
+
+        return $fields;
+    }
+
+    /**
+     * Format the given scopes.
+     *
+     * @param array  $scopes
+     * @param string $scopeSeparator
+     *
+     * @return string
+     */
+    protected function formatScopes(array $scopes, $scopeSeparator)
+    {
+        return implode($scopeSeparator, $scopes);
+    }
+
+    /**
+     * Determine if the current request / session has a mismatching "state".
+     *
+     * @return bool
+     */
+    protected function hasInvalidState()
+    {
+        if ($this->isStateless()) {
+            return false;
+        }
+
+        $state = $this->request->getSession()->get('state');
+
+        return !(strlen($state) > 0 && $this->request->get('state') === $state);
     }
 
     /**
@@ -341,20 +405,6 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * Set the scopes of the requested access.
-     *
-     * @param array $scopes
-     *
-     * @return $this
-     */
-    public function scopes(array $scopes)
-    {
-        $this->scopes = $scopes;
-
-        return $this;
-    }
-
-    /**
      * Get a fresh instance of the Guzzle HTTP client.
      *
      * @return \GuzzleHttp\Client
@@ -362,30 +412,6 @@ abstract class AbstractProvider implements ProviderInterface
     protected function getHttpClient()
     {
         return new Client();
-    }
-
-    /**
-     * Set the request instance.
-     *
-     * @param Request $request
-     *
-     * @return $this
-     */
-    public function setRequest(Request $request)
-    {
-        $this->request = $request;
-
-        return $this;
-    }
-    
-    /**
-     * Get the request instance.
-     *
-     * @return Request
-     */
-    public function getRequest()
-    {
-        return $this->request;
     }
 
     /**
@@ -409,32 +435,6 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * Indicates that the provider should operate as stateless.
-     *
-     * @return $this
-     */
-    public function stateless()
-    {
-        $this->stateless = true;
-
-        return $this;
-    }
-
-    /**
-     * Set the custom parameters of the request.
-     *
-     * @param array $parameters
-     *
-     * @return $this
-     */
-    public function with(array $parameters)
-    {
-        $this->parameters = $parameters;
-
-        return $this;
-    }
-
-    /**
      * Return array item by key.
      *
      * @param array  $array
@@ -443,7 +443,7 @@ abstract class AbstractProvider implements ProviderInterface
      *
      * @return mixed
      */
-    public function arrayItem(array $array, $key, $default = null)
+    protected function arrayItem(array $array, $key, $default = null)
     {
         if (is_null($key)) {
             return $array;

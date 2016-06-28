@@ -252,26 +252,4 @@ class SocialiteManager implements FactoryInterface
     {
         return call_user_func_array([$this->driver(), $method], $parameters);
     }
-
-    /**
-     * Set Request instance.
-     *
-     * @param Request $request
-     */
-    public function setRequest(Request $request)
-    {
-        $this->request = $request;
-
-        return $this;
-    }
-
-    /**
-     * Return the request instance.
-     *
-     * @return \Symfony\Component\HttpFoundation\Request
-     */
-    public function getRequest()
-    {
-        return $this->request;
-    }
 }
