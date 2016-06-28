@@ -377,6 +377,16 @@ abstract class AbstractProvider implements ProviderInterface
 
         return $this;
     }
+    
+    /**
+     * Get the request instance.
+     *
+     * @return Request
+     */
+    public function getRequest()
+    {
+        return $this->request;
+    }
 
     /**
      * Determine if the provider is operating with state.
