@@ -42,6 +42,13 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
     protected $scopes = ['snsapi_login'];
 
     /**
+     * Indicates if the session state should be utilized.
+     *
+     * @var bool
+     */
+    protected $stateless = true;
+
+    /**
      * {@inheritdoc}.
      */
     protected function getAuthUrl($state)
