@@ -98,10 +98,10 @@ abstract class AbstractProvider implements ProviderInterface
      */
     public function __construct(Request $request, $clientId, $clientSecret, $redirectUrl = null)
     {
-        $this->request      = $request;
-        $this->clientId     = $clientId;
+        $this->request = $request;
+        $this->clientId = $clientId;
         $this->clientSecret = $clientSecret;
-        $this->redirectUrl  = $redirectUrl;
+        $this->redirectUrl = $redirectUrl;
     }
 
     /**

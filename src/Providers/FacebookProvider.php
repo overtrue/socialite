@@ -124,7 +124,7 @@ class FacebookProvider extends AbstractProvider implements ProviderInterface
         $avatarUrl = $this->graphUrl.'/'.$this->version.'/'.$user['id'].'/picture';
 
         $firstName = $this->arrayItem($user, 'first_name');
-        $lastName  = $this->arrayItem($user, 'last_name');
+        $lastName = $this->arrayItem($user, 'last_name');
 
         return new User([
             'id'              => $this->arrayItem($user, 'id'),

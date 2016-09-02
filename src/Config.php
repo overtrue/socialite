@@ -71,7 +71,7 @@ class Config implements ArrayAccess
     public function set($key, $value)
     {
         if (is_null($key)) {
-            throw new InvalidArgumentException("Invalid config key.");
+            throw new InvalidArgumentException('Invalid config key.');
         }
 
         $keys = explode('.', $key);
