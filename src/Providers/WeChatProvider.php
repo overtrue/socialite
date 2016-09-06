@@ -11,11 +11,11 @@
 
 namespace Overtrue\Socialite\Providers;
 
+use InvalidArgumentException;
 use Overtrue\Socialite\AccessToken;
 use Overtrue\Socialite\AccessTokenInterface;
 use Overtrue\Socialite\ProviderInterface;
 use Overtrue\Socialite\User;
-use InvalidArgumentException;
 
 /**
  * Class WeChatProvider.
@@ -107,7 +107,7 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
         }
 
         if (empty($token['openid'])) {
-            throw new InvalidArgumentException("openid of AccessToken is required.");
+            throw new InvalidArgumentException('openid of AccessToken is required.');
         }
 
         $response = $this->getHttpClient()->get($this->baseUrl.'/userinfo', [
