@@ -131,7 +131,7 @@ class QQProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getUserByToken(AccessTokenInterface $token)
     {
-        $response = $this->getHttpClient()->get($this->baseUrl.'/oauth2.0/me?access_token='.$token->getToken());
+        $response = $this->getHttpClient()->get($this->baseUrl.'/oauth2.0/me?access_token='.$token->getToken().'&unionid=1');
 
         $me = json_decode($this->removeCallback($response->getBody()->getContents()), true);
         $this->openId   = $me['openid'];
