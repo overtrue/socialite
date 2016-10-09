@@ -134,8 +134,8 @@ class QQProvider extends AbstractProvider implements ProviderInterface
         $response = $this->getHttpClient()->get($this->baseUrl.'/oauth2.0/me?access_token='.$token->getToken().'&unionid=1');
 
         $me = json_decode($this->removeCallback($response->getBody()->getContents()), true);
-        $this->openId   = $me['openid'];
-        $this->unionId  = isset($me['unionid']) ? $me['unionid'] : '';
+        $this->openId = $me['openid'];
+        $this->unionId = isset($me['unionid']) ? $me['unionid'] : '';
 
         $queries = [
             'access_token'       => $token->getToken(),
