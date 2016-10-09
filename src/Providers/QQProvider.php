@@ -38,6 +38,13 @@ class QQProvider extends AbstractProvider implements ProviderInterface
     protected $openId;
 
     /**
+     * User unionid.
+     *
+     * @var string
+     */
+    protected $unionId;
+
+    /**
      * The scopes being requested.
      *
      * @var array
@@ -124,9 +131,11 @@ class QQProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getUserByToken(AccessTokenInterface $token)
     {
-        $response = $this->getHttpClient()->get($this->baseUrl.'/oauth2.0/me?access_token='.$token->getToken());
+        $response = $this->getHttpClient()->get($this->baseUrl.'/oauth2.0/me?access_token='.$token->getToken().'&unionid=1');
 
-        $this->openId = json_decode($this->removeCallback($response->getBody()->getContents()), true)['openid'];
+        $me = json_decode($this->removeCallback($response->getBody()->getContents()), true);
+        $this->openId   = $me['openid'];
+        $this->unionId  = isset($me['unionid']) ? $me['unionid'] : '';
 
         $queries = [
             'access_token'       => $token->getToken(),
@@ -150,6 +159,7 @@ class QQProvider extends AbstractProvider implements ProviderInterface
     {
         return new User([
             'id'       => $this->openId,
+            'unionid'  => $this->unionId,
             'nickname' => $this->arrayItem($user, 'nickname'),
             'name'     => $this->arrayItem($user, 'nickname'),
             'email'    => $this->arrayItem($user, 'email'),
