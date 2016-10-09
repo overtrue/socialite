@@ -91,7 +91,7 @@ $response = $socialite->driver('github')
 
 ### Redirect URL
 
-You may alse want to dynamic set `redirect`，you can use the following methods to change the `redirect` URL:
+You may also want to dynamic set `redirect`，you can use the following methods to change the `redirect` URL:
 
 ```php
 $socialite->redirect($url);
