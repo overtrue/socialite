@@ -38,6 +38,12 @@ class QQProvider extends AbstractProvider implements ProviderInterface
     protected $openId;
 
     /**
+     * get token(openid) with unionid.
+     * @var bool
+     */
+    protected $withUnionId = false;
+
+    /**
      * User unionid.
      *
      * @var string
@@ -123,6 +129,15 @@ class QQProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
+     *
+     * @return self
+     */
+    public function withUnionId() {
+        $this->withUnionId = true;
+        return $this;
+    }
+
+    /**
      * Get the raw user for the given access token.
      *
      * @param \Overtrue\Socialite\AccessTokenInterface $token
@@ -131,10 +146,13 @@ class QQProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getUserByToken(AccessTokenInterface $token)
     {
-        $response = $this->getHttpClient()->get($this->baseUrl.'/oauth2.0/me?access_token='.$token->getToken().'&unionid=1');
+        $url = $this->baseUrl.'/oauth2.0/me?access_token='.$token->getToken();
+        $this->withUnionId && $url .= '&unionid=1';
+
+        $response = $this->getHttpClient()->get($url);
 
         $me = json_decode($this->removeCallback($response->getBody()->getContents()), true);
-        $this->openId = $me['openid'];
+        $this->openId  = $me['openid'];
         $this->unionId = isset($me['unionid']) ? $me['unionid'] : '';
 
         $queries = [
