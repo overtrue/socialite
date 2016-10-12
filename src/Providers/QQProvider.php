@@ -39,6 +39,7 @@ class QQProvider extends AbstractProvider implements ProviderInterface
 
     /**
      * get token(openid) with unionid.
+     *
      * @var bool
      */
     protected $withUnionId = false;
@@ -129,11 +130,12 @@ class QQProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     *
      * @return self
      */
-    public function withUnionId() {
+    public function withUnionId()
+    {
         $this->withUnionId = true;
+
         return $this;
     }
 
@@ -152,7 +154,7 @@ class QQProvider extends AbstractProvider implements ProviderInterface
         $response = $this->getHttpClient()->get($url);
 
         $me = json_decode($this->removeCallback($response->getBody()->getContents()), true);
-        $this->openId  = $me['openid'];
+        $this->openId = $me['openid'];
         $this->unionId = isset($me['unionid']) ? $me['unionid'] : '';
 
         $queries = [
