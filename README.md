@@ -215,7 +215,7 @@ $request = $socialite->getRequest();
 By default, the `SocialiteManager` use `Symfony\Component\HttpFoundation\Session\Session` instance as session manager, you can change it as following lines:
 
 ```php
-$session = new YouCustomSessionManager();
+$session = new YourCustomSessionManager();
 $socialite->getRequest()->setSession($session);
 ```
 
