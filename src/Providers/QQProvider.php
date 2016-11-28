@@ -152,13 +152,13 @@ class QQProvider extends AbstractProvider implements ProviderInterface
 
         $response = $this->getHttpClient()->get($url);
 
-        $me            = json_decode($this->removeCallback($response->getBody()->getContents()), true);
-        $this->openId  = $me['openid'];
+        $me = json_decode($this->removeCallback($response->getBody()->getContents()), true);
+        $this->openId = $me['openid'];
         $this->unionId = isset($me['unionid']) ? $me['unionid'] : '';
 
         $queries = [
-            'access_token'       => $token->getToken(),
-            'openid'             => $this->openId,
+            'access_token' => $token->getToken(),
+            'openid' => $this->openId,
             'oauth_consumer_key' => $this->clientId,
         ];
 
@@ -177,12 +177,12 @@ class QQProvider extends AbstractProvider implements ProviderInterface
     protected function mapUserToObject(array $user)
     {
         return new User([
-            'id'       => $this->openId,
-            'unionid'  => $this->unionId,
+            'id' => $this->openId,
+            'unionid' => $this->unionId,
             'nickname' => $this->arrayItem($user, 'nickname'),
-            'name'     => $this->arrayItem($user, 'nickname'),
-            'email'    => $this->arrayItem($user, 'email'),
-            'avatar'   => $this->arrayItem($user, 'figureurl_qq_2'),
+            'name' => $this->arrayItem($user, 'nickname'),
+            'email' => $this->arrayItem($user, 'email'),
+            'avatar' => $this->arrayItem($user, 'figureurl_qq_2'),
         ]);
     }
 
@@ -196,8 +196,8 @@ class QQProvider extends AbstractProvider implements ProviderInterface
     protected function removeCallback($response)
     {
         if (strpos($response, 'callback') !== false) {
-            $lpos     = strpos($response, '(');
-            $rpos     = strrpos($response, ')');
+            $lpos = strpos($response, '(');
+            $rpos = strrpos($response, ')');
             $response = substr($response, $lpos + 1, $rpos - $lpos - 1);
         }
 

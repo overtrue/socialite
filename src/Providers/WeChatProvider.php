@@ -79,11 +79,11 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
     protected function getCodeFields($state = null)
     {
         return array_merge([
-            'appid'         => $this->clientId,
-            'redirect_uri'  => $this->redirectUrl,
+            'appid' => $this->clientId,
+            'redirect_uri' => $this->redirectUrl,
             'response_type' => 'code',
-            'scope'         => $this->formatScopes($this->scopes, $this->scopeSeparator),
-            'state'         => $state ?: md5(time()),
+            'scope' => $this->formatScopes($this->scopes, $this->scopeSeparator),
+            'state' => $state ?: md5(time()),
         ], $this->parameters);
     }
 
@@ -113,8 +113,8 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
         $response = $this->getHttpClient()->get($this->baseUrl.'/userinfo', [
             'query' => [
                 'access_token' => $token->getToken(),
-                'openid'       => $token['openid'],
-                'lang'         => 'zh_CN',
+                'openid' => $token['openid'],
+                'lang' => 'zh_CN',
             ],
         ]);
 
@@ -127,11 +127,11 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
     protected function mapUserToObject(array $user)
     {
         return new User([
-            'id'       => $this->arrayItem($user, 'openid'),
-            'name'     => $this->arrayItem($user, 'nickname'),
+            'id' => $this->arrayItem($user, 'openid'),
+            'name' => $this->arrayItem($user, 'nickname'),
             'nickname' => $this->arrayItem($user, 'nickname'),
-            'avatar'   => $this->arrayItem($user, 'headimgurl'),
-            'email'    => null,
+            'avatar' => $this->arrayItem($user, 'headimgurl'),
+            'email' => null,
         ]);
     }
 
@@ -141,9 +141,9 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
     protected function getTokenFields($code)
     {
         return [
-            'appid'      => $this->clientId,
-            'secret'     => $this->clientSecret,
-            'code'       => $code,
+            'appid' => $this->clientId,
+            'secret' => $this->clientSecret,
+            'code' => $code,
             'grant_type' => 'authorization_code',
         ];
     }
@@ -170,8 +170,8 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
     protected function removeCallback($response)
     {
         if (strpos($response, 'callback') !== false) {
-            $lpos     = strpos($response, '(');
-            $rpos     = strrpos($response, ')');
+            $lpos = strpos($response, '(');
+            $rpos = strrpos($response, ')');
             $response = substr($response, $lpos + 1, $rpos - $lpos - 1);
         }
 

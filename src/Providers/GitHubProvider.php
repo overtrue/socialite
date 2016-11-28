@@ -96,11 +96,11 @@ class GitHubProvider extends AbstractProvider implements ProviderInterface
     protected function mapUserToObject(array $user)
     {
         return new User([
-            'id'       => $this->arrayItem($user, 'id'),
+            'id' => $this->arrayItem($user, 'id'),
             'nickname' => $this->arrayItem($user, 'login'),
-            'name'     => $this->arrayItem($user, 'name'),
-            'email'    => $this->arrayItem($user, 'email'),
-            'avatar'   => $this->arrayItem($user, 'avatar_url'),
+            'name' => $this->arrayItem($user, 'name'),
+            'email' => $this->arrayItem($user, 'email'),
+            'avatar' => $this->arrayItem($user, 'avatar_url'),
         ]);
     }
 

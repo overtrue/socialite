@@ -99,10 +99,10 @@ abstract class AbstractProvider implements ProviderInterface
      */
     public function __construct(Request $request, $clientId, $clientSecret, $redirectUrl = null)
     {
-        $this->request      = $request;
-        $this->clientId     = $clientId;
+        $this->request = $request;
+        $this->clientId = $clientId;
         $this->clientSecret = $clientSecret;
-        $this->redirectUrl  = $redirectUrl;
+        $this->redirectUrl = $redirectUrl;
     }
 
     /**
@@ -231,7 +231,7 @@ abstract class AbstractProvider implements ProviderInterface
 
         $response = $this->getHttpClient()->post($this->getTokenUrl(), [
             'headers' => ['Accept' => 'application/json'],
-            $postKey  => $this->getTokenFields($code),
+            $postKey => $this->getTokenFields($code),
         ]);
 
         return $this->parseAccessToken($response->getBody());
@@ -324,9 +324,9 @@ abstract class AbstractProvider implements ProviderInterface
     protected function getCodeFields($state = null)
     {
         $fields = array_merge([
-            'client_id'     => $this->clientId,
-            'redirect_uri'  => $this->redirectUrl,
-            'scope'         => $this->formatScopes($this->scopes, $this->scopeSeparator),
+            'client_id' => $this->clientId,
+            'redirect_uri' => $this->redirectUrl,
+            'scope' => $this->formatScopes($this->scopes, $this->scopeSeparator),
             'response_type' => 'code',
         ], $this->parameters);
 
@@ -376,10 +376,10 @@ abstract class AbstractProvider implements ProviderInterface
     protected function getTokenFields($code)
     {
         return [
-            'client_id'     => $this->clientId,
+            'client_id' => $this->clientId,
             'client_secret' => $this->clientSecret,
-            'code'          => $code,
-            'redirect_uri'  => $this->redirectUrl,
+            'code' => $code,
+            'redirect_uri' => $this->redirectUrl,
         ];
     }
 
