@@ -219,7 +219,7 @@ $session = new YourCustomSessionManager();
 $socialite->getRequest()->setSession($session);
 ```
 
-> Your custom session manager must be implement the `[Symfony\Component\HttpFoundation\Session\SessionInterface](http://api.symfony.com/3.0/Symfony/Component/HttpFoundation/Session/SessionInterface.html)`.
+> Your custom session manager must be implement the [`Symfony\Component\HttpFoundation\Session\SessionInterface`](http://api.symfony.com/3.0/Symfony/Component/HttpFoundation/Session/SessionInterface.html).
 
 Enjoy it! :heart:
 
