@@ -11,7 +11,6 @@
 
 namespace Overtrue\Socialite\Providers;
 
-use Overtrue\Socialite\AccessToken;
 use Overtrue\Socialite\AccessTokenInterface;
 use Overtrue\Socialite\ProviderInterface;
 use Overtrue\Socialite\User;
@@ -126,7 +125,7 @@ class QQProvider extends AbstractProvider implements ProviderInterface
     {
         parse_str($body, $token);
 
-        return new AccessToken($token);
+        return parent::parseAccessToken($token);
     }
 
     /**
@@ -153,8 +152,8 @@ class QQProvider extends AbstractProvider implements ProviderInterface
 
         $response = $this->getHttpClient()->get($url);
 
-        $me = json_decode($this->removeCallback($response->getBody()->getContents()), true);
-        $this->openId = $me['openid'];
+        $me            = json_decode($this->removeCallback($response->getBody()->getContents()), true);
+        $this->openId  = $me['openid'];
         $this->unionId = isset($me['unionid']) ? $me['unionid'] : '';
 
         $queries = [
@@ -197,8 +196,8 @@ class QQProvider extends AbstractProvider implements ProviderInterface
     protected function removeCallback($response)
     {
         if (strpos($response, 'callback') !== false) {
-            $lpos = strpos($response, '(');
-            $rpos = strrpos($response, ')');
+            $lpos     = strpos($response, '(');
+            $rpos     = strrpos($response, ')');
             $response = substr($response, $lpos + 1, $rpos - $lpos - 1);
         }
 

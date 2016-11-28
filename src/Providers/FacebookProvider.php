@@ -11,7 +11,6 @@
 
 namespace Overtrue\Socialite\Providers;
 
-use Overtrue\Socialite\AccessToken;
 use Overtrue\Socialite\AccessTokenInterface;
 use Overtrue\Socialite\ProviderInterface;
 use Overtrue\Socialite\User;
@@ -97,7 +96,7 @@ class FacebookProvider extends AbstractProvider implements ProviderInterface
     {
         parse_str($body, $token);
 
-        return new AccessToken($token);
+        return parent::parseAccessToken($token);
     }
 
     /**
@@ -124,7 +123,7 @@ class FacebookProvider extends AbstractProvider implements ProviderInterface
         $avatarUrl = $this->graphUrl.'/'.$this->version.'/'.$user['id'].'/picture';
 
         $firstName = $this->arrayItem($user, 'first_name');
-        $lastName = $this->arrayItem($user, 'last_name');
+        $lastName  = $this->arrayItem($user, 'last_name');
 
         return new User([
             'id'              => $this->arrayItem($user, 'id'),

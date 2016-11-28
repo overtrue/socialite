@@ -15,6 +15,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use Overtrue\Socialite\AccessToken;
 use Overtrue\Socialite\AccessTokenInterface;
+use Overtrue\Socialite\AuthorizeFailedException;
 use Overtrue\Socialite\InvalidStateException;
 use Overtrue\Socialite\ProviderInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -77,7 +78,7 @@ abstract class AbstractProvider implements ProviderInterface
     /**
      * The type of the encoding in the query.
      *
-     * @var int Can be either PHP_QUERY_RFC3986 or PHP_QUERY_RFC1738.
+     * @var int Can be either PHP_QUERY_RFC3986 or PHP_QUERY_RFC1738
      */
     protected $encodingType = PHP_QUERY_RFC1738;
 
@@ -98,10 +99,10 @@ abstract class AbstractProvider implements ProviderInterface
      */
     public function __construct(Request $request, $clientId, $clientSecret, $redirectUrl = null)
     {
-        $this->request = $request;
-        $this->clientId = $clientId;
+        $this->request      = $request;
+        $this->clientId     = $clientId;
         $this->clientSecret = $clientSecret;
-        $this->redirectUrl = $redirectUrl;
+        $this->redirectUrl  = $redirectUrl;
     }
 
     /**
@@ -385,13 +386,21 @@ abstract class AbstractProvider implements ProviderInterface
     /**
      * Get the access token from the token response body.
      *
-     * @param \Psr\Http\Message\StreamInterface $body
+     * @param \Psr\Http\Message\StreamInterface|array $body
      *
      * @return \Overtrue\Socialite\AccessToken
      */
     protected function parseAccessToken($body)
     {
-        return new AccessToken((array) json_decode($body, true));
+        if (!is_array($body)) {
+            $body = json_decode($body, true);
+        }
+
+        if (empty($body['access_token'])) {
+            throw new AuthorizeFailedException('Authorize Failed: '.json_encode($body, JSON_UNESCAPED_UNICODE), $body);
+        }
+
+        return new AccessToken($body);
     }
 
     /**

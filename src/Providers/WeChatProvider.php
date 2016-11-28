@@ -11,9 +11,9 @@
 
 namespace Overtrue\Socialite\Providers;
 
-use InvalidArgumentException;
 use Overtrue\Socialite\AccessToken;
 use Overtrue\Socialite\AccessTokenInterface;
+use Overtrue\Socialite\InvalidArgumentException;
 use Overtrue\Socialite\ProviderInterface;
 use Overtrue\Socialite\User;
 
@@ -161,14 +161,6 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * {@inheritdoc}.
-     */
-    protected function parseAccessToken($body)
-    {
-        return new AccessToken(json_decode($body, true));
-    }
-
-    /**
      * Remove the fucking callback parentheses.
      *
      * @param mixed $response
@@ -178,8 +170,8 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
     protected function removeCallback($response)
     {
         if (strpos($response, 'callback') !== false) {
-            $lpos = strpos($response, '(');
-            $rpos = strrpos($response, ')');
+            $lpos     = strpos($response, '(');
+            $rpos     = strrpos($response, ')');
             $response = substr($response, $lpos + 1, $rpos - $lpos - 1);
         }
 
