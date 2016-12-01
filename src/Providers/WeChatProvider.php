@@ -92,7 +92,7 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getTokenUrl()
     {
-        if ($this->isOpenPlatform()) {
+        if ($this->isOpenPlatform()){
             return $this->baseUrl . '/oauth2/component/access_token';
         }
         return $this->baseUrl . '/oauth2/access_token';
