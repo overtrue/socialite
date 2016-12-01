@@ -79,7 +79,7 @@ class LinkedinProvider extends AbstractProvider implements ProviderInterface
 
         $response = $this->getHttpClient()->get($url, [
             'headers' => [
-                'x-li-format'   => 'json',
+                'x-li-format' => 'json',
                 'Authorization' => 'Bearer '.$token,
             ],
         ]);
@@ -93,11 +93,11 @@ class LinkedinProvider extends AbstractProvider implements ProviderInterface
     protected function mapUserToObject(array $user)
     {
         return new User([
-            'id'              => $this->arrayItem($user, 'id'),
-            'nickname'        => $this->arrayItem($user, 'formattedName'),
-            'name'            => $this->arrayItem($user, 'formattedName'),
-            'email'           => $this->arrayItem($user, 'emailAddress'),
-            'avatar'          => $this->arrayItem($user, 'pictureUrl'),
+            'id' => $this->arrayItem($user, 'id'),
+            'nickname' => $this->arrayItem($user, 'formattedName'),
+            'name' => $this->arrayItem($user, 'formattedName'),
+            'email' => $this->arrayItem($user, 'emailAddress'),
+            'avatar' => $this->arrayItem($user, 'pictureUrl'),
             'avatar_original' => $this->arrayItem($user, 'pictureUrls.values.0'),
         ]);
     }

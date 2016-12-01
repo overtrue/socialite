@@ -95,7 +95,7 @@ class WeiboProvider extends AbstractProvider implements ProviderInterface
     {
         $response = $this->getHttpClient()->get($this->baseUrl.'/'.$this->version.'/users/show.json', [
             'query' => [
-                'uid'          => $token['uid'],
+                'uid' => $token['uid'],
                 'access_token' => $token->getToken(),
             ],
             'headers' => [
@@ -116,11 +116,11 @@ class WeiboProvider extends AbstractProvider implements ProviderInterface
     protected function mapUserToObject(array $user)
     {
         return new User([
-            'id'       => $this->arrayItem($user, 'id'),
+            'id' => $this->arrayItem($user, 'id'),
             'nickname' => $this->arrayItem($user, 'screen_name'),
-            'name'     => $this->arrayItem($user, 'name'),
-            'email'    => $this->arrayItem($user, 'email'),
-            'avatar'   => $this->arrayItem($user, 'avatar_large'),
+            'name' => $this->arrayItem($user, 'name'),
+            'email' => $this->arrayItem($user, 'email'),
+            'avatar' => $this->arrayItem($user, 'avatar_large'),
         ]);
     }
 }

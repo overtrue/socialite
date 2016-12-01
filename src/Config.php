@@ -101,7 +101,7 @@ class Config implements ArrayAccess
      * @return bool true on success or false on failure.
      *              </p>
      *              <p>
-     *              The return value will be casted to boolean if non-boolean was returned.
+     *              The return value will be casted to boolean if non-boolean was returned
      *
      * @since 5.0.0
      */
@@ -119,7 +119,7 @@ class Config implements ArrayAccess
      *                      The offset to retrieve.
      *                      </p>
      *
-     * @return mixed Can return all value types.
+     * @return mixed Can return all value types
      *
      * @since 5.0.0
      */

@@ -58,11 +58,11 @@ class DoubanProvider extends AbstractProvider implements ProviderInterface
     protected function mapUserToObject(array $user)
     {
         return new User([
-            'id'       => $this->arrayItem($user, 'id'),
+            'id' => $this->arrayItem($user, 'id'),
             'nickname' => $this->arrayItem($user, 'name'),
-            'name'     => $this->arrayItem($user, 'name'),
-            'avatar'   => $this->arrayItem($user, 'large_avatar'),
-            'email'    => null,
+            'name' => $this->arrayItem($user, 'name'),
+            'avatar' => $this->arrayItem($user, 'large_avatar'),
+            'email' => null,
         ]);
     }
 
