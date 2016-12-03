@@ -30,7 +30,9 @@ class CorpWechatProvider extends AbstractProvider implements ProviderInterface
      *
      * @var string
      */
-    protected $baseUrl = 'https://qyapi.weixin.qq.com/cgi-bin/user/getuserinfo';
+    protected $user_baseinfo_api = 'https://qyapi.weixin.qq.com/cgi-bin/user/getuserinfo';
+    protected $user_info_api = 'https://qyapi.weixin.qq.com/cgi-bin/user/get';
+    protected $access_api_url = 'https://qyapi.weixin.qq.com/cgi-bin/gettoken';
 
     /**
      * {@inheritdoc}.
@@ -67,7 +69,8 @@ class CorpWechatProvider extends AbstractProvider implements ProviderInterface
     protected function buildAuthUrlFromBase($url, $state)
     {
         $query = http_build_query($this->getCodeFields($state), '', '&', $this->encodingType);
-        return $url.'?'.$query.'#wechat_redirect';
+        $url = $url.'?'.$query.'#wechat_redirect';
+        return $url;
     }
 
     /**
@@ -88,15 +91,11 @@ class CorpWechatProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * {@inheritdoc}.
+     * 获取 access token的路径.
      */
     protected function getTokenUrl()
     {
-        if ($this->isOpenPlatform()) {
-            return $this->baseUrl.'/oauth2/component/access_token';
-        }
-
-        return $this->baseUrl.'/oauth2/access_token';
+        return $this->access_api_url;
     }
 
     /**
@@ -104,21 +103,16 @@ class CorpWechatProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getUserByToken(AccessTokenInterface $token)
     {
-        $scopes = explode(',', $token->getAttribute('scope', ''));
 
-        if (in_array('snsapi_base', $scopes)) {
-            return $token->toArray();
+
+        if (empty($token['UserId'])) {
+            throw new InvalidArgumentException('UserId of AccessToken is required.');
         }
 
-        if (empty($token['openid'])) {
-            throw new InvalidArgumentException('openid of AccessToken is required.');
-        }
-
-        $response = $this->getHttpClient()->get($this->baseUrl.'/userinfo', [
+        $response = $this->getHttpClient()->get($this->user_info_api, [
             'query' => [
                 'access_token' => $token->getToken(),
-                'openid' => $token['openid'],
-                'lang' => 'zh_CN',
+                'userid' => $token['UserId'],
             ],
         ]);
 
@@ -131,58 +125,78 @@ class CorpWechatProvider extends AbstractProvider implements ProviderInterface
     protected function mapUserToObject(array $user)
     {
         return new User([
-            'id' => $this->arrayItem($user, 'openid'),
-            'name' => $this->arrayItem($user, 'nickname'),
-            'nickname' => $this->arrayItem($user, 'nickname'),
-            'avatar' => $this->arrayItem($user, 'headimgurl'),
-            'email' => null,
+            'userid' => $this->arrayItem($user, 'userid'),
+            'name' => $this->arrayItem($user, 'name'),
+            'avatar' => $this->arrayItem($user, 'avatar'),
+            'mobile' => $this->arrayItem($user, 'mobile'),
+            'department' => $this->arrayItem($user, 'department'),
+            'gender' => $this->arrayItem($user, 'gender'),
+            'email' => $this->arrayItem($user, 'email'),
+            'status' => $this->arrayItem($user, 'status'),
         ]);
     }
 
     /**
-     * {@inheritdoc}.
+     * 构建access_token 的参数列表, 分为两种情况一种是 获取access token, 另一种是直接获取userid
      */
-    protected function getTokenFields($code)
+    protected function getTokenFields($code = false)
     {
-        $base = [
-            'appid' => $this->clientId,
-            'code' => $code,
-            'grant_type' => 'authorization_code',
-        ];
+        //参数列表: 
+        // https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=id&corpsecret=secrect
 
-        if ($this->isOpenPlatform()) {
-            return array_merge($base, [
-                'component_appid' => $this->config->get('wechat.open_platform.app_id'),
-                'component_access_token' => $this->config->get('wechat.open_platform.access_token'),
-            ]);
+        if(!$code){
+            $token_fields = [
+                'corpid' => $this->clientId,
+                'corpsecret' => $this->clientSecret,
+            ];    
+        }else{
+            $token_fields = [
+                'access_token'=>$this->config['longlive_access_token'],
+                'code'=>$code,
+            ];    
         }
-
-        return array_merge($base, [
-            'secret' => $this->clientSecret,
-        ]);
+     
+        return $token_fields;
     }
 
     /**
-     * {@inheritdoc}.
+     * 原始微信oauth 应该是返回 access token + openid
+     * 企业号因为用的是7200秒的, 所以需要支持从外部去获取access_token 不会冲突  要返回 userid 
      */
     public function getAccessToken($code)
     {
-        $response = $this->getHttpClient()->get($this->getTokenUrl(), [
-            'query' => $this->getTokenFields($code),
+
+        //没有指定则自己获取
+        if(!$this->config['longlive_access_token']){
+            $this->config['longlive_access_token'] = $this->getLongiveAccessToken();
+        }
+        $param = $this->getTokenFields($code);
+        // dd($param);
+        $get_token_url = $this->user_baseinfo_api;
+        $response = $this->getHttpClient()->get($get_token_url, [
+            'query' => $param,
         ]);
 
-        return $this->parseAccessToken($response->getBody()->getContents());
+        $content = $response->getBody()->getContents();
+        $content = json_decode($content,true);
+        $content['access_token'] =  $this->config['longlive_access_token'];
+
+        $token = $this->parseAccessToken($content);
+        return $token;
+
+    }
+    // !!应该尽量不要调用, 除非 单独与overture/wechat使用, 否则同时获取accesstoken, 会冲突
+    public function getLongiveAccessToken($forse_refresh = false){
+        $get_token_url = $this->getTokenUrl();
+        $response = $this->getHttpClient()->get($get_token_url, [
+            'query' => $this->getTokenFields(),
+        ]);
+        $content = $response->getBody()->getContents();
+        $token = $this->parseAccessToken($content);
+        return $token['access_token'];
     }
 
-    /**
-     * Detect wechat open platform.
-     *
-     * @return mixed
-     */
-    protected function isOpenPlatform()
-    {
-        return $this->config->get('wechat.open_platform');
-    }
+   
 
     /**
      * Remove the fucking callback parentheses.
