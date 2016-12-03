@@ -30,7 +30,7 @@ class CorpWechatProvider extends AbstractProvider implements ProviderInterface
      *
      * @var string
      */
-    protected $baseUrl = 'https://api.weixin.qq.com/sns';
+    protected $baseUrl = 'https://qyapi.weixin.qq.com/cgi-bin/user/getuserinfo';
 
     /**
      * {@inheritdoc}.
@@ -40,7 +40,7 @@ class CorpWechatProvider extends AbstractProvider implements ProviderInterface
     /**
      * {@inheritdoc}.
      */
-    protected $scopes = ['snsapi_login'];
+    protected $scopes = ['snsapi_base'];
 
     /**
      * Indicates if the session state should be utilized.
@@ -84,7 +84,6 @@ class CorpWechatProvider extends AbstractProvider implements ProviderInterface
             'state' => $state ?: md5(time()),
         ], $this->parameters);
 
-        // dd($result);
         return $result;
     }
 
