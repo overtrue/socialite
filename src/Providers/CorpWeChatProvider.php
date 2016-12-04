@@ -137,18 +137,17 @@ class CorpWechatProvider extends AbstractProvider implements ProviderInterface
     protected function getTokenFields($code = false)
     {
 
-        if (!$code){
+        if (!$code) {
             return [
                 'corpid' => $this->clientId,
                 'corpsecret' => $this->clientSecret,
             ];
         }
+
         return [
 						'access_token'=>$this->config['longlive_access_token'],
             'code'=>$code,
-        ];    
-    
-     
+        ];
     }
 
     /**
@@ -158,7 +157,7 @@ class CorpWechatProvider extends AbstractProvider implements ProviderInterface
     public function getAccessToken($code)
     {
         //没有指定则自己获取
-        if (!$this->config['longlive_access_token']){
+        if (!$this->config['longlive_access_token']) {
             $this->config['longlive_access_token'] = $this->getLongiveAccessToken();
         }
         $param = $this->getTokenFields($code);
