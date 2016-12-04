@@ -148,7 +148,7 @@ class CorpWechatProvider extends AbstractProvider implements ProviderInterface
             'code' => $code,
         ];
     }
-    
+
     /**
      * 原始微信oauth 应该是返回 access token + openid
      * 企业号因为用的是7200秒的, 所以需要支持从外部去获取access_token 不会冲突  要返回 userid.
@@ -170,6 +170,7 @@ class CorpWechatProvider extends AbstractProvider implements ProviderInterface
 
         return $token;
     }
+    
     // !!应该尽量不要调用, 除非 单独与overture/wechat使用, 否则同时获取accesstoken, 会冲突
     public function getLongiveAccessToken($forse_refresh = false)
     {
