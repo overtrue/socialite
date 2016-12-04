@@ -170,7 +170,7 @@ class CorpWechatProvider extends AbstractProvider implements ProviderInterface
 
         return $token;
     }
-    
+
     // !!应该尽量不要调用, 除非 单独与overture/wechat使用, 否则同时获取accesstoken, 会冲突
     public function getLongiveAccessToken($forse_refresh = false)
     {
