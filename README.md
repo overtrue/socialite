@@ -4,8 +4,7 @@
 
 # 使用方法/Useage
 - 首先建议通读 <https://github.com/overtrue/socialite>
-
-
+- 代码示意
 
 
 ```php
