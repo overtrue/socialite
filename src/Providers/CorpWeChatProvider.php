@@ -67,6 +67,7 @@ class CorpWechatProvider extends AbstractProvider implements ProviderInterface
     {
         $query = http_build_query($this->getCodeFields($state), '', '&', $this->encodingType);
         $url = $url.'?'.$query.'#wechat_redirect';
+
         return $url;
     }
 
@@ -75,7 +76,6 @@ class CorpWechatProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getCodeFields($state = null)
     {
-
         $result = array_merge([
             'appid' => $this->clientId,
             'redirect_uri' => $this->redirectUrl,
@@ -136,7 +136,6 @@ class CorpWechatProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getTokenFields($code = false)
     {
-
         if (!$code) {
             return [
                 'corpid' => $this->clientId,
