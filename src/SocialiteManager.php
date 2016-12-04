@@ -55,7 +55,7 @@ class SocialiteManager implements FactoryInterface
             'weibo' => 'Weibo',
             'qq' => 'QQ',
             'wechat' => 'WeChat',
-            'corp-wechat' => 'CorpWeChat',
+            'corp_wechat' => 'CorpWeChat',
             'douban' => 'Douban',
     ];
 
@@ -134,7 +134,6 @@ class SocialiteManager implements FactoryInterface
         if (isset($this->initialDrivers[$driver])) {
             $provider = $this->initialDrivers[$driver];
             $provider = __NAMESPACE__.'\\Providers\\'.$provider.'Provider';
-
             return $this->buildProvider($provider, $this->formatConfig($this->config->get($driver)));
         }
 

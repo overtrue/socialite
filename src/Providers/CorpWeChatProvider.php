@@ -30,9 +30,10 @@ class CorpWechatProvider extends AbstractProvider implements ProviderInterface
      *
      * @var string
      */
-    protected $user_baseinfo_api = 'https://qyapi.weixin.qq.com/cgi-bin/user/getuserinfo';
-    protected $user_info_api = 'https://qyapi.weixin.qq.com/cgi-bin/user/get';
-    protected $access_api_url = 'https://qyapi.weixin.qq.com/cgi-bin/gettoken';
+    protected $userBaseInfoApi = 'https://qyapi.weixin.qq.com/cgi-bin/user/getuserinfo';
+    protected $userInfoApi = 'https://qyapi.weixin.qq.com/cgi-bin/user/get';
+    protected $accessTokenApi = 'https://qyapi.weixin.qq.com/cgi-bin/gettoken';
+    protected $oauthApi= 'https://open.weixin.qq.com/connect/oauth2/authorize';
 
     /**
      * {@inheritdoc}.
@@ -56,11 +57,7 @@ class CorpWechatProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getAuthUrl($state)
     {
-        $path = 'oauth2/authorize';
-
-        $url = "https://open.weixin.qq.com/connect/{$path}";
-        // dd($url);
-        return $this->buildAuthUrlFromBase($url, $state);
+        return $this->buildAuthUrlFromBase($this->oauthApi, $state);
     }
 
     /**
@@ -95,7 +92,7 @@ class CorpWechatProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getTokenUrl()
     {
-        return $this->access_api_url;
+        return $this->accessTokenApi;
     }
 
     /**
@@ -103,13 +100,11 @@ class CorpWechatProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getUserByToken(AccessTokenInterface $token)
     {
-
-
         if (empty($token['UserId'])) {
             throw new InvalidArgumentException('UserId of AccessToken is required.');
         }
 
-        $response = $this->getHttpClient()->get($this->user_info_api, [
+        $response = $this->getHttpClient()->get($this->userInfoApi, [
             'query' => [
                 'access_token' => $token->getToken(),
                 'userid' => $token['UserId'],
@@ -141,22 +136,19 @@ class CorpWechatProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getTokenFields($code = false)
     {
-        //参数列表: 
-        // https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=id&corpsecret=secrect
 
         if(!$code){
-            $token_fields = [
+            return [
                 'corpid' => $this->clientId,
                 'corpsecret' => $this->clientSecret,
-            ];    
-        }else{
-            $token_fields = [
-                'access_token'=>$this->config['longlive_access_token'],
-                'code'=>$code,
-            ];    
+            ];
         }
+        return [
+            'access_token'=>$this->config['longlive_access_token'],
+            'code'=>$code,
+        ];    
+    
      
-        return $token_fields;
     }
 
     /**
@@ -165,30 +157,25 @@ class CorpWechatProvider extends AbstractProvider implements ProviderInterface
      */
     public function getAccessToken($code)
     {
-
         //没有指定则自己获取
         if(!$this->config['longlive_access_token']){
             $this->config['longlive_access_token'] = $this->getLongiveAccessToken();
         }
         $param = $this->getTokenFields($code);
-        // dd($param);
-        $get_token_url = $this->user_baseinfo_api;
-        $response = $this->getHttpClient()->get($get_token_url, [
+        $response = $this->getHttpClient()->get($this->userBaseInfoApi, [
             'query' => $param,
         ]);
-
         $content = $response->getBody()->getContents();
         $content = json_decode($content,true);
         $content['access_token'] =  $this->config['longlive_access_token'];
-
         $token = $this->parseAccessToken($content);
         return $token;
 
     }
     // !!应该尽量不要调用, 除非 单独与overture/wechat使用, 否则同时获取accesstoken, 会冲突
     public function getLongiveAccessToken($forse_refresh = false){
-        $get_token_url = $this->getTokenUrl();
-        $response = $this->getHttpClient()->get($get_token_url, [
+        $getTokenUrl = $this->getTokenUrl();
+        $response = $this->getHttpClient()->get($getTokenUrl, [
             'query' => $this->getTokenFields(),
         ]);
         $content = $response->getBody()->getContents();
