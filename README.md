@@ -1,11 +1,12 @@
 
-# 添加企业号登录支持/Add Wechat Media Platform for Copr Version
+# 添加微信企业号ouath登录支持  Add Wechat Media Platform for Copr Version
 - 添加了一个新的Driver类: CorpWechat / Add a new driver into providers named CorpWechat
+- 这个库的主要目的是为了fork出overtrue/wechat的企业版铺平道路
+- 下面的代码示意是在laravel 下面写的, 其他框架或者纯php使用的时候可能需要做一些变通
 
 # 使用方法/Useage
 - 首先建议通读 <https://github.com/overtrue/socialite>
-- 代码示意
-
+- 代码示意:
 
 ```php
 use Overtrue\Socialite\SocialiteManager as Socialite;
