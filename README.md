@@ -1,6 +1,7 @@
 
 # 添加企业号登录支持/Add Wechat Media Platform for Copr Version
 - 添加了一个新的Driver类: CorpWechat / Add a new driver into providers named CorpWechat
+
 # 使用方法/Useage
 - 首先建议通读 <https://github.com/overtrue/socialite>
 
