@@ -33,7 +33,7 @@ class CorpWechatProvider extends AbstractProvider implements ProviderInterface
     protected $userBaseInfoApi = 'https://qyapi.weixin.qq.com/cgi-bin/user/getuserinfo';
     protected $userInfoApi = 'https://qyapi.weixin.qq.com/cgi-bin/user/get';
     protected $accessTokenApi = 'https://qyapi.weixin.qq.com/cgi-bin/gettoken';
-    protected $oauthApi= 'https://open.weixin.qq.com/connect/oauth2/authorize';
+    protected $oauthApi = 'https://open.weixin.qq.com/connect/oauth2/authorize';
 
     /**
      * {@inheritdoc}.
@@ -132,19 +132,19 @@ class CorpWechatProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * 构建access_token 的参数列表, 分为两种情况一种是 获取access token, 另一种是直接获取userid
+     * 构建access_token 的参数列表, 分为两种情况一种是 获取access token, 另一种是直接获取userid.
      */
     protected function getTokenFields($code = false)
     {
 
-        if(!$code){
+        if (!$code){
             return [
                 'corpid' => $this->clientId,
                 'corpsecret' => $this->clientSecret,
             ];
         }
         return [
-            'access_token'=>$this->config['longlive_access_token'],
+						'access_token'=>$this->config['longlive_access_token'],
             'code'=>$code,
         ];    
     
@@ -153,12 +153,12 @@ class CorpWechatProvider extends AbstractProvider implements ProviderInterface
 
     /**
      * 原始微信oauth 应该是返回 access token + openid
-     * 企业号因为用的是7200秒的, 所以需要支持从外部去获取access_token 不会冲突  要返回 userid 
+     * 企业号因为用的是7200秒的, 所以需要支持从外部去获取access_token 不会冲突  要返回 userid.
      */
     public function getAccessToken($code)
     {
         //没有指定则自己获取
-        if(!$this->config['longlive_access_token']){
+        if (!$this->config['longlive_access_token']){
             $this->config['longlive_access_token'] = $this->getLongiveAccessToken();
         }
         $param = $this->getTokenFields($code);
@@ -166,24 +166,24 @@ class CorpWechatProvider extends AbstractProvider implements ProviderInterface
             'query' => $param,
         ]);
         $content = $response->getBody()->getContents();
-        $content = json_decode($content,true);
-        $content['access_token'] =  $this->config['longlive_access_token'];
+        $content = json_decode($content, true);
+        $content['access_token'] = $this->config['longlive_access_token'];
         $token = $this->parseAccessToken($content);
-        return $token;
 
+        return $token;
     }
     // !!应该尽量不要调用, 除非 单独与overture/wechat使用, 否则同时获取accesstoken, 会冲突
-    public function getLongiveAccessToken($forse_refresh = false){
+    public function getLongiveAccessToken($forse_refresh = false)
+		{
         $getTokenUrl = $this->getTokenUrl();
         $response = $this->getHttpClient()->get($getTokenUrl, [
             'query' => $this->getTokenFields(),
         ]);
         $content = $response->getBody()->getContents();
         $token = $this->parseAccessToken($content);
+
         return $token['access_token'];
     }
-
-   
 
     /**
      * Remove the fucking callback parentheses.
