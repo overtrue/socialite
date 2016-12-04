@@ -144,11 +144,11 @@ class CorpWechatProvider extends AbstractProvider implements ProviderInterface
         }
 
         return [
-            'access_token'=>$this->config['longlive_access_token'],
-            'code'=>$code,
+            'access_token' => $this->config['longlive_access_token'],
+            'code' => $code,
         ];
     }
-
+    
     /**
      * 原始微信oauth 应该是返回 access token + openid
      * 企业号因为用的是7200秒的, 所以需要支持从外部去获取access_token 不会冲突  要返回 userid.
