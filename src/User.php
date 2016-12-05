@@ -19,7 +19,7 @@ use JsonSerializable;
  */
 class User implements ArrayAccess, UserInterface, JsonSerializable
 {
-    use AttributeTrait;
+    use HasAttributes;
 
     /**
      * User constructor.
