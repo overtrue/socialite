@@ -12,14 +12,14 @@
 namespace Overtrue\Socialite;
 
 /**
- * Trait AttributeTrait.
+ * Trait HasAttributes.
  */
-trait AttributeTrait
+trait HasAttributes
 {
     /**
      * @var array
      */
-    protected $attributes;
+    protected $attributes = [];
 
     /**
      * Return the attributes.

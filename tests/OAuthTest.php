@@ -40,7 +40,6 @@ class OAuthTest extends PHPUnit_Framework_TestCase
         $request = Request::create('foo', 'GET', ['state' => str_repeat('A', 40), 'code' => 'code']);
         $request->setSession($session = m::mock('Symfony\Component\HttpFoundation\Session\SessionInterface'));
 
-
         $provider = new OAuthTwoTestProviderStub($request, new Config([]), 'client_id', 'client_secret');
         $this->assertNull($provider->getRedirectUrl());
 
@@ -57,7 +56,6 @@ class OAuthTest extends PHPUnit_Framework_TestCase
     {
         $request = Request::create('foo', 'GET', ['state' => str_repeat('A', 40), 'code' => 'code']);
         $request->setSession($session = m::mock('Symfony\Component\HttpFoundation\Session\SessionInterface'));
-
 
         $session->shouldReceive('get')->once()->with('state')->andReturn(str_repeat('A', 40));
         $provider = new OAuthTwoTestProviderStub($request, new Config([]), 'client_id', 'client_secret', 'redirect_uri');
