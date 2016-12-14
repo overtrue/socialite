@@ -147,7 +147,7 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
         $base = [
             'appid' => $this->clientId,
             'code' => $code,
-            'grant_type' => 'authorization_code'
+            'grant_type' => 'authorization_code',
         ];
 
         if ($this->isOpenPlatform()) {
@@ -178,11 +178,11 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
     /**
      * Detect wechat open platform.
      *
-     * @return boolean
+     * @return bool
      */
     protected function isOpenPlatform()
     {
-        return !! $this->config->get('wechat.open_platform');
+        return (bool) $this->config->get('wechat.open_platform');
     }
 
     /**
