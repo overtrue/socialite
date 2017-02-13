@@ -50,6 +50,38 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
     protected $stateless = true;
 
     /**
+     * Return country code instead of country name.
+     *
+     * @var bool
+     */
+    protected $withCountryCode = false;
+
+    /**
+     * Return country code instead of country name.
+     *
+     * @return $this
+     */
+    public function withCountryCode()
+    {
+        $this->withCountryCode = true;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}.
+     */
+    public function getAccessToken($code)
+    {
+        $response = $this->getHttpClient()->get($this->getTokenUrl(), [
+            'headers' => ['Accept' => 'application/json'],
+            'query' => $this->getTokenFields($code),
+        ]);
+
+        return $this->parseAccessToken($response->getBody());
+    }
+
+    /**
      * {@inheritdoc}.
      */
     protected function getAuthUrl($state)
@@ -114,11 +146,14 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
             throw new InvalidArgumentException('openid of AccessToken is required.');
         }
 
+        $language = $this->withCountryCode ? null : (isset($this->parameters['lang']) ? $this->parameters['lang'] : 'zh_CN');
+
         $response = $this->getHttpClient()->get($this->baseUrl.'/userinfo', [
-            'query' => [
+            'query' => array_filter([
                 'access_token' => $token->getToken(),
                 'openid' => $token['openid'],
-            ],
+                'lang' => $language,
+            ]),
         ]);
 
         return json_decode($response->getBody(), true);
@@ -159,19 +194,6 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
         return array_merge($base, [
             'secret' => $this->clientSecret,
         ]);
-    }
-
-    /**
-     * {@inheritdoc}.
-     */
-    public function getAccessToken($code)
-    {
-        $response = $this->getHttpClient()->get($this->getTokenUrl(), [
-            'headers' => ['Accept' => 'application/json'],
-            'query' => $this->getTokenFields($code),
-        ]);
-
-        return $this->parseAccessToken($response->getBody());
     }
 
     /**
