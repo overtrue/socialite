@@ -165,7 +165,7 @@ abstract class AbstractProvider implements ProviderInterface
 
         if ($this->usesState()) {
             $state = sha1(uniqid(mt_rand(1, 1000000), true));
-            $this->request->getSession()->set('state', $state);
+            $this->request->getSession()->put('state', $state);
         }
 
         return new RedirectResponse($this->getAuthUrl($state));
