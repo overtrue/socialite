@@ -164,8 +164,7 @@ abstract class AbstractProvider implements ProviderInterface
         }
 
         if ($this->usesState()) {
-            $state = sha1(uniqid(mt_rand(1, 1000000), true));
-            $this->request->getSession()->put('state', $state);
+            $state = $this->makeState();
         }
 
         return new RedirectResponse($this->getAuthUrl($state));
@@ -480,5 +479,26 @@ abstract class AbstractProvider implements ProviderInterface
         }
 
         return $array;
+    }
+
+    /**
+     * Put state to session storage and return it.
+     *
+     * @return string|bool
+     */
+    protected function makeState()
+    {
+        $state = sha1(uniqid(mt_rand(1, 1000000), true));
+        $session = $this->request->getSession();
+
+        if (is_callable([$session, 'put'])) {
+            $session->put('state', $state);
+        } elseif (is_callable([$session, 'set'])) {
+            $session->set('state', $state);
+        } else {
+            return false;
+        }
+
+        return $state;
     }
 }
