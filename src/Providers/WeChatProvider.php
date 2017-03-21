@@ -197,13 +197,13 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * Detect wechat open platform.
+     * Check if open platform configuration exist.
      *
      * @return bool
      */
     protected function isOpenPlatform()
     {
-        return (bool) $this->config->get('wechat.open_platform');
+        return $this->config->has('wechat.open_platform');
     }
 
     /**
