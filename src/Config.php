@@ -94,7 +94,7 @@ class Config implements ArrayAccess
     /**
      * Determine if the given configuration value exists.
      *
-     * @param  string $key
+     * @param string $key
      *
      * @return bool
      */
