@@ -41,7 +41,7 @@ class WeChatOpenPlatformProvider extends WeChatProvider
 
     /**
      * Create a new provider instance.
-     * (Overriding)
+     * (Overriding).
      *
      * @param \Symfony\Component\HttpFoundation\Request $request
      * @param string                                    $clientId

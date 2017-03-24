@@ -1,13 +1,13 @@
 <?php
 
-use Overtrue\Socialite\Providers\WeChatProvider as RealWeChatProvider;
 use Overtrue\Socialite\Providers\WeChatOpenPlatformProvider as RealWeChatOpenPlatformProvider;
+use Overtrue\Socialite\Providers\WeChatProvider as RealWeChatProvider;
 use Symfony\Component\HttpFoundation\Request;
 
 class WechatProviderTest extends PHPUnit_Framework_TestCase
 {
     /** @test */
-    function has_correctly_redirect_response()
+    public function has_correctly_redirect_response()
     {
         $wechatRedirectResponse = (new WeChatProvider(Request::create('foo'), 'client_id', 'client_secret', 'http://localhost/socialite/callback.php'))
                     ->redirect();
@@ -23,7 +23,7 @@ class WechatProviderTest extends PHPUnit_Framework_TestCase
     }
 
     /** @test */
-    function providers_has_correct_token_url_and_token_fields()
+    public function providers_has_correct_token_url_and_token_fields()
     {
         $wechatProvider = new WeChatProvider(Request::create('foo'), 'client_id', 'client_secret', 'http://localhost/socialite/callback.php');
         $wechatOpenPlatformProvider = new WeChatOpenPlatformProvider(Request::create('foo'), 'client_id', ['component-app-id', 'component-access-token'], 'redirect-url');

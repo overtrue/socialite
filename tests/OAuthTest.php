@@ -11,7 +11,6 @@
 
 use Mockery as m;
 use Overtrue\Socialite\AccessTokenInterface;
-use Overtrue\Socialite\Config;
 use Overtrue\Socialite\Providers\AbstractProvider;
 use Overtrue\Socialite\User;
 use Symfony\Component\HttpFoundation\Request;
