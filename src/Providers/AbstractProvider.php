@@ -34,13 +34,6 @@ abstract class AbstractProvider implements ProviderInterface
     protected $request;
 
     /**
-     * The configuration.
-     *
-     * @var \Overtrue\Socialite\Config
-     */
-    protected $config;
-
-    /**
      * The client ID.
      *
      * @var string
@@ -100,15 +93,13 @@ abstract class AbstractProvider implements ProviderInterface
      * Create a new provider instance.
      *
      * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param \Overtrue\Socialite\Config                $config
      * @param string                                    $clientId
      * @param string                                    $clientSecret
      * @param string|null                               $redirectUrl
      */
-    public function __construct(Request $request, $config, $clientId, $clientSecret, $redirectUrl = null)
+    public function __construct(Request $request, $clientId, $clientSecret, $redirectUrl = null)
     {
         $this->request = $request;
-        $this->config = $config;
         $this->clientId = $clientId;
         $this->clientSecret = $clientSecret;
         $this->redirectUrl = $redirectUrl;
