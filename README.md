@@ -64,11 +64,11 @@ $user->getEmail();     // "anzhengchao@gmail.com"
 
 Now we support the following sites:
 
-`facebook`, `github`, `google`, `linkedin`, `weibo`, `qq`, `wechat` and `douban`.
+`facebook`, `github`, `google`, `linkedin`, `weibo`, `qq`, `wechat`, `wechat_open`, and `douban`.
 
 Each drive uses the same configuration keys: `client_id`, `client_secret`, `redirect`.
 
-example:
+Example:
 ```
 ...
   'weibo' => [
@@ -77,6 +77,15 @@ example:
     'redirect'      => 'http://localhost/socialite/callback.php',
   ],
 ...
+```
+
+Special configuration options for [WeChat Open Platform](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419318590&token=&lang=zh_CN)
+```
+'wechat_open' => [
+    'client_id'     => 'your-app-id',
+    'client_secret' => ['your-component-appid', 'your-component-access-token'],
+    'redirect'      => 'http://localhost/socialite/callback.php',
+]
 ```
 
 ### Scope
@@ -232,6 +241,7 @@ Enjoy it! :heart:
 - [QQ - OAuth 2.0 登录QQ](http://wiki.connect.qq.com/oauth2-0%E7%AE%80%E4%BB%8B)
 - [微信公众平台 - OAuth文档](http://mp.weixin.qq.com/wiki/9/01f711493b5a02f24b04365ac5d8fd95.html)
 - [微信开放平台 - 网站应用微信登录开发指南](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419316505&token=&lang=zh_CN)
+- [微信开放平台 - 代公众号发起网页授权](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419318590&token=&lang=zh_CN)
 - [豆瓣 - OAuth 2.0 授权机制说明](http://developers.douban.com/wiki/?title=oauth2)
 
 # License
