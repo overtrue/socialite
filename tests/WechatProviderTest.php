@@ -63,7 +63,7 @@ class WechatProviderTest extends PHPUnit_Framework_TestCase
             'response_type' => 'code',
             'scope' => 'snsapi_base',
             'state' => 'state',
-            'component_appid' => 'component-app-id'
+            'component_appid' => 'component-app-id',
         ], $provider->codeFields('state'));
     }
 }
