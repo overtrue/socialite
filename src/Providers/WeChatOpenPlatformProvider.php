@@ -48,14 +48,21 @@ class WeChatOpenPlatformProvider extends WeChatProvider
      * @param array                                     $componentCredits
      * @param string|null                               $redirectUrl
      */
-    public function __construct(Request $request, $clientId, array $componentCredits, $redirectUrl = null)
+    public function __construct(Request $request, $clientId, array $componentCredentials, $redirectUrl = null)
     {
         parent::__construct($request, $clientId, null, $redirectUrl);
 
-        list($componentAppId, $componentAccessToken) = $componentCredits;
+        list($this->componentAppId, $this->componentAccessToken) = $componentCredentials;
+    }
 
-        $this->componentAppId = $componentAppId;
-        $this->componentAccessToken = $componentAccessToken;
+    /**
+     * {@inheritdoc}.
+     */
+    public function getCodeFields($state = null)
+    {
+        $this->with(['component_appid' => $this->componentAppId]);
+
+        return parent::getCodeFields($state);
     }
 
     /**
