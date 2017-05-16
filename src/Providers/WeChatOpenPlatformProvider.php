@@ -23,6 +23,8 @@ class WeChatOpenPlatformProvider extends WeChatProvider
     /**
      * Component AppId.
      *
+     * @deprecated 2.0 Will be removed in the future
+     *
      * @var string
      */
     protected $componentAppId;
@@ -30,9 +32,16 @@ class WeChatOpenPlatformProvider extends WeChatProvider
     /**
      * Component Access Token.
      *
+     * @deprecated 2.0 Will be removed in the future
+     *
      * @var string
      */
     protected $componentAccessToken;
+
+    /**
+     * @var \EasyWeChat\OpenPlatform\AccessToken|array
+     */
+    protected $credentials;
 
     /**
      * {@inheritdoc}.
@@ -43,16 +52,19 @@ class WeChatOpenPlatformProvider extends WeChatProvider
      * Create a new provider instance.
      * (Overriding).
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param string                                    $clientId
-     * @param array                                     $componentCredits
-     * @param string|null                               $redirectUrl
+     * @param \Symfony\Component\HttpFoundation\Request  $request
+     * @param string                                     $clientId
+     * @param \EasyWeChat\OpenPlatform\AccessToken|array $credentials
+     * @param string|null                                $redirectUrl
      */
-    public function __construct(Request $request, $clientId, array $componentCredentials, $redirectUrl = null)
+    public function __construct(Request $request, $clientId, $credentials, $redirectUrl = null)
     {
         parent::__construct($request, $clientId, null, $redirectUrl);
 
-        list($this->componentAppId, $this->componentAccessToken) = $componentCredentials;
+        $this->credentials = $credentials;
+        if (is_array($credentials)) {
+            list($this->componentAppId, $this->componentAccessToken) = $credentials;
+        }
     }
 
     /**
@@ -60,7 +72,7 @@ class WeChatOpenPlatformProvider extends WeChatProvider
      */
     public function getCodeFields($state = null)
     {
-        $this->with(['component_appid' => $this->componentAppId]);
+        $this->with(['component_appid' => $this->componentAppId()]);
 
         return parent::getCodeFields($state);
     }
@@ -80,10 +92,30 @@ class WeChatOpenPlatformProvider extends WeChatProvider
     {
         return [
             'appid' => $this->clientId,
-            'component_appid' => $this->componentAppId,
-            'component_access_token' => $this->componentAccessToken,
+            'component_appid' => $this->componentAppId(),
+            'component_access_token' => $this->componentAccessToken(),
             'code' => $code,
             'grant_type' => 'authorization_code',
         ];
+    }
+
+    /**
+     * Get component app id.
+     *
+     * @return string
+     */
+    protected function componentAppId()
+    {
+        return $this->componentAppId ?: $this->credentials->getAppId();
+    }
+
+    /**
+     * Get component access token.
+     *
+     * @return string
+     */
+    protected function componentAccessToken()
+    {
+        return $this->componentAccessToken ?: $this->credentials->getToken();
     }
 }
