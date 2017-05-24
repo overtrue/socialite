@@ -110,6 +110,9 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getCodeFields($state = null)
     {
+        if ($this->isOpenPlatform()) {
+            $this->with(['component_appid' => $this->config->get('wechat.open_platform.app_id')]);
+        }
         return array_merge([
             'appid' => $this->clientId,
             'redirect_uri' => $this->redirectUrl,
@@ -198,5 +201,29 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
         }
 
         return $response;
+    }
+    
+    /**
+     * Set app id
+     * @param $authorizer_app_id
+     * @return $this
+     */
+    public function setAuthorizerAppId($authorizer_app_id)
+    {
+        $this->clientId = $authorizer_app_id;
+        return $this;
+    }
+
+    /**
+     * set platform component access token
+     * @param $token
+     * @return $this
+     */
+    public function setComponentToken($token)
+    {
+        $wechat= $this->config->get('wechat');
+        $wechat['open_platform']['access_token'] = $token;
+        $this->config->set('wechat', $wechat);
+        return $this;
     }
 }
