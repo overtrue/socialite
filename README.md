@@ -11,6 +11,15 @@ Socialite is an OAuth2 Authentication tool. It is inspired by [laravel/socialite
 
 For Laravel 5: [overtrue/laravel-socialite](https://github.com/overtrue/laravel-socialite)
 
+<p align="center">
+  <br>
+  <b>创造不息，交付不止</b>
+  <br>
+  <a href="https://www.yousails.com">
+    <img src="https://yousails.com/banners/brand.png" width=350>
+  </a>
+</p>
+
 # Requirement
 
 ```
