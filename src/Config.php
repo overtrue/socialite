@@ -92,6 +92,18 @@ class Config implements ArrayAccess
     }
 
     /**
+     * Determine if the given configuration value exists.
+     *
+     * @param string $key
+     *
+     * @return bool
+     */
+    public function has($key)
+    {
+        return (bool) $this->get($key);
+    }
+
+    /**
      * Whether a offset exists.
      *
      * @link  http://php.net/manual/en/arrayaccess.offsetexists.php

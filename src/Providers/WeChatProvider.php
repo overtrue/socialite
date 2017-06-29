@@ -124,10 +124,6 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getTokenUrl()
     {
-        if ($this->isOpenPlatform()) {
-            return $this->baseUrl.'/oauth2/component/access_token';
-        }
-
         return $this->baseUrl.'/oauth2/access_token';
     }
 
@@ -178,32 +174,12 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getTokenFields($code)
     {
-        $base = [
+        return [
             'appid' => $this->clientId,
+            'secret' => $this->clientSecret,
             'code' => $code,
             'grant_type' => 'authorization_code',
         ];
-
-        if ($this->isOpenPlatform()) {
-            return array_merge($base, [
-                'component_appid' => $this->config->get('wechat.open_platform.app_id'),
-                'component_access_token' => $this->config->get('wechat.open_platform.access_token'),
-            ]);
-        }
-
-        return array_merge($base, [
-            'secret' => $this->clientSecret,
-        ]);
-    }
-
-    /**
-     * Detect wechat open platform.
-     *
-     * @return bool
-     */
-    protected function isOpenPlatform()
-    {
-        return (bool) $this->config->get('wechat.open_platform');
     }
 
     /**
