@@ -419,7 +419,7 @@ abstract class AbstractProvider implements ProviderInterface
      */
     protected function getHttpClient()
     {
-        return new Client();
+        return new Client(['http_errors' => false]);
     }
 
     /**
