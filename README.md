@@ -28,7 +28,7 @@ PHP >= 5.4
 # Installation
 
 ```shell
-$ composer require "overtrue/socialite:~1.0"
+$ composer require "overtrue/socialite:~1.1"
 ```
 
 # Usage
@@ -66,6 +66,7 @@ $user->getId();        // 1472352
 $user->getNickname();  // "overtrue"
 $user->getName();      // "安正超"
 $user->getEmail();     // "anzhengchao@gmail.com"
+$user->getProviderName(); // GitHub
 ...
 ```
 
@@ -185,6 +186,7 @@ $user->getEmail();
 $user->getAvatar();
 $user->getOriginal();
 $user->getToken();// or $user->getAccessToken()
+$user->getProviderName(); // GitHub/Google/Facebook...
 ```
 
 #### Get original response from OAuth API

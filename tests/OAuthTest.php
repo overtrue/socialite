@@ -110,6 +110,14 @@ class OAuthTest extends PHPUnit_Framework_TestCase
         $provider = new OAuthTwoTestProviderStub($request, 'client_id', 'client_secret', 'redirect');
         $user = $provider->user();
     }
+
+    public function testDriverName()
+    {
+        $request = Request::create('foo', 'GET', ['state' => 'state', 'code' => 'code']);
+        $provider = new OAuthTwoTestProviderStub($request, 'client_id', 'client_secret', 'redirect');
+
+        $this->assertSame('OAuthTwoTest', $provider->getName());
+    }
 }
 
 class OAuthTwoTestProviderStub extends AbstractProvider
