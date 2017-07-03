@@ -42,6 +42,16 @@ class User implements ArrayAccess, UserInterface, JsonSerializable
     }
 
     /**
+     * Get the username for the user.
+     *
+     * @return string
+     */
+    public function getUsername()
+    {
+        return $this->getAttribute('username', $this->getId());
+    }
+
+    /**
      * Get the nickname / username for the user.
      *
      * @return string
