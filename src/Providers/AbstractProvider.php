@@ -26,7 +26,8 @@ use Symfony\Component\HttpFoundation\Request;
  */
 abstract class AbstractProvider implements ProviderInterface
 {
-    /** Provider name
+    /**
+     * Provider name
      *
      * @var string
      */
