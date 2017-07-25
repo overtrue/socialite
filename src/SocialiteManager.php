@@ -107,7 +107,7 @@ class SocialiteManager implements FactoryInterface
      *
      * @param string $driver
      *
-     * @return mixed
+     * @return \Overtrue\Socialite\Providers\AbstractProvider
      */
     public function driver($driver = null)
     {
@@ -127,7 +127,7 @@ class SocialiteManager implements FactoryInterface
      *
      * @throws \InvalidArgumentException
      *
-     * @return mixed
+     * @return \Overtrue\Socialite\Providers\AbstractProvider
      */
     protected function createDriver($driver)
     {
@@ -150,7 +150,7 @@ class SocialiteManager implements FactoryInterface
      *
      * @param string $driver
      *
-     * @return mixed
+     * @return \Overtrue\Socialite\Providers\AbstractProvider
      */
     protected function callCustomCreator($driver)
     {
@@ -215,7 +215,7 @@ class SocialiteManager implements FactoryInterface
      * @param string $provider
      * @param array  $config
      *
-     * @return \Overtrue\Socialite\AbstractProvider
+     * @return \Overtrue\Socialite\Providers\AbstractProvider
      */
     public function buildProvider($provider, $config)
     {
@@ -252,5 +252,29 @@ class SocialiteManager implements FactoryInterface
     public function __call($method, $parameters)
     {
         return call_user_func_array([$this->driver(), $method], $parameters);
+    }
+
+    /**
+     * Get a request
+     *
+     * @return \Symfony\Component\HttpFoundation\Request
+     */
+    public function getRequest()
+    {
+        return $this->request;
+    }
+
+    /**
+     * Set a request
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *
+     * @return $this
+     */
+    public function setRequest(Request $request)
+    {
+        $this->request = $request;
+
+        return $this;
     }
 }
