@@ -18,7 +18,7 @@ use Overtrue\Socialite\User;
 /**
  * Class LinkedinProvider.
  *
- * @link https://developer.linkedin.com/docs/oauth2 [Authenticating with OAuth 2.0]
+ * @see https://developer.linkedin.com/docs/oauth2 [Authenticating with OAuth 2.0]
  */
 class LinkedinProvider extends AbstractProvider implements ProviderInterface
 {

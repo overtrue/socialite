@@ -18,7 +18,7 @@ use Overtrue\Socialite\User;
 /**
  * Class FacebookProvider.
  *
- * @link https://developers.facebook.com/docs/graph-api [Facebook - Graph API]
+ * @see https://developers.facebook.com/docs/graph-api [Facebook - Graph API]
  */
 class FacebookProvider extends AbstractProvider implements ProviderInterface
 {

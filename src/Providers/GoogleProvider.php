@@ -19,7 +19,7 @@ use Overtrue\Socialite\User;
 /**
  * Class GoogleProvider.
  *
- * @link https://developers.google.com/identity/protocols/OpenIDConnect [OpenID Connect]
+ * @see https://developers.google.com/identity/protocols/OpenIDConnect [OpenID Connect]
  */
 class GoogleProvider extends AbstractProvider implements ProviderInterface
 {

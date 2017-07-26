@@ -18,6 +18,9 @@ use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
  * Class SocialiteManager.
+ *
+ * @method Request           getRequest()
+ * @method ProviderInterface setRequest(Request $request)
  */
 class SocialiteManager implements FactoryInterface
 {
@@ -31,7 +34,7 @@ class SocialiteManager implements FactoryInterface
     /**
      * The request instance.
      *
-     * @var \Symfony\Component\HttpFoundation\Request
+     * @var Request
      */
     protected $request;
 
@@ -62,15 +65,15 @@ class SocialiteManager implements FactoryInterface
     /**
      * The array of created "drivers".
      *
-     * @var array
+     * @var ProviderInterface[]
      */
     protected $drivers = [];
 
     /**
      * SocialiteManager constructor.
      *
-     * @param array                                          $config
-     * @param \Symfony\Component\HttpFoundation\Request|null $request
+     * @param array        $config
+     * @param Request|null $request
      */
     public function __construct(array $config, Request $request = null)
     {
@@ -96,6 +99,8 @@ class SocialiteManager implements FactoryInterface
      * Get the default driver name.
      *
      * @return string
+     *
+     * @throws \InvalidArgumentException
      */
     public function getDefaultDriver()
     {
@@ -107,7 +112,7 @@ class SocialiteManager implements FactoryInterface
      *
      * @param string $driver
      *
-     * @return mixed
+     * @return ProviderInterface
      */
     public function driver($driver = null)
     {
@@ -127,7 +132,7 @@ class SocialiteManager implements FactoryInterface
      *
      * @throws \InvalidArgumentException
      *
-     * @return mixed
+     * @return ProviderInterface
      */
     protected function createDriver($driver)
     {
@@ -150,7 +155,7 @@ class SocialiteManager implements FactoryInterface
      *
      * @param string $driver
      *
-     * @return mixed
+     * @return ProviderInterface
      */
     protected function callCustomCreator($driver)
     {
@@ -160,7 +165,7 @@ class SocialiteManager implements FactoryInterface
     /**
      * Create default request instance.
      *
-     * @return \Symfony\Component\HttpFoundation\Request
+     * @return Request
      */
     protected function createDefaultRequest()
     {
@@ -190,7 +195,7 @@ class SocialiteManager implements FactoryInterface
     /**
      * Get all of the created "drivers".
      *
-     * @return array
+     * @return ProviderInterface[]
      */
     public function getDrivers()
     {
@@ -202,7 +207,7 @@ class SocialiteManager implements FactoryInterface
      *
      * @param string $driver
      *
-     * @return mixed
+     * @return ProviderInterface
      */
     public function with($driver)
     {
@@ -215,7 +220,7 @@ class SocialiteManager implements FactoryInterface
      * @param string $provider
      * @param array  $config
      *
-     * @return \Overtrue\Socialite\AbstractProvider
+     * @return ProviderInterface
      */
     public function buildProvider($provider, $config)
     {

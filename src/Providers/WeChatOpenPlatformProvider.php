@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Class WeChatProvider.
  *
- * @link https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419318590&token=&lang=zh_CN [WeChat - 公众开放平台代公众号 OAuth 文档]
+ * @see https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419318590&token=&lang=zh_CN [WeChat - 公众开放平台代公众号 OAuth 文档]
  */
 class WeChatOpenPlatformProvider extends WeChatProvider
 {

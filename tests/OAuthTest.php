@@ -70,7 +70,7 @@ class OAuthTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Overtrue\Socialite\InvalidStateException
+     * @expectedException \Overtrue\Socialite\InvalidStateException
      */
     public function testExceptionIsThrownIfStateIsInvalid()
     {
@@ -82,7 +82,7 @@ class OAuthTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Overtrue\Socialite\AuthorizeFailedException
+     * @expectedException \Overtrue\Socialite\AuthorizeFailedException
      * @expectedExceptionMessage Authorize Failed: {"error":"scope is invalid"}
      */
     public function testExceptionisThrownIfAuthorizeFailed()
@@ -100,7 +100,7 @@ class OAuthTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Overtrue\Socialite\InvalidStateException
+     * @expectedException \Overtrue\Socialite\InvalidStateException
      */
     public function testExceptionIsThrownIfStateIsNotSet()
     {
