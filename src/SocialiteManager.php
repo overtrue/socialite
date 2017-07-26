@@ -98,9 +98,9 @@ class SocialiteManager implements FactoryInterface
     /**
      * Get the default driver name.
      *
-     * @return string
-     *
      * @throws \InvalidArgumentException
+     *
+     * @return string
      */
     public function getDefaultDriver()
     {
