@@ -18,9 +18,6 @@ use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
  * Class SocialiteManager.
- *
- * @method Request           getRequest()
- * @method ProviderInterface setRequest(Request $request)
  */
 class SocialiteManager implements FactoryInterface
 {
@@ -78,7 +75,10 @@ class SocialiteManager implements FactoryInterface
     public function __construct(array $config, Request $request = null)
     {
         $this->config = new Config($config);
-        $this->request = $request ?: $this->createDefaultRequest();
+
+        if ($request) {
+            $this->setRequest($request);
+        }
     }
 
     /**
@@ -96,33 +96,39 @@ class SocialiteManager implements FactoryInterface
     }
 
     /**
-     * Get the default driver name.
-     *
-     * @return string
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function getDefaultDriver()
-    {
-        throw new InvalidArgumentException('No Socialite driver was specified.');
-    }
-
-    /**
      * Get a driver instance.
      *
      * @param string $driver
      *
      * @return ProviderInterface
      */
-    public function driver($driver = null)
+    public function driver($driver)
     {
-        $driver = $driver ?: $this->getDefaultDriver();
-
         if (!isset($this->drivers[$driver])) {
             $this->drivers[$driver] = $this->createDriver($driver);
         }
 
         return $this->drivers[$driver];
+    }
+
+    /**
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *
+     * @return $this
+     */
+    public function setRequest(Request $request)
+    {
+        $this->request = $request;
+
+        return $this;
+    }
+
+    /**
+     * @return \Symfony\Component\HttpFoundation\Request
+     */
+    public function getRequest()
+    {
+        return $this->request ?: $this->createDefaultRequest();
     }
 
     /**
@@ -203,18 +209,6 @@ class SocialiteManager implements FactoryInterface
     }
 
     /**
-     * Get a driver instance.
-     *
-     * @param string $driver
-     *
-     * @return ProviderInterface
-     */
-    public function with($driver)
-    {
-        return $this->driver($driver);
-    }
-
-    /**
      * Build an OAuth 2 provider instance.
      *
      * @param string $provider
@@ -225,7 +219,7 @@ class SocialiteManager implements FactoryInterface
     public function buildProvider($provider, $config)
     {
         return new $provider(
-            $this->request, $config['client_id'],
+            $this->getRequest(), $config['client_id'],
             $config['client_secret'], $config['redirect']
         );
     }
@@ -244,18 +238,5 @@ class SocialiteManager implements FactoryInterface
             'secret' => $config['client_secret'],
             'callback_uri' => $config['redirect'],
         ], $config);
-    }
-
-    /**
-     * Dynamically call the default driver instance.
-     *
-     * @param string $method
-     * @param array  $parameters
-     *
-     * @return mixed
-     */
-    public function __call($method, $parameters)
-    {
-        return call_user_func_array([$this->driver(), $method], $parameters);
     }
 }

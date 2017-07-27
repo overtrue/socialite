@@ -208,7 +208,7 @@ $user = $socialite->user($accessToken);
 
 ### Custom Session or Request instance.
 
-You can set the request with your custom `Request` instance which instanceof `Symfony\Component\HttpFoundation\Request`.
+You can set the request with your custom `Request` instance which instanceof `Symfony\Component\HttpFoundation\Request` before you call `driver` method.
 
 
 ```php
