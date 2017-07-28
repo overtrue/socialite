@@ -11,7 +11,7 @@
 </p>
 
 
-<p align="center">Socialite is an OAuth2 Authentication tool. It is inspired by [laravel/socialite](https://github.com/laravel/socialite), You can easily use it in any PHP project.</p>
+<p align="center">Socialite is an OAuth2 Authentication tool. It is inspired by <a href="https://github.com/laravel/socialite">laravel/socialite</a>, You can easily use it in any PHP project.</p>
 
 For Laravel 5: [overtrue/laravel-socialite](https://github.com/overtrue/laravel-socialite)
 
