@@ -1,12 +1,15 @@
 <h1 align="center"> Socialite</h1>
 <p align="center">
-[![Build Status](https://travis-ci.org/overtrue/socialite.svg?branch=master)](https://travis-ci.org/overtrue/socialite)
-[![Latest Stable Version](https://poser.pugx.org/overtrue/socialite/v/stable.svg)](https://packagist.org/packages/overtrue/socialite)
-[![Latest Unstable Version](https://poser.pugx.org/overtrue/socialite/v/unstable.svg)](https://packagist.org/packages/overtrue/socialite)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/overtrue/socialite/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/overtrue/socialite/?branch=master)
-[![Total Downloads](https://poser.pugx.org/overtrue/socialite/downloads)](https://packagist.org/packages/overtrue/socialite)
-[![License](https://poser.pugx.org/overtrue/socialite/license)](https://packagist.org/packages/overtrue/socialite)
-<p>
+<a href="https://travis-ci.org/overtrue/socialite"><img src="https://travis-ci.org/overtrue/socialite.svg?branch=master" alt="Build Status"></a>
+<a href="https://packagist.org/packages/overtrue/socialite"><img src="https://poser.pugx.org/overtrue/socialite/v/stable.svg" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/overtrue/socialite"><img src="https://poser.pugx.org/overtrue/socialite/v/unstable.svg" alt="Latest Unstable Version"></a>
+<a href="https://scrutinizer-ci.com/g/overtrue/socialite/build-status/master"><img src="https://scrutinizer-ci.com/g/overtrue/socialite/badges/build.png?b=master" alt="Build Status"></a>
+<a href="https://scrutinizer-ci.com/g/overtrue/socialite/?branch=master"><img src="https://scrutinizer-ci.com/g/overtrue/socialite/badges/quality-score.png?b=master" alt="Scrutinizer Code Quality"></a>
+<a href="https://scrutinizer-ci.com/g/overtrue/socialite/?branch=master"><img src="https://scrutinizer-ci.com/g/overtrue/socialite/badges/coverage.png?b=master" alt="Code Coverage"></a>
+<a href="https://packagist.org/packages/overtrue/socialite"><img src="https://poser.pugx.org/overtrue/socialite/downloads" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/overtrue/socialite"><img src="https://poser.pugx.org/overtrue/socialite/license" alt="License"></a>
+</p>
+
 
 <p align="center">Socialite is an OAuth2 Authentication tool. It is inspired by [laravel/socialite](https://github.com/laravel/socialite), You can easily use it in any PHP project.</p>
 
