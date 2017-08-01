@@ -47,6 +47,16 @@ class WeWorkProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
+     * @param string $agentId
+     *
+     * @return $this
+     */
+    public function agent($agentId)
+    {
+        return $this->setAgentId($agentId);
+    }
+
+    /**
      * Return user details.
      *
      * @return $this
