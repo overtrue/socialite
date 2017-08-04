@@ -16,6 +16,7 @@ use Overtrue\Socialite\AccessTokenInterface;
 use Overtrue\Socialite\InvalidArgumentException;
 use Overtrue\Socialite\ProviderInterface;
 use Overtrue\Socialite\User;
+use Overtrue\Socialite\WeChatComponentInterface;
 
 /**
  * Class WeChatProvider.
@@ -57,6 +58,11 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
     protected $withCountryCode = false;
 
     /**
+     * @var WeChatComponentInterface
+     */
+    protected $component;
+
+    /**
      * Return country code instead of country name.
      *
      * @return $this
@@ -64,6 +70,22 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
     public function withCountryCode()
     {
         $this->withCountryCode = true;
+
+        return $this;
+    }
+
+    /**
+     * WeChat OpenPlatform 3rd component.
+     *
+     * @param WeChatComponentInterface $component
+     *
+     * @return $this
+     */
+    public function component(WeChatComponentInterface $component)
+    {
+        $this->scopes = ['snsapi_base'];
+
+        $this->component = $component;
 
         return $this;
     }
@@ -110,6 +132,10 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getCodeFields($state = null)
     {
+        if ($this->component) {
+            $this->with(['component_appid' => $this->component->getAppId()]);
+        }
+
         return array_merge([
             'appid' => $this->clientId,
             'redirect_uri' => $this->redirectUrl,
@@ -124,6 +150,10 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getTokenUrl()
     {
+        if ($this->component) {
+            return $this->baseUrl.'/oauth2/component/access_token';
+        }
+
         return $this->baseUrl.'/oauth2/access_token';
     }
 
@@ -174,12 +204,14 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getTokenFields($code)
     {
-        return [
+        return array_filter([
             'appid' => $this->clientId,
             'secret' => $this->clientSecret,
+            'component_appid' => $this->component ? $this->component->getAppId() : null,
+            'component_access_token' => $this->component ? $this->component->getToken() : null,
             'code' => $code,
             'grant_type' => 'authorization_code',
-        ];
+        ]);
     }
 
     /**

@@ -75,6 +75,30 @@ class WechatProviderTest extends PHPUnit_Framework_TestCase
             'component_appid' => 'component-app-id',
         ], $provider->codeFields('state'));
     }
+
+    public function testOpenPlatformComponent()
+    {
+        $provider = new WeChatProvider(Request::create('foo'), 'client_id', null, 'redirect-url');
+        $provider->component(new WeChatComponent());
+        $this->assertSame([
+            'appid' => 'client_id',
+            'redirect_uri' => 'redirect-url',
+            'response_type' => 'code',
+            'scope' => 'snsapi_base',
+            'state' => 'state',
+            'component_appid' => 'component-app-id',
+        ], $provider->codeFields('state'));
+
+        $this->assertSame([
+            'appid' => 'client_id',
+            'component_appid' => 'component-app-id',
+            'component_access_token' => 'token',
+            'code' => 'simcode',
+            'grant_type' => 'authorization_code',
+        ], $provider->tokenFields('simcode'));
+
+        $this->assertSame('https://api.weixin.qq.com/sns/oauth2/component/access_token', $provider->tokenUrl());
+    }
 }
 
 trait ProviderTrait
@@ -103,4 +127,17 @@ class WeChatProvider extends RealWeChatProvider
 class WeChatOpenPlatformProvider extends RealWeChatOpenPlatformProvider
 {
     use ProviderTrait;
+}
+
+class WeChatComponent implements \Overtrue\Socialite\WeChatComponentInterface
+{
+    public function getAppId()
+    {
+        return 'component-app-id';
+    }
+
+    public function getToken()
+    {
+        return 'token';
+    }
 }
