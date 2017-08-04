@@ -55,7 +55,7 @@ abstract class AbstractProvider implements ProviderInterface
     protected $clientSecret;
 
     /**
-     * @var \Overtrue\Socialite\AccessToken
+     * @var \Overtrue\Socialite\AccessTokenInterface
      */
     protected $accessToken;
 
@@ -246,7 +246,7 @@ abstract class AbstractProvider implements ProviderInterface
      *
      * @param string $code
      *
-     * @return \Overtrue\Socialite\AccessToken
+     * @return \Overtrue\Socialite\AccessTokenInterface
      */
     public function getAccessToken($code)
     {
@@ -427,7 +427,7 @@ abstract class AbstractProvider implements ProviderInterface
      *
      * @param \Psr\Http\Message\StreamInterface|array $body
      *
-     * @return \Overtrue\Socialite\AccessToken
+     * @return \Overtrue\Socialite\AccessTokenInterface
      */
     protected function parseAccessToken($body)
     {
