@@ -55,6 +55,11 @@ abstract class AbstractProvider implements ProviderInterface
     protected $clientSecret;
 
     /**
+     * @var \Overtrue\Socialite\AccessToken
+     */
+    protected $accessToken;
+
+    /**
      * The redirect URL.
      *
      * @var string
@@ -225,6 +230,18 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
+     * @param \Overtrue\Socialite\AccessTokenInterface $accessToken
+     *
+     * @return $this
+     */
+    public function setAccessToken(AccessTokenInterface $accessToken)
+    {
+        $this->accessToken = $accessToken;
+
+        return $this;
+    }
+
+    /**
      * Get the access token for the given code.
      *
      * @param string $code
@@ -233,6 +250,10 @@ abstract class AbstractProvider implements ProviderInterface
      */
     public function getAccessToken($code)
     {
+        if ($this->accessToken) {
+            return $this->accessToken;
+        }
+
         $postKey = (version_compare(ClientInterface::VERSION, '6') === 1) ? 'form_params' : 'body';
 
         $response = $this->getHttpClient()->post($this->getTokenUrl(), [
