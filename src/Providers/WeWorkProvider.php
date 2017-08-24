@@ -126,7 +126,12 @@ class WeWorkProvider extends AbstractProvider implements ProviderInterface
 
     protected function getTokenUrl()
     {
-        return null;
+        $queries = [
+            'corpid'     => $this->clientId,
+            'corpsecret' => $this->clientSecret,
+        ];
+
+        return 'https://qyapi.weixin.qq.com/cgi-bin/gettoken?'.http_build_query($queries);
     }
 
     /**
