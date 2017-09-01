@@ -77,6 +77,10 @@ class SocialiteManager implements FactoryInterface
     {
         $this->config = new Config($config);
 
+        if ($this->config->has('guzzle')) {
+            Providers\AbstractProvider::setGuzzleOptions($this->config->get('guzzle'));
+        }
+
         if ($request) {
             $this->setRequest($request);
         }
@@ -220,8 +224,10 @@ class SocialiteManager implements FactoryInterface
     public function buildProvider($provider, $config)
     {
         return new $provider(
-            $this->getRequest(), $config['client_id'],
-            $config['client_secret'], $config['redirect']
+            $this->getRequest(),
+            $config['client_id'],
+            $config['client_secret'],
+            $config['redirect']
         );
     }
 
