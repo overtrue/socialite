@@ -103,11 +103,11 @@ abstract class AbstractProvider implements ProviderInterface
 
 
     /**
-     * The options for guzzle\client
+     * The options for guzzle\client.
      *
      * @var array
      */
-    protected static $guzzleOptions = [ 'http_errors' => false ];
+    protected static $guzzleOptions = ['http_errors' => false];
 
 
     /**
@@ -472,11 +472,11 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * Set options for Guzzle HTTP client
+     * Set options for Guzzle HTTP client.
      *
      * @param array $config
      */
-    public static function setGuzzleOptions($config=[])
+    public static function setGuzzleOptions($config = [])
     {
         return self::$guzzleOptions = $config;
     }
