@@ -31,7 +31,7 @@ PHP >= 7.0
 # Installation
 
 ```shell
-$ composer require "overtrue/socialite:~1.1"
+$ composer require "overtrue/socialite" -vvv
 ```
 
 # Usage
