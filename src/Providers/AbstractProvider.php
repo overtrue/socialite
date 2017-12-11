@@ -55,6 +55,11 @@ abstract class AbstractProvider implements ProviderInterface
     protected $clientSecret;
 
     /**
+     * @var \Overtrue\Socialite\AccessTokenInterface
+     */
+    protected $accessToken;
+
+    /**
      * The redirect URL.
      *
      * @var string
@@ -95,6 +100,13 @@ abstract class AbstractProvider implements ProviderInterface
      * @var bool
      */
     protected $stateless = false;
+
+    /**
+     * The options for guzzle\client.
+     *
+     * @var array
+     */
+    protected static $guzzleOptions = ['http_errors' => false];
 
     /**
      * Create a new provider instance.
@@ -225,14 +237,30 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
+     * @param \Overtrue\Socialite\AccessTokenInterface $accessToken
+     *
+     * @return $this
+     */
+    public function setAccessToken(AccessTokenInterface $accessToken)
+    {
+        $this->accessToken = $accessToken;
+
+        return $this;
+    }
+
+    /**
      * Get the access token for the given code.
      *
      * @param string $code
      *
-     * @return \Overtrue\Socialite\AccessToken
+     * @return \Overtrue\Socialite\AccessTokenInterface
      */
     public function getAccessToken($code)
     {
+        if ($this->accessToken) {
+            return $this->accessToken;
+        }
+
         $postKey = (version_compare(ClientInterface::VERSION, '6') === 1) ? 'form_params' : 'body';
 
         $response = $this->getHttpClient()->post($this->getTokenUrl(), [
@@ -406,7 +434,7 @@ abstract class AbstractProvider implements ProviderInterface
      *
      * @param \Psr\Http\Message\StreamInterface|array $body
      *
-     * @return \Overtrue\Socialite\AccessToken
+     * @return \Overtrue\Socialite\AccessTokenInterface
      */
     protected function parseAccessToken($body)
     {
@@ -438,7 +466,17 @@ abstract class AbstractProvider implements ProviderInterface
      */
     protected function getHttpClient()
     {
-        return new Client(['http_errors' => false]);
+        return new Client(self::$guzzleOptions);
+    }
+
+    /**
+     * Set options for Guzzle HTTP client.
+     *
+     * @param array $config
+     */
+    public static function setGuzzleOptions($config = [])
+    {
+        return self::$guzzleOptions = $config;
     }
 
     /**
