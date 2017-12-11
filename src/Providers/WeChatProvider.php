@@ -223,7 +223,7 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
      */
     protected function removeCallback($response)
     {
-        if (strpos($response, 'callback') !== false) {
+        if (false !== strpos($response, 'callback')) {
             $lpos = strpos($response, '(');
             $rpos = strrpos($response, ')');
             $response = substr($response, $lpos + 1, $rpos - $lpos - 1);
