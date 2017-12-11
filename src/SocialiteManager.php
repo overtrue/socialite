@@ -55,7 +55,6 @@ class SocialiteManager implements FactoryInterface
             'weibo' => 'Weibo',
             'qq' => 'QQ',
             'wechat' => 'WeChat',
-            'wechat_open' => 'WeChatOpenPlatform',
             'douban' => 'Douban',
             'wework' => 'WeWork',
     ];
