@@ -160,6 +160,6 @@ class User implements ArrayAccess, UserInterface, JsonSerializable
      */
     public function jsonSerialize()
     {
-        return array_merge($this->attributes, ['token' => $this->token->getAttributes()]);
+        return array_merge($this->attributes, ['token' => $this->token ? $this->token->getAttributes() : null]);
     }
 }
