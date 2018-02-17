@@ -54,8 +54,8 @@ class OutlookProvider extends AbstractProvider implements ProviderInterface
         $response = $this->getHttpClient()->get(
             'https://graph.microsoft.com/v1.0/me',
             ['headers' => [
-                'Accept'        => 'application/json',
-                'Authorization' => 'Bearer ' . $token->getToken(),
+                'Accept' => 'application/json',
+                'Authorization' => 'Bearer '.$token->getToken(),
             ],
             ]);
 
@@ -68,11 +68,11 @@ class OutlookProvider extends AbstractProvider implements ProviderInterface
     protected function mapUserToObject(array $user)
     {
         return new User([
-            'id'       => $this->arrayItem($user, 'id'),
+            'id' => $this->arrayItem($user, 'id'),
             'nickname' => null,
-            'name'     => $this->arrayItem($user, 'displayName'),
-            'email'    => $this->arrayItem($user, 'userPrincipalName'),
-            'avatar'   => null,
+            'name' => $this->arrayItem($user, 'displayName'),
+            'email' => $this->arrayItem($user, 'userPrincipalName'),
+            'avatar' => null,
         ]);
     }
 
