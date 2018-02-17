@@ -49,15 +49,15 @@ class SocialiteManager implements FactoryInterface
      */
     protected $initialDrivers = [
         'facebook' => 'Facebook',
-        'github'   => 'GitHub',
-        'google'   => 'Google',
+        'github' => 'GitHub',
+        'google' => 'Google',
         'linkedin' => 'Linkedin',
-        'weibo'    => 'Weibo',
-        'qq'       => 'QQ',
-        'wechat'   => 'WeChat',
-        'douban'   => 'Douban',
-        'wework'   => 'WeWork',
-        'outlook'  => 'Outlook',
+        'weibo' => 'Weibo',
+        'qq' => 'QQ',
+        'wechat' => 'WeChat',
+        'douban' => 'Douban',
+        'wework' => 'WeWork',
+        'outlook' => 'Outlook',
     ];
 
     /**
@@ -149,7 +149,7 @@ class SocialiteManager implements FactoryInterface
     {
         if (isset($this->initialDrivers[$driver])) {
             $provider = $this->initialDrivers[$driver];
-            $provider = __NAMESPACE__ . '\\Providers\\' . $provider . 'Provider';
+            $provider = __NAMESPACE__.'\\Providers\\'.$provider.'Provider';
 
             return $this->buildProvider($provider, $this->formatConfig($this->config->get($driver)));
         }
@@ -241,8 +241,8 @@ class SocialiteManager implements FactoryInterface
     public function formatConfig(array $config)
     {
         return array_merge([
-            'identifier'   => $config['client_id'],
-            'secret'       => $config['client_secret'],
+            'identifier' => $config['client_id'],
+            'secret' => $config['client_secret'],
             'callback_uri' => $config['redirect'],
         ], $config);
     }
