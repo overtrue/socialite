@@ -94,15 +94,6 @@ Example:
 ...
 ```
 
-Special configuration options for [WeChat Open Platform](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419318590&token=&lang=zh_CN)
-```
-'wechat_open' => [
-    'client_id'     => 'your-app-id',
-    'client_secret' => ['your-component-appid', 'your-component-access-token'],
-    'redirect'      => 'http://localhost/socialite/callback.php',
-]
-```
-
 ### Scope
 
 Before redirecting the user, you may also set "scopes" on the request using the scope method. This method will overwrite all existing scopes:
