@@ -69,6 +69,7 @@ $user = $socialite->driver('github')->user();
 
 $user->getId();        // 1472352
 $user->getNickname();  // "overtrue"
+$user->getUsername();  // "overtrue"
 $user->getName();      // "安正超"
 $user->getEmail();     // "anzhengchao@gmail.com"
 $user->getProviderName(); // GitHub
