@@ -45,7 +45,22 @@ class LinkedinProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getAuthUrl($state)
     {
-        return $this->buildAuthUrlFromBase('https://www.linkedin.com/uas/oauth2/authorization', $state);
+        return $this->buildAuthUrlFromBase('https://www.linkedin.com/oauth/v2/authorization', $state);
+    }
+
+    /**
+     * Get the access token for the given code.
+     *
+     * @param string $code
+     *
+     * @return \Overtrue\Socialite\AccessToken
+     */
+    public function getAccessToken($code)
+    {
+        $response = $this->getHttpClient()
+                         ->post($this->getTokenUrl(), ['form_params' => $this->getTokenFields($code)]);
+
+        return $this->parseAccessToken($response->getBody());
     }
 
     /**
@@ -53,7 +68,7 @@ class LinkedinProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getTokenUrl()
     {
-        return 'https://www.linkedin.com/uas/oauth2/accessToken';
+        return 'https://www.linkedin.com/oauth/v2/accessToken';
     }
 
     /**
@@ -114,5 +129,15 @@ class LinkedinProvider extends AbstractProvider implements ProviderInterface
         $this->fields = $fields;
 
         return $this;
+    }
+
+    /**
+     * Determine if the provider is operating as stateless.
+     *
+     * @return bool
+     */
+    protected function isStateless()
+    {
+        return true;
     }
 }
