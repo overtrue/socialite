@@ -69,6 +69,7 @@ $user = $socialite->driver('github')->user();
 
 $user->getId();        // 1472352
 $user->getNickname();  // "overtrue"
+$user->getUsername();  // "overtrue"
 $user->getName();      // "安正超"
 $user->getEmail();     // "anzhengchao@gmail.com"
 $user->getProviderName(); // GitHub
@@ -92,15 +93,6 @@ Example:
     'redirect'      => 'http://localhost/socialite/callback.php',
   ],
 ...
-```
-
-Special configuration options for [WeChat Open Platform](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419318590&token=&lang=zh_CN)
-```
-'wechat_open' => [
-    'client_id'     => 'your-app-id',
-    'client_secret' => ['your-component-appid', 'your-component-access-token'],
-    'redirect'      => 'http://localhost/socialite/callback.php',
-]
 ```
 
 ### Scope

@@ -55,7 +55,7 @@ class OutlookProvider extends AbstractProvider implements ProviderInterface
             'https://graph.microsoft.com/v1.0/me',
             ['headers' => [
                 'Accept' => 'application/json',
-                'Authorization' => 'Bearer ' . $token->getToken(),
+                'Authorization' => 'Bearer '.$token->getToken(),
             ],
             ]);
 
