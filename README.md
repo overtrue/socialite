@@ -64,7 +64,18 @@ echo $response;// or $response->send();
 ```php
 <?php
 
-// ...
+use Overtrue\Socialite\SocialiteManager;
+
+$config = [
+  'github' => [
+  'client_id' => 'your-app-id',
+  'client_secret' => 'your-app-secret',
+  'redirect' => 'http://localhost/socialite/callback.php',
+  ],
+];
+
+$socialite = new SocialiteManager($config);
+
 $user = $socialite->driver('github')->user();
 
 $user->getId();        // 1472352
