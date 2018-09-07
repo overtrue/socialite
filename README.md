@@ -42,6 +42,7 @@ For Laravel 5: [overtrue/laravel-socialite](https://github.com/overtrue/laravel-
 
 ```php
 <?php
+
 use Overtrue\Socialite\SocialiteManager;
 
 $config = [
