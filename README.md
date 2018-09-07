@@ -68,11 +68,11 @@ echo $response;// or $response->send();
 use Overtrue\Socialite\SocialiteManager;
 
 $config = [
-  'github' => [
-  'client_id' => 'your-app-id',
-  'client_secret' => 'your-app-secret',
-  'redirect' => 'http://localhost/socialite/callback.php',
-  ],
+    'github' => [
+        'client_id' => 'your-app-id',
+        'client_secret' => 'your-app-secret',
+        'redirect' => 'http://localhost/socialite/callback.php',
+    ],
 ];
 
 $socialite = new SocialiteManager($config);
