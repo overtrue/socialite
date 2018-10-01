@@ -407,7 +407,10 @@ abstract class AbstractProvider implements ProviderInterface
             return false;
         }
 
-        $state = $this->request->getSession()->get('state');
+        $state = null;
+        if ($session = $this->request->getSession()) {
+            $state = $session->get('state');
+        }
 
         return !(strlen($state) > 0 && $this->request->get('state') === $state);
     }
