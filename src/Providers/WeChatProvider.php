@@ -196,6 +196,10 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
             'name' => $this->arrayItem($user, 'nickname'),
             'nickname' => $this->arrayItem($user, 'nickname'),
             'avatar' => $this->arrayItem($user, 'headimgurl'),
+            'sex' => $this->arrayItem($user, 'sex'),
+            'province' => $this->arrayItem($user, 'province'),
+            'city' => $this->arrayItem($user, 'city'),
+            'country' => $this->arrayItem($user, 'country'),
             'email' => null,
         ]);
     }
