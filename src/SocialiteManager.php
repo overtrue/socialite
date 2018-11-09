@@ -114,7 +114,7 @@ class SocialiteManager implements FactoryInterface
         }
         // swoole constrcut request bug
         // there set request
-        $this->drivers[$driver]->setRequest($this->request);
+        $this->drivers[$driver]->setRequest(request());
         return $this->drivers[$driver];
     }
 
