@@ -112,7 +112,9 @@ class SocialiteManager implements FactoryInterface
         if (!isset($this->drivers[$driver])) {
             $this->drivers[$driver] = $this->createDriver($driver);
         }
-
+        // swoole constrcut request bug
+        // there set request
+        $this->drivers[$driver]->setRequest($this->request);
         return $this->drivers[$driver];
     }
 
