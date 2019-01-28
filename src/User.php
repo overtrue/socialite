@@ -164,10 +164,12 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
     }
 
     /**
-     * String representation of object
+     * String representation of object.
      *
      * @link  https://php.net/manual/en/serializable.serialize.php
+     *
      * @return string the string representation of the object or null
+     *
      * @since 5.1.0
      */
     public function serialize()
@@ -176,7 +178,7 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
     }
 
     /**
-     * Constructs the object
+     * Constructs the object.
      *
      * @link  https://php.net/manual/en/serializable.unserialize.php
      *
@@ -185,6 +187,7 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
      *                           </p>
      *
      * @return void
+     *
      * @since 5.1.0
      */
     public function unserialize($serialized)
