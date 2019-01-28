@@ -100,7 +100,7 @@ class User implements ArrayAccess, UserInterface, JsonSerializable
      */
     public function setToken(AccessTokenInterface $token)
     {
-        $this->setAttribute('token', $token);
+        $this->setAttribute('token', $token->getToken());
 
         return $this;
     }
