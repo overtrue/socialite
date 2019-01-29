@@ -100,7 +100,7 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
      */
     public function setToken(AccessTokenInterface $token)
     {
-        $this->setAttribute('token', $token);
+        $this->setAttribute('token', $token->getToken());
 
         return $this;
     }
@@ -132,7 +132,7 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
      */
     public function getToken()
     {
-        return $this->getAttribute('token');
+        return new AccessToken(['access_token' => $this->getAttribute('token')]);
     }
 
     /**
@@ -160,18 +160,12 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
      */
     public function jsonSerialize()
     {
-        if (is_object($this->token)) {
-            $token = $this->token->getToken();
-        } else {
-            $token = $this->token;
-        }
-
-        return array_merge($this->attributes, ['token' => $token]);
+        return $this->attributes;
     }
 
     public function serialize()
     {
-        return serialize($this->jsonSerialize());
+        return serialize($this->attributes);
     }
 
     /**
