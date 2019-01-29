@@ -17,7 +17,7 @@ use JsonSerializable;
 /**
  * Class User.
  */
-class User implements ArrayAccess, UserInterface, JsonSerializable
+class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializable
 {
     use HasAttributes;
 
@@ -160,6 +160,35 @@ class User implements ArrayAccess, UserInterface, JsonSerializable
      */
     public function jsonSerialize()
     {
-        return array_merge($this->attributes, ['token' => $this->token ? $this->token->getToken() : null]);
+        if (is_object($this->token)) {
+            $token = $this->token->getToken();
+        } else {
+            $token = $this->token;
+        }
+
+        return array_merge($this->attributes, ['token' => $token]);
+    }
+
+    public function serialize()
+    {
+        return serialize($this->jsonSerialize());
+    }
+
+    /**
+     * Constructs the object.
+     *
+     * @link  https://php.net/manual/en/serializable.unserialize.php
+     *
+     * @param string $serialized <p>
+     *                           The string representation of the object.
+     *                           </p>
+     *
+     * @return void
+     *
+     * @since 5.1.0
+     */
+    public function unserialize($serialized)
+    {
+        $this->attributes = \unserialize($serialized) ?? [];
     }
 }
