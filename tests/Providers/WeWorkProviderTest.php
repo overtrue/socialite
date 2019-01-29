@@ -10,9 +10,10 @@
  */
 
 use Overtrue\Socialite\Providers\WeWorkProvider;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 
-class WeWorkProviderTest extends PHPUnit_Framework_TestCase
+class WeWorkProviderTest extends TestCase
 {
     public function testQrConnect()
     {

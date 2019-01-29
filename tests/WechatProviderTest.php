@@ -10,9 +10,10 @@
  */
 
 use Overtrue\Socialite\Providers\WeChatProvider as RealWeChatProvider;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 
-class WechatProviderTest extends PHPUnit_Framework_TestCase
+class WechatProviderTest extends TestCase
 {
     public function testWeChatProviderHasCorrectlyRedirectResponse()
     {
