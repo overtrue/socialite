@@ -336,9 +336,9 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * @return string
-     *
      * @throws \ReflectionException
+     *
+     * @return string
      */
     public function getName()
     {
