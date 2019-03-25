@@ -32,14 +32,6 @@ class DouYinProvider extends AbstractProvider implements ProviderInterface
     protected $scopes = ['user_info'];
 
     /**
-     * 授权用户唯一标识.
-     *
-     * @var string
-     */
-    private $openId = null;
-
-
-    /**
      * 获取登录页面地址.
      *
      * {@inheritdoc}
@@ -133,9 +125,6 @@ class DouYinProvider extends AbstractProvider implements ProviderInterface
             throw new AuthorizeFailedException('Authorize Failed: '.json_encode($body, JSON_UNESCAPED_UNICODE), $body);
         }
 
-        // 抖音用户唯一标识
-        $this->openId = $body['data']['open_id'];
-
         return new AccessToken($body['data']);
     }
 
@@ -151,8 +140,9 @@ class DouYinProvider extends AbstractProvider implements ProviderInterface
 
         $response = $this->getHttpClient()->get(
             $userUrl, [
-                'query' => ['access_token' => $token->getToken(),
-                    'open_id' => $this->openId
+                'query' => [
+                    'access_token' => $token->getToken(),
+                    'open_id' => $token['open_id']
                 ],
             ]
         );
@@ -164,7 +154,7 @@ class DouYinProvider extends AbstractProvider implements ProviderInterface
      * 格式化用户信息
      *
      * @param array $user
-     * 
+     *
      * @return User
      */
     protected function mapUserToObject(array $user)
