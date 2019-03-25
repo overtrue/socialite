@@ -16,7 +16,6 @@ use Overtrue\Socialite\User;
  */
 class DouYinProvider extends AbstractProvider implements ProviderInterface
 {
-
     /**
      * 抖音接口域名.
      *
@@ -43,7 +42,7 @@ class DouYinProvider extends AbstractProvider implements ProviderInterface
 
 
     /**
-     * 获取授权码接口参数
+     * 获取授权码接口参数.
      *
      * @param string|null $state
      *
@@ -76,7 +75,7 @@ class DouYinProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * 通过code获取access_token
+     * 通过code获取access_token.
      *
      * @param string $code
      *
@@ -92,7 +91,7 @@ class DouYinProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * 获取access_token接口参数
+     * 获取access_token接口参数.
      *
      * @param string $code
      *
@@ -109,7 +108,7 @@ class DouYinProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * 格式化token
+     * 格式化token.
      *
      * @param \Psr\Http\Message\StreamInterface|array $body
      *
@@ -129,7 +128,7 @@ class DouYinProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * 通过token 获取用户信息
+     * 通过token 获取用户信息.
      *
      * @param AccessTokenInterface $token
      * @return array|mixed
@@ -142,7 +141,7 @@ class DouYinProvider extends AbstractProvider implements ProviderInterface
             $userUrl, [
                 'query' => [
                     'access_token' => $token->getToken(),
-                    'open_id' => $token['open_id']
+                    'open_id' => $token['open_id'],
                 ],
             ]
         );
@@ -151,7 +150,7 @@ class DouYinProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * 格式化用户信息
+     * 格式化用户信息.
      *
      * @param array $user
      *
