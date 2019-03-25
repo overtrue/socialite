@@ -1,36 +1,38 @@
-<?php namespace Overtrue\Socialite\Providers;
+<?php
+
+namespace Overtrue\Socialite\Providers;
 
 use Overtrue\Socialite\AccessToken;
 use Overtrue\Socialite\AccessTokenInterface;
 use Overtrue\Socialite\ProviderInterface;
 use Overtrue\Socialite\User;
 
-
 /**
  * Class DouYinProvider.
  *
  * @author haoliang@qiyuankeji.vip
+ *
  * @see http://open.douyin.com/platform
  */
 class DouYinProvider extends AbstractProvider implements ProviderInterface
 {
 
     /**
-     * 抖音接口域名
+     * 抖音接口域名.
      *
      * @var string
      */
     protected $baseUrl = 'https://open.douyin.com';
 
     /**
-     * 应用授权作用域
+     * 应用授权作用域.
      *
      * @var array
      */
     protected $scopes = ['user_info'];
 
     /**
-     * 授权用户唯一标识
+     * 授权用户唯一标识.
      *
      * @var string
      */
@@ -38,13 +40,13 @@ class DouYinProvider extends AbstractProvider implements ProviderInterface
 
 
     /**
-     * 获取登录页面地址
+     * 获取登录页面地址.
      *
      * {@inheritdoc}
      */
     protected function getAuthUrl($state)
     {
-        return $this->buildAuthUrlFromBase($this->baseUrl . '/platform/oauth/connect', $state);
+        return $this->buildAuthUrlFromBase($this->baseUrl.'/platform/oauth/connect', $state);
     }
 
 
@@ -72,13 +74,13 @@ class DouYinProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * 获取access_token地址
+     * 获取access_token地址.
      *
      * {@inheritdoc}
      */
     protected function getTokenUrl()
     {
-        return $this->baseUrl . '/oauth/access_token';
+        return $this->baseUrl.'/oauth/access_token';
     }
 
     /**
@@ -121,7 +123,8 @@ class DouYinProvider extends AbstractProvider implements ProviderInterface
      *
      * @return \Overtrue\Socialite\AccessTokenInterface
      */
-    protected function parseAccessToken($body) {
+    protected function parseAccessToken($body)
+    {
         if (!is_array($body)) {
             $body = json_decode($body, true);
         }
@@ -144,7 +147,7 @@ class DouYinProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getUserByToken(AccessTokenInterface $token)
     {
-        $userUrl = $this->baseUrl . '/oauth/userinfo/';
+        $userUrl = $this->baseUrl.'/oauth/userinfo/';
 
         $response = $this->getHttpClient()->get(
             $userUrl, [
@@ -154,13 +157,14 @@ class DouYinProvider extends AbstractProvider implements ProviderInterface
             ]
         );
 
-        return json_decode($response->getBody(), true);;
+        return json_decode($response->getBody(), true);
     }
 
     /**
      * 格式化用户信息
      *
      * @param array $user
+     * 
      * @return User
      */
     protected function mapUserToObject(array $user)
