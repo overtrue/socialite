@@ -92,7 +92,7 @@ $user->getProviderName(); // GitHub
 
 Now we support the following sites:
 
-`facebook`, `github`, `google`, `linkedin`, `outlook`, `weibo`, `qq`, `wechat`, and `douban`.
+`facebook`, `github`, `google`, `linkedin`, `outlook`, `weibo`, `qq`, `wechat`, `douyin`, and `douban`.
 
 Each drive uses the same configuration keys: `client_id`, `client_secret`, `redirect`.
 
@@ -263,6 +263,7 @@ Enjoy it! :heart:
 - [微信开放平台 - 网站应用微信登录开发指南](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419316505&token=&lang=zh_CN)
 - [微信开放平台 - 代公众号发起网页授权](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419318590&token=&lang=zh_CN)
 - [豆瓣 - OAuth 2.0 授权机制说明](http://developers.douban.com/wiki/?title=oauth2)
+- [抖音 - 网站应用开发指南](http://open.douyin.com/platform/doc)
 
 # License
 
