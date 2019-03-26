@@ -40,7 +40,6 @@ class DouYinProvider extends AbstractProvider implements ProviderInterface
         return $this->buildAuthUrlFromBase($this->baseUrl.'/platform/oauth/connect', $state);
     }
 
-
     /**
      * 获取授权码接口参数.
      *
@@ -131,6 +130,7 @@ class DouYinProvider extends AbstractProvider implements ProviderInterface
      * 通过token 获取用户信息.
      *
      * @param AccessTokenInterface $token
+     *
      * @return array|mixed
      */
     protected function getUserByToken(AccessTokenInterface $token)
@@ -165,5 +165,4 @@ class DouYinProvider extends AbstractProvider implements ProviderInterface
             'avatar' => $this->arrayItem($user, 'avatar'),
         ]);
     }
-
 }
