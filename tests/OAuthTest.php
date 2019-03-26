@@ -27,7 +27,7 @@ class OAuthTest extends TestCase
     {
         $request = Request::create('foo');
         $request->setSession($session = m::mock('Symfony\Component\HttpFoundation\Session\SessionInterface'));
-        $session->shouldReceive('set')->once();
+        $session->shouldReceive('put')->once();
         $provider = new OAuthTwoTestProviderStub($request, 'client_id', 'client_secret', 'redirect');
         $response = $provider->redirect();
 
