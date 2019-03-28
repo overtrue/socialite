@@ -14,7 +14,7 @@
     },
     "require-dev": {
         "mockery/mockery": "~1.2",
-        "phpunit/phpunit": "~6"
+        "phpunit/phpunit": "~8"
     },
     "license": "MIT",
     "authors": [
