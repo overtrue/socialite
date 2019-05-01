@@ -58,7 +58,7 @@ class TaobaoProvider extends AbstractProvider implements ProviderInterface
     /**
      * Web 对应 PC 端（淘宝 logo ）浏览器页面样式；Tmall 对应天猫的浏览器页面样式；Wap 对应无线端的浏览器页面样式。
      */
-    protected $view= 'web';
+    protected $view = 'web';
 
     /**
      * The scopes being requested.
