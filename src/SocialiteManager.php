@@ -59,6 +59,7 @@ class SocialiteManager implements FactoryInterface
         'wework' => 'WeWork',
         'outlook' => 'Outlook',
         'douyin' => 'DouYin',
+        'taobao' => 'Taobao',
     ];
 
     /**
