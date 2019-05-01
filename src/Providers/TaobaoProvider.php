@@ -16,7 +16,7 @@ use Overtrue\Socialite\ProviderInterface;
 use Overtrue\Socialite\User;
 
 /**
- * Class TaobaoProvider
+ * Class TaobaoProvider.
  *
  * @author mechono <haodouliu@gmail.com>
  *
@@ -32,7 +32,7 @@ class TaobaoProvider extends AbstractProvider implements ProviderInterface
     protected $baseUrl = 'https://oauth.taobao.com';
 
     /**
-     * Taobao API service URL address
+     * Taobao API service URL address.
      *
      * @var string
      */
@@ -76,7 +76,7 @@ class TaobaoProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getAuthUrl($state)
     {
-        return $this->buildAuthUrlFromBase($this->baseUrl . '/authorize', $state);
+        return $this->buildAuthUrlFromBase($this->baseUrl.'/authorize', $state);
     }
 
     /**
@@ -109,7 +109,7 @@ class TaobaoProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getTokenUrl()
     {
-        return $this->baseUrl . '/token';
+        return $this->baseUrl.'/token';
     }
 
     /**
