@@ -82,7 +82,7 @@ $user->getProviderName(); // GitHub
 
 Now we support the following sites:
 
-`facebook`, `github`, `google`, `linkedin`, `outlook`, `weibo`, `qq`, `wechat`, `douyin`, and `douban`.
+`facebook`, `github`, `google`, `linkedin`, `outlook`, `weibo`, 'taobao', `qq`, `wechat`, `douyin`, and `douban`.
 
 Each drive uses the same configuration keys: `client_id`, `client_secret`, `redirect`.
 
