@@ -84,7 +84,7 @@ Now we support the following sites:
 
 `facebook`, `github`, `google`, `linkedin`, `outlook`, `weibo`, `taobao`, `qq`, `wechat`, `douyin`, and `douban`.
 
-Each drive uses the same configuration keys: `client_id`, `client_secret`, `redirect`.
+Each driver uses the same configuration keys: `client_id`, `client_secret`, `redirect`.
 
 Example:
 ```
@@ -109,7 +109,7 @@ $response = $socialite->driver('github')
 
 ### Redirect URL
 
-You may also want to dynamic set `redirect`，you can use the following methods to change the `redirect` URL:
+You may also want to dynamicly set `redirect`，you can use the following methods to change the `redirect` URL:
 
 ```php
 $socialite->redirect($url);
@@ -165,7 +165,7 @@ $user = $socialite->driver('weibo')->user();
 }
 ```
 
-You can fetch the user attribute as a array key like this:
+You can fetch the user attribute as a array keys like these:
 
 ```php
 $user['id'];        // 1472352
@@ -175,7 +175,7 @@ $user['email'];     // "anzhengchao@gmail.com"
 ...
 ```
 
-Or using method:
+Or using the method:
 
 ```php
 $user->getId();
@@ -223,7 +223,7 @@ Or set request to `SocialiteManager` instance:
 $socialite->setRequest($request);
 ```
 
-You can get the request from `SocialiteManager` instance by `getRequest()`:
+You can get the request from the `SocialiteManager` instance by `getRequest()`:
 
 ```php
 $request = $socialite->getRequest();
@@ -231,7 +231,7 @@ $request = $socialite->getRequest();
 
 #### Set custom session manager.
 
-By default, the `SocialiteManager` use `Symfony\Component\HttpFoundation\Session\Session` instance as session manager, you can change it as following lines:
+By default, the `SocialiteManager` uses the `Symfony\Component\HttpFoundation\Session\Session` instance as session manager, you can change it as follows:
 
 ```php
 $session = new YourCustomSessionManager();
