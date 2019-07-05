@@ -150,8 +150,8 @@ class LinkedinProvider extends AbstractProvider implements ProviderInterface
             'nickname' => $name,
             'name' => $name,
             'email' => $this->arrayItem($user, 'emailAddress'),
-            'avatar' => $this->arrayItem($avatar, 'identifiers.0.identifier'),
-            'avatar_original' => $this->arrayItem($originalAvatar, 'identifiers.0.identifier'),
+            'avatar' => $avatar ? $this->arrayItem($avatar, 'identifiers.0.identifier') : null,
+            'avatar_original' => $originalAvatar ? $this->arrayItem($originalAvatar, 'identifiers.0.identifier') : null,
         ]);
     }
 
