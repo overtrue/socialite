@@ -103,6 +103,7 @@ class LinkedinProvider extends AbstractProvider implements ProviderInterface
 
         return (array) json_decode($response->getBody(), true);
     }
+
     /**
      * Get the email address for the user.
      *
