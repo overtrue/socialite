@@ -27,18 +27,7 @@ class LinkedinProvider extends AbstractProvider implements ProviderInterface
      *
      * @var array
      */
-    protected $scopes = ['r_basicprofile', 'r_emailaddress'];
-
-    /**
-     * The fields that are included in the profile.
-     *
-     * @var array
-     */
-    protected $fields = [
-        'id', 'first-name', 'last-name', 'formatted-name',
-        'email-address', 'headline', 'location', 'industry',
-        'public-profile-url', 'picture-url', 'picture-urls::(original)',
-    ];
+    protected $scopes = ['r_liteprofile', 'r_emailaddress'];
 
     /**
      * {@inheritdoc}
@@ -58,7 +47,7 @@ class LinkedinProvider extends AbstractProvider implements ProviderInterface
     public function getAccessToken($code)
     {
         $response = $this->getHttpClient()
-                         ->post($this->getTokenUrl(), ['form_params' => $this->getTokenFields($code)]);
+            ->post($this->getTokenUrl(), ['form_params' => $this->getTokenFields($code)]);
 
         return $this->parseAccessToken($response->getBody());
     }
@@ -88,19 +77,52 @@ class LinkedinProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getUserByToken(AccessTokenInterface $token)
     {
-        $fields = implode(',', $this->fields);
+        $basicProfile = $this->getBasicProfile($token);
+        $emailAddress = $this->getEmailAddress($token);
 
-        $url = 'https://api.linkedin.com/v2/me?projection=('.$fields.')';
+        return array_merge($basicProfile, $emailAddress);
+    }
+
+    /**
+     * Get the basic profile fields for the user.
+     *
+     * @param string $token
+     *
+     * @return array
+     */
+    protected function getBasicProfile($token)
+    {
+        $url = 'https://api.linkedin.com/v2/me?projection=(id,firstName,lastName,profilePicture(displayImage~:playableStreams))';
 
         $response = $this->getHttpClient()->get($url, [
             'headers' => [
-                'Content-Type' => 'application/json',
-                'X-Restli-Protocol-Version' => '2.0.0',
                 'Authorization' => 'Bearer '.$token,
+                'X-RestLi-Protocol-Version' => '2.0.0',
             ],
         ]);
 
-        return json_decode($response->getBody(), true);
+        return (array) json_decode($response->getBody(), true);
+    }
+
+    /**
+     * Get the email address for the user.
+     *
+     * @param string $token
+     *
+     * @return array
+     */
+    protected function getEmailAddress($token)
+    {
+        $url = 'https://api.linkedin.com/v2/emailAddress?q=members&projection=(elements*(handle~))';
+
+        $response = $this->getHttpClient()->get($url, [
+            'headers' => [
+                'Authorization' => 'Bearer '.$token,
+                'X-RestLi-Protocol-Version' => '2.0.0',
+            ],
+        ]);
+
+        return (array) $this->arrayItem(json_decode($response->getBody(), true), 'elements.0.handle~');
     }
 
     /**
@@ -108,13 +130,28 @@ class LinkedinProvider extends AbstractProvider implements ProviderInterface
      */
     protected function mapUserToObject(array $user)
     {
+        $preferredLocale = $this->arrayItem($user, 'firstName.preferredLocale.language').'_'.$this->arrayItem($user, 'firstName.preferredLocale.country');
+        $firstName = $this->arrayItem($user, 'firstName.localized.'.$preferredLocale);
+        $lastName = $this->arrayItem($user, 'lastName.localized.'.$preferredLocale);
+        $name = $firstName.' '.$lastName;
+
+        $images = (array) $this->arrayItem($user, 'profilePicture.displayImage~.elements', []);
+        $avatars = array_filter($images, function ($image) {
+            return $image['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['storageSize']['width'] === 100;
+        });
+        $avatar = array_shift($avatars);
+        $originalAvatars = array_filter($images, function ($image) {
+            return $image['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['storageSize']['width'] === 800;
+        });
+        $originalAvatar = array_shift($originalAvatars);
+
         return new User([
             'id' => $this->arrayItem($user, 'id'),
-            'nickname' => $this->arrayItem($user, 'formattedName'),
-            'name' => $this->arrayItem($user, 'formattedName'),
+            'nickname' => $name,
+            'name' => $name,
             'email' => $this->arrayItem($user, 'emailAddress'),
-            'avatar' => $this->arrayItem($user, 'pictureUrl'),
-            'avatar_original' => $this->arrayItem($user, 'pictureUrls.values.0'),
+            'avatar' => $avatar ? $this->arrayItem($avatar, 'identifiers.0.identifier') : null,
+            'avatar_original' => $originalAvatar ? $this->arrayItem($originalAvatar, 'identifiers.0.identifier') : null,
         ]);
     }
 
