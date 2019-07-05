@@ -87,6 +87,7 @@ class LinkedinProvider extends AbstractProvider implements ProviderInterface
      * Get the basic profile fields for the user.
      *
      * @param string $token
+     *
      * @return array
      */
     protected function getBasicProfile($token)
@@ -106,6 +107,7 @@ class LinkedinProvider extends AbstractProvider implements ProviderInterface
      * Get the email address for the user.
      *
      * @param string $token
+     *
      * @return array
      */
     protected function getEmailAddress($token)
