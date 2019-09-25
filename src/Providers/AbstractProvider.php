@@ -411,7 +411,7 @@ abstract class AbstractProvider implements ProviderInterface
 
         $state = $this->request->getSession()->get('state');
 
-        return !(strlen($state) > 0 && $this->request->get('state') === $state);
+        return !(strlen($state) > 0 && request()->input('state') === $state);
     }
 
     /**
@@ -458,7 +458,7 @@ abstract class AbstractProvider implements ProviderInterface
      */
     protected function getCode()
     {
-        return $this->request->get('code');
+        return request()->input('code');
     }
 
     /**
