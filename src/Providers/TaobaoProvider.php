@@ -74,7 +74,7 @@ class TaobaoProvider extends AbstractProvider implements ProviderInterface
      *
      * @return string
      */
-    protected function getAuthUrl($state)
+    public function getAuthUrl($state)
     {
         return $this->buildAuthUrlFromBase($this->baseUrl.'/authorize', $state);
     }

@@ -105,7 +105,7 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
     /**
      * {@inheritdoc}.
      */
-    protected function getAuthUrl($state)
+    public function getAuthUrl($state)
     {
         $path = 'oauth2/authorize';
 

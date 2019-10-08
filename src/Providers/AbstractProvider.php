@@ -131,7 +131,7 @@ abstract class AbstractProvider implements ProviderInterface
      *
      * @return string
      */
-    abstract protected function getAuthUrl($state);
+    abstract public function getAuthUrl($state);
 
     /**
      * Get the token URL for the provider.
@@ -538,7 +538,7 @@ abstract class AbstractProvider implements ProviderInterface
      *
      * @return string|bool
      */
-    protected function makeState()
+    public function makeState()
     {
         if (!$this->request->hasSession()) {
             return false;

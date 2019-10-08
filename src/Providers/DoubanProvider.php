@@ -25,7 +25,7 @@ class DoubanProvider extends AbstractProvider implements ProviderInterface
     /**
      * {@inheritdoc}.
      */
-    protected function getAuthUrl($state)
+    public function getAuthUrl($state)
     {
         return $this->buildAuthUrlFromBase('https://www.douban.com/service/auth2/auth', $state);
     }
