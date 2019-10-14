@@ -102,6 +102,12 @@ abstract class AbstractProvider implements ProviderInterface
     protected $stateless = false;
 
     /**
+     * Indicates if the state should be save to session.
+     *
+     * @var bool
+     */
+    protected $autoSaveState = true;
+    /**
      * The options for guzzle\client.
      *
      * @var array
@@ -236,6 +242,18 @@ abstract class AbstractProvider implements ProviderInterface
         return $this->redirectUrl;
     }
 
+    /**
+     * Set autoSaveState .
+     *
+     * @param bool $autoSaveState
+     *
+     * @return $this
+     */
+    public function setAutoSaveState(bool $autoSaveState)
+    {
+        $this->autoSaveState = $autoSaveState;
+        return $this;
+    }
     /**
      * @param \Overtrue\Socialite\AccessTokenInterface $accessToken
      *
@@ -410,7 +428,6 @@ abstract class AbstractProvider implements ProviderInterface
         }
 
         $state = $this->request->getSession()->get('state');
-
         return !(strlen($state) > 0 && $this->request->get('state') === $state);
     }
 
@@ -540,11 +557,15 @@ abstract class AbstractProvider implements ProviderInterface
      */
     public function makeState()
     {
+        $state = sha1(uniqid(mt_rand(1, 1000000), true));
+        if (!$this->autoSaveState) {
+            return $state;
+        }
+
         if (!$this->request->hasSession()) {
             return false;
         }
 
-        $state = sha1(uniqid(mt_rand(1, 1000000), true));
         $session = $this->request->getSession();
 
         if (is_callable([$session, 'put'])) {
