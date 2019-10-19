@@ -252,8 +252,10 @@ abstract class AbstractProvider implements ProviderInterface
     public function setAutoSaveState(bool $autoSaveState)
     {
         $this->autoSaveState = $autoSaveState;
+
         return $this;
     }
+
     /**
      * @param \Overtrue\Socialite\AccessTokenInterface $accessToken
      *
@@ -428,6 +430,7 @@ abstract class AbstractProvider implements ProviderInterface
         }
 
         $state = $this->request->getSession()->get('state');
+
         return !(strlen($state) > 0 && $this->request->get('state') === $state);
     }
 
