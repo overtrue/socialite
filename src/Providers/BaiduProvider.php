@@ -52,7 +52,7 @@ class BaiduProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getAuthUrl($state)
     {
-        return $this->buildAuthUrlFromBase($this->baseUrl . '/oauth/' . $this->version . '/authorize', $state);
+        return $this->buildAuthUrlFromBase($this->baseUrl.'/oauth/'.$this->version.'/authorize', $state);
     }
 
     /**
@@ -62,10 +62,10 @@ class BaiduProvider extends AbstractProvider implements ProviderInterface
     {
         return array_merge([
             'response_type' => 'code',
-            'client_id'     => $this->clientId,
-            'redirect_uri'  => $this->redirectUrl,
-            'scope'         => $this->formatScopes($this->scopes, $this->scopeSeparator),
-            'display'       => $this->display,
+            'client_id' => $this->clientId,
+            'redirect_uri' => $this->redirectUrl,
+            'scope' => $this->formatScopes($this->scopes, $this->scopeSeparator),
+            'display' => $this->display,
         ], $this->parameters);
     }
 
@@ -76,7 +76,7 @@ class BaiduProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getTokenUrl()
     {
-        return $this->baseUrl . '/oauth/' . $this->version . '/token';
+        return $this->baseUrl.'/oauth/'.$this->version.'/token';
     }
 
     /**
@@ -100,8 +100,8 @@ class BaiduProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getUserByToken(AccessTokenInterface $token)
     {
-        $response = $this->getHttpClient()->get($this->baseUrl . '/rest/' . $this->version . '/passport/users/getInfo', [
-            'query'   => [
+        $response = $this->getHttpClient()->get($this->baseUrl.'/rest/'.$this->version.'/passport/users/getInfo', [
+            'query' => [
                 'access_token' => $token->getToken(),
             ],
             'headers' => [
@@ -122,12 +122,13 @@ class BaiduProvider extends AbstractProvider implements ProviderInterface
     protected function mapUserToObject(array $user)
     {
         $realname = $this->arrayItem($user, 'realname');
+
         return new User([
-            'id'       => $this->arrayItem($user, 'userid'),
+            'id' => $this->arrayItem($user, 'userid'),
             'nickname' => empty($realname) ? '' : $realname,
-            'name'     => $this->arrayItem($user, 'username'),
-            'email'    => '',
-            'avatar'   => $this->arrayItem($user, 'portrait'),
+            'name' => $this->arrayItem($user, 'username'),
+            'email' => '',
+            'avatar' => $this->arrayItem($user, 'portrait'),
         ]);
     }
 }
