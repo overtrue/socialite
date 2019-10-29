@@ -121,9 +121,10 @@ class BaiduProvider extends AbstractProvider implements ProviderInterface
      */
     protected function mapUserToObject(array $user)
     {
+        $realname = $this->arrayItem($user, 'realname');
         return new User([
             'id'       => $this->arrayItem($user, 'userid'),
-            'nickname' => $this->arrayItem($user, 'realname') ?? '',
+            'nickname' => empty($realname) ? '' : $realname,
             'name'     => $this->arrayItem($user, 'username'),
             'email'    => '',
             'avatar'   => $this->arrayItem($user, 'portrait'),
