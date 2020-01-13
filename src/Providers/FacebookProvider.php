@@ -110,7 +110,8 @@ class FacebookProvider extends AbstractProvider implements ProviderInterface
      */
     protected function mapUserToObject(array $user)
     {
-        $avatarUrl = $this->graphUrl.'/'.$this->version.'/'.$user['id'].'/picture';
+        $userId = $this->arrayItem($user, 'id');
+        $avatarUrl = $this->graphUrl.'/'.$this->version.'/'.$userId.'/picture';
 
         $firstName = $this->arrayItem($user, 'first_name');
         $lastName = $this->arrayItem($user, 'last_name');
@@ -120,8 +121,8 @@ class FacebookProvider extends AbstractProvider implements ProviderInterface
             'nickname' => null,
             'name' => $firstName.' '.$lastName,
             'email' => $this->arrayItem($user, 'email'),
-            'avatar' => $avatarUrl.'?type=normal',
-            'avatar_original' => $avatarUrl.'?width=1920',
+            'avatar' => $userId ? $avatarUrl.'?type=normal' : null,
+            'avatar_original' => $userId ? $avatarUrl.'?width=1920' : null,
         ]);
     }
 
