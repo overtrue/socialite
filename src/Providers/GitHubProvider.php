@@ -49,10 +49,10 @@ class GitHubProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getUserByToken(AccessTokenInterface $token)
     {
-        $userUrl = 'https://api.github.com/user?access_token='.$token->getToken();
+        $userUrl = 'https://api.github.com/user';
 
         $response = $this->getHttpClient()->get(
-            $userUrl, $this->getRequestOptions()
+            $userUrl, $this->createAuthorizationHeaders($token)
         );
 
         $user = json_decode($response->getBody(), true);
@@ -73,11 +73,11 @@ class GitHubProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getEmailByToken($token)
     {
-        $emailsUrl = 'https://api.github.com/user/emails?access_token='.$token->getToken();
+        $emailsUrl = 'https://api.github.com/user/emails';
 
         try {
             $response = $this->getHttpClient()->get(
-                $emailsUrl, $this->getRequestOptions()
+                $emailsUrl, $this->createAuthorizationHeaders($token)
             );
         } catch (Exception $e) {
             return;
@@ -108,13 +108,16 @@ class GitHubProvider extends AbstractProvider implements ProviderInterface
     /**
      * Get the default options for an HTTP request.
      *
+     * @param string $token
+     *
      * @return array
      */
-    protected function getRequestOptions()
+    protected function createAuthorizationHeaders(string $token)
     {
         return [
             'headers' => [
                 'Accept' => 'application/vnd.github.v3+json',
+                'Authorization' => sprintf('token %s', $token),
             ],
         ];
     }
