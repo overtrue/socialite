@@ -132,7 +132,7 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
     protected function getCodeFields($state = null)
     {
         if ($this->component) {
-            $this->with(['component_appid' => $this->component->getAppId()]);
+            $this->with(array_merge($this->parameters, ['component_appid' => $this->component->getAppId()]));
         }
 
         return array_merge([

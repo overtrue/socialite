@@ -70,6 +70,18 @@ class WechatProviderTest extends TestCase
 
         $this->assertSame('https://api.weixin.qq.com/sns/oauth2/component/access_token', $provider->tokenUrl());
     }
+
+    public function testOpenPlatformComponentWithCustomParameters()
+    {
+        $provider = new WeChatProvider(Request::create('foo'), 'client_id', null, 'redirect-url');
+        $provider->component(new WeChatComponent());
+        $provider->with(['foo' => 'bar']);
+
+        $fields = $provider->codeFields('wechat-state');
+
+        $this->assertArrayHasKey('foo', $fields);
+        $this->assertSame('bar', $fields['foo']);
+    }
 }
 
 trait ProviderTrait
