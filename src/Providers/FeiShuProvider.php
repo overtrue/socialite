@@ -1,13 +1,22 @@
 <?php
 
+/*
+ * This file is part of the overtrue/socialite.
+ *
+ * (c) overtrue <i@overtrue.me>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Overtrue\Socialite\Providers;
 
-use Overtrue\Socialite\User;
 use Overtrue\Socialite\AccessToken;
-use Overtrue\Socialite\ProviderInterface;
 use Overtrue\Socialite\AccessTokenInterface;
-use Overtrue\Socialite\InvalidStateException;
 use Overtrue\Socialite\AuthorizeFailedException;
+use Overtrue\Socialite\InvalidStateException;
+use Overtrue\Socialite\ProviderInterface;
+use Overtrue\Socialite\User;
 
 /**
  * Class FeiShuProvider.
