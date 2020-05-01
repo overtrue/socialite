@@ -138,7 +138,8 @@ class DouYinProvider extends AbstractProvider implements ProviderInterface
         $userUrl = $this->baseUrl.'/oauth/userinfo/';
 
         $response = $this->getHttpClient()->get(
-            $userUrl, [
+            $userUrl,
+            [
                 'query' => [
                     'access_token' => $token->getToken(),
                     'open_id' => $token['open_id'],
