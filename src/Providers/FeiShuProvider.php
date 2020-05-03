@@ -172,7 +172,7 @@ class FeiShuProvider extends AbstractProvider implements ProviderInterface
 
         $result = json_decode($response->getBody(), true);
 
-        return $result['data'] ?? '';
+        return $result['data'];
     }
 
     /**
