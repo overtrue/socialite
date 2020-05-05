@@ -181,6 +181,6 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
      */
     public function unserialize($serialized)
     {
-        $this->attributes = \unserialize($serialized) ?? [];
+        $this->attributes = unserialize($serialized) ?: [];
     }
 }
