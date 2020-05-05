@@ -22,7 +22,7 @@
   },
   "require-dev": {
     "mockery/mockery": "~1.2",
-    "phpunit/phpunit": "~6"
+    "phpunit/phpunit": "~9"
   },
   "conflict": {
     "socialiteproviders/weixin": "*"
