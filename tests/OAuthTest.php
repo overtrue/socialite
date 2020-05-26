@@ -28,7 +28,11 @@ class OAuthTest extends TestCase
         $request = Request::create('foo');
         $request->setSession($session = m::mock('Symfony\Component\HttpFoundation\Session\SessionInterface'));
         $session->shouldReceive('put')->once();
-        $provider = new OAuthTwoTestProviderStub($request, 'client_id', 'client_secret', 'redirect');
+        $provider = new OAuthTwoTestProviderStub($request, [
+            'client_id' => 'client_id',
+            'client_secret' => 'client_secret',
+            'redirect' => 'redirect'
+        ]);
         $response = $provider->redirect();
 
         $this->assertInstanceOf('Symfony\Component\HttpFoundation\RedirectResponse', $response);
@@ -40,10 +44,17 @@ class OAuthTest extends TestCase
         $request = Request::create('foo', 'GET', ['state' => str_repeat('A', 40), 'code' => 'code']);
         $request->setSession($session = m::mock('Symfony\Component\HttpFoundation\Session\SessionInterface'));
 
-        $provider = new OAuthTwoTestProviderStub($request, 'client_id', 'client_secret');
+        $provider = new OAuthTwoTestProviderStub($request, [
+            'client_id' => 'client_id',
+            'client_secret' => 'client_secret'
+        ]);
         $this->assertNull($provider->getRedirectUrl());
 
-        $provider = new OAuthTwoTestProviderStub($request, 'client_id', 'client_secret', 'redirect_uri');
+        $provider = new OAuthTwoTestProviderStub($request, [
+            'client_id' => 'client_id',
+            'client_secret' => 'client_secret',
+            'redirect' => 'redirect_uri'
+        ]);
         $this->assertSame('redirect_uri', $provider->getRedirectUrl());
         $provider->setRedirectUrl('overtrue.me');
         $this->assertSame('overtrue.me', $provider->getRedirectUrl());
@@ -58,7 +69,11 @@ class OAuthTest extends TestCase
         $request->setSession($session = m::mock('Symfony\Component\HttpFoundation\Session\SessionInterface'));
 
         $session->shouldReceive('get')->once()->with('state')->andReturn(str_repeat('A', 40));
-        $provider = new OAuthTwoTestProviderStub($request, 'client_id', 'client_secret', 'redirect_uri');
+        $provider = new OAuthTwoTestProviderStub($request, [
+            'client_id' => 'client_id',
+            'client_secret' => 'client_secret',
+            'redirect' => 'redirect_uri'
+        ]);
         $provider->http = m::mock('StdClass');
         $provider->http->shouldReceive('post')->once()->with('http://token.url', [
             'headers' => ['Accept' => 'application/json'], 'form_params' => ['client_id' => 'client_id', 'client_secret' => 'client_secret', 'code' => 'code', 'redirect_uri' => 'redirect_uri'],
@@ -78,7 +93,11 @@ class OAuthTest extends TestCase
         $request = Request::create('foo', 'GET', ['state' => str_repeat('B', 40), 'code' => 'code']);
         $request->setSession($session = m::mock('Symfony\Component\HttpFoundation\Session\SessionInterface'));
         $session->shouldReceive('get')->once()->with('state')->andReturn(str_repeat('A', 40));
-        $provider = new OAuthTwoTestProviderStub($request, 'client_id', 'client_secret', 'redirect');
+        $provider = new OAuthTwoTestProviderStub($request, [
+            'client_id' => 'client_id',
+            'client_secret' => 'client_secret',
+            'redirect' => 'redirect'
+        ]);
         $user = $provider->user();
     }
 
@@ -91,7 +110,11 @@ class OAuthTest extends TestCase
         $request = Request::create('foo', 'GET', ['state' => str_repeat('A', 40), 'code' => 'code']);
         $request->setSession($session = m::mock('Symfony\Component\HttpFoundation\Session\SessionInterface'));
         $session->shouldReceive('get')->once()->with('state')->andReturn(str_repeat('A', 40));
-        $provider = new OAuthTwoTestProviderStub($request, 'client_id', 'client_secret', 'redirect_uri');
+        $provider = new OAuthTwoTestProviderStub($request, [
+            'client_id' => 'client_id',
+            'client_secret' => 'client_secret',
+            'redirect' => 'redirect_uri'
+        ]);
         $provider->http = m::mock('StdClass');
         $provider->http->shouldReceive('post')->once()->with('http://token.url', [
             'headers' => ['Accept' => 'application/json'], 'form_params' => ['client_id' => 'client_id', 'client_secret' => 'client_secret', 'code' => 'code', 'redirect_uri' => 'redirect_uri'],
@@ -108,14 +131,22 @@ class OAuthTest extends TestCase
         $request = Request::create('foo', 'GET', ['state' => 'state', 'code' => 'code']);
         $request->setSession($session = m::mock('Symfony\Component\HttpFoundation\Session\SessionInterface'));
         $session->shouldReceive('get')->once()->with('state');
-        $provider = new OAuthTwoTestProviderStub($request, 'client_id', 'client_secret', 'redirect');
+        $provider = new OAuthTwoTestProviderStub($request, [
+            'client_id' => 'client_id',
+            'client_secret' => 'client_secret',
+            'redirect' => 'redirect'
+        ]);
         $user = $provider->user();
     }
 
     public function testDriverName()
     {
         $request = Request::create('foo', 'GET', ['state' => 'state', 'code' => 'code']);
-        $provider = new OAuthTwoTestProviderStub($request, 'client_id', 'client_secret', 'redirect');
+        $provider = new OAuthTwoTestProviderStub($request, [
+            'client_id' => 'client_id',
+            'client_secret' => 'client_secret',
+            'redirect' => 'redirect'
+        ]);
 
         $this->assertSame('OAuthTwoTest', $provider->getName());
     }

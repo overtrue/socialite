@@ -17,7 +17,11 @@ class WeWorkProviderTest extends TestCase
 {
     public function testQrConnect()
     {
-        $response = (new WeWorkProvider(Request::create('foo'), 'ww100000a5f2191', 'client_secret', 'http://www.oa.com'))
+        $response = (new WeWorkProvider(Request::create('foo'), [
+            'client_id' => 'ww100000a5f2191',
+            'client_secret' => 'client_secret',
+            'redirect' => 'http://www.oa.com'
+        ]))
                     ->setAgentId('1000000')
                     ->stateless()
                     ->redirect();
@@ -27,21 +31,29 @@ class WeWorkProviderTest extends TestCase
 
     public function testOAuthWithAgentId()
     {
-        $response = (new WeWorkProvider(Request::create('foo'), 'CORPID', 'client_secret', 'REDIRECT_URI'))
-                    ->scopes(['snsapi_base'])
-                    ->setAgentId('1000000')
-                    ->stateless()
-                    ->redirect();
+        $response = (new WeWorkProvider(Request::create('foo'), [
+            'client_id' => 'CORPID',
+            'client_secret' => 'client_secret',
+            'redirect' => 'REDIRECT_URI']
+        ))
+            ->scopes(['snsapi_base'])
+            ->setAgentId('1000000')
+            ->stateless()
+            ->redirect();
 
         $this->assertSame('https://open.weixin.qq.com/connect/oauth2/authorize?appid=CORPID&redirect_uri=REDIRECT_URI&response_type=code&scope=snsapi_base&agentid=1000000#wechat_redirect', $response->getTargetUrl());
     }
 
     public function testOAuthWithoutAgentId()
     {
-        $response = (new WeWorkProvider(Request::create('foo'), 'CORPID', 'client_secret', 'REDIRECT_URI'))
-                    ->scopes(['snsapi_base'])
-                    ->stateless()
-                    ->redirect();
+        $response = (new WeWorkProvider(Request::create('foo'), [
+            'client_id' => 'CORPID',
+            'client_secret' => 'client_secret',
+            'redirect' => 'REDIRECT_URI']
+        ))
+            ->scopes(['snsapi_base'])
+            ->stateless()
+            ->redirect();
 
         $this->assertSame('https://open.weixin.qq.com/connect/oauth2/authorize?appid=CORPID&redirect_uri=REDIRECT_URI&response_type=code&scope=snsapi_base#wechat_redirect', $response->getTargetUrl());
     }

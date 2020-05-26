@@ -41,6 +41,13 @@ abstract class AbstractProvider implements ProviderInterface
     protected $request;
 
     /**
+     * Driver config
+     *
+     * @var array
+     */
+    protected $config;
+
+    /**
      * The client ID.
      *
      * @var string
@@ -112,16 +119,15 @@ abstract class AbstractProvider implements ProviderInterface
      * Create a new provider instance.
      *
      * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param string                                    $clientId
-     * @param string                                    $clientSecret
-     * @param string|null                               $redirectUrl
+     * @param array                                     $config
      */
-    public function __construct(Request $request, $clientId, $clientSecret, $redirectUrl = null)
+    public function __construct(Request $request, $config)
     {
+        $this->config = $config;
         $this->request = $request;
-        $this->clientId = $clientId;
-        $this->clientSecret = $clientSecret;
-        $this->redirectUrl = $redirectUrl;
+        $this->clientId = $config['client_id'];
+        $this->clientSecret = $config['client_secret'];
+        $this->redirectUrl = isset($config['redirect']) ? $config['redirect'] : null;
     }
 
     /**

@@ -112,6 +112,8 @@ class SocialiteManager implements FactoryInterface
      */
     public function driver($driver)
     {
+        $driver = strtolower($driver);
+
         if (!isset($this->drivers[$driver])) {
             $this->drivers[$driver] = $this->createDriver($driver);
         }
@@ -150,15 +152,15 @@ class SocialiteManager implements FactoryInterface
      */
     protected function createDriver($driver)
     {
+        if (isset($this->customCreators[$driver])) {
+            return $this->callCustomCreator($driver);
+        }
+
         if (isset($this->initialDrivers[$driver])) {
             $provider = $this->initialDrivers[$driver];
             $provider = __NAMESPACE__.'\\Providers\\'.$provider.'Provider';
 
             return $this->buildProvider($provider, $this->formatConfig($this->config->get($driver)));
-        }
-
-        if (isset($this->customCreators[$driver])) {
-            return $this->callCustomCreator($driver);
         }
 
         throw new InvalidArgumentException("Driver [$driver] not supported.");
@@ -201,6 +203,8 @@ class SocialiteManager implements FactoryInterface
      */
     public function extend($driver, Closure $callback)
     {
+        $driver = strtolower($driver);
+
         $this->customCreators[$driver] = $callback;
 
         return $this;
@@ -226,12 +230,7 @@ class SocialiteManager implements FactoryInterface
      */
     public function buildProvider($provider, $config)
     {
-        return new $provider(
-            $this->getRequest(),
-            $config['client_id'],
-            $config['client_secret'],
-            $config['redirect']
-        );
+        return new $provider($this->getRequest(), $config);
     }
 
     /**
