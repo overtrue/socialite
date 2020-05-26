@@ -46,14 +46,14 @@ class OAuthTest extends TestCase
 
         $provider = new OAuthTwoTestProviderStub($request, [
             'client_id' => 'client_id',
-            'client_secret' => 'client_secret'
+            'client_secret' => 'client_secret',
         ]);
         $this->assertNull($provider->getRedirectUrl());
 
         $provider = new OAuthTwoTestProviderStub($request, [
             'client_id' => 'client_id',
             'client_secret' => 'client_secret',
-            'redirect' => 'redirect_uri'
+            'redirect' => 'redirect_uri',
         ]);
         $this->assertSame('redirect_uri', $provider->getRedirectUrl());
         $provider->setRedirectUrl('overtrue.me');

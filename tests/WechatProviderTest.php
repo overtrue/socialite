@@ -20,7 +20,7 @@ class WechatProviderTest extends TestCase
         $response = (new WeChatProvider(Request::create('foo'), [
             'client_id' => 'client_id',
             'client_secret' => 'client_secret',
-            'redirect' => 'http://localhost/socialite/callback.php'
+            'redirect' => 'http://localhost/socialite/callback.php',
         ]))->redirect();
 
         $this->assertInstanceOf('Symfony\Component\HttpFoundation\RedirectResponse', $response);
@@ -33,7 +33,7 @@ class WechatProviderTest extends TestCase
         $provider = new WeChatProvider(Request::create('foo'), [
             'client_id' => 'client_id',
             'client_secret' => 'client_secret',
-            'redirect' => 'http://localhost/socialite/callback.php'
+            'redirect' => 'http://localhost/socialite/callback.php',
         ]);
 
         $this->assertSame('https://api.weixin.qq.com/sns/oauth2/access_token', $provider->tokenUrl());
@@ -59,7 +59,7 @@ class WechatProviderTest extends TestCase
         $provider = new WeChatProvider(Request::create('foo'), [
             'client_id' => 'client_id',
             'client_secret' => null,
-            'redirect' => 'redirect-url'
+            'redirect' => 'redirect-url',
         ]);
         $provider->component(new WeChatComponent());
         $this->assertSame([
@@ -88,7 +88,7 @@ class WechatProviderTest extends TestCase
         $provider = new WeChatProvider(Request::create('foo'), [
             'client_id' => 'client_id',
             'client_secret' => null,
-            'redirect' => 'redirect-url'
+            'redirect' => 'redirect-url',
         ]);
         $provider->component(new WeChatComponent());
         $provider->with(['foo' => 'bar']);

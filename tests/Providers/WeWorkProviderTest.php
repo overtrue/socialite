@@ -34,7 +34,7 @@ class WeWorkProviderTest extends TestCase
         $response = (new WeWorkProvider(Request::create('foo'), [
             'client_id' => 'CORPID',
             'client_secret' => 'client_secret',
-            'redirect' => 'REDIRECT_URI',    
+            'redirect' => 'REDIRECT_URI',
         ]))
             ->scopes(['snsapi_base'])
             ->setAgentId('1000000')
