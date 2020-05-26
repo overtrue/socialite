@@ -41,7 +41,7 @@ abstract class AbstractProvider implements ProviderInterface
     protected $request;
 
     /**
-     * Driver config
+     * Driver config.
      *
      * @var array
      */

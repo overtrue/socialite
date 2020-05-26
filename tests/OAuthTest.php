@@ -31,7 +31,7 @@ class OAuthTest extends TestCase
         $provider = new OAuthTwoTestProviderStub($request, [
             'client_id' => 'client_id',
             'client_secret' => 'client_secret',
-            'redirect' => 'redirect'
+            'redirect' => 'redirect',
         ]);
         $response = $provider->redirect();
 
@@ -72,7 +72,7 @@ class OAuthTest extends TestCase
         $provider = new OAuthTwoTestProviderStub($request, [
             'client_id' => 'client_id',
             'client_secret' => 'client_secret',
-            'redirect' => 'redirect_uri'
+            'redirect' => 'redirect_uri',
         ]);
         $provider->http = m::mock('StdClass');
         $provider->http->shouldReceive('post')->once()->with('http://token.url', [
@@ -96,7 +96,7 @@ class OAuthTest extends TestCase
         $provider = new OAuthTwoTestProviderStub($request, [
             'client_id' => 'client_id',
             'client_secret' => 'client_secret',
-            'redirect' => 'redirect'
+            'redirect' => 'redirect',
         ]);
         $user = $provider->user();
     }
@@ -113,7 +113,7 @@ class OAuthTest extends TestCase
         $provider = new OAuthTwoTestProviderStub($request, [
             'client_id' => 'client_id',
             'client_secret' => 'client_secret',
-            'redirect' => 'redirect_uri'
+            'redirect' => 'redirect_uri',
         ]);
         $provider->http = m::mock('StdClass');
         $provider->http->shouldReceive('post')->once()->with('http://token.url', [
@@ -134,7 +134,7 @@ class OAuthTest extends TestCase
         $provider = new OAuthTwoTestProviderStub($request, [
             'client_id' => 'client_id',
             'client_secret' => 'client_secret',
-            'redirect' => 'redirect'
+            'redirect' => 'redirect',
         ]);
         $user = $provider->user();
     }
@@ -145,7 +145,7 @@ class OAuthTest extends TestCase
         $provider = new OAuthTwoTestProviderStub($request, [
             'client_id' => 'client_id',
             'client_secret' => 'client_secret',
-            'redirect' => 'redirect'
+            'redirect' => 'redirect',
         ]);
 
         $this->assertSame('OAuthTwoTest', $provider->getName());

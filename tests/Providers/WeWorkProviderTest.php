@@ -20,11 +20,11 @@ class WeWorkProviderTest extends TestCase
         $response = (new WeWorkProvider(Request::create('foo'), [
             'client_id' => 'ww100000a5f2191',
             'client_secret' => 'client_secret',
-            'redirect' => 'http://www.oa.com'
+            'redirect' => 'http://www.oa.com',
         ]))
-                    ->setAgentId('1000000')
-                    ->stateless()
-                    ->redirect();
+            ->setAgentId('1000000')
+            ->stateless()
+            ->redirect();
 
         $this->assertSame('https://open.work.weixin.qq.com/wwopen/sso/qrConnect?appid=ww100000a5f2191&agentid=1000000&redirect_uri=http%3A%2F%2Fwww.oa.com', $response->getTargetUrl());
     }
@@ -34,8 +34,8 @@ class WeWorkProviderTest extends TestCase
         $response = (new WeWorkProvider(Request::create('foo'), [
             'client_id' => 'CORPID',
             'client_secret' => 'client_secret',
-            'redirect' => 'REDIRECT_URI']
-        ))
+            'redirect' => 'REDIRECT_URI',    
+        ]))
             ->scopes(['snsapi_base'])
             ->setAgentId('1000000')
             ->stateless()
@@ -49,8 +49,8 @@ class WeWorkProviderTest extends TestCase
         $response = (new WeWorkProvider(Request::create('foo'), [
             'client_id' => 'CORPID',
             'client_secret' => 'client_secret',
-            'redirect' => 'REDIRECT_URI']
-        ))
+            'redirect' => 'REDIRECT_URI',
+        ]))
             ->scopes(['snsapi_base'])
             ->stateless()
             ->redirect();
