@@ -27,7 +27,7 @@ class UserTest extends TestCase
         $user = new User([
             'token' =>
                 new AccessToken([
-                    'access_token'  => 'mock-token',
+                    'access_token' => 'mock-token',
                     'refresh_token' => 'fake_refresh',
                 ])
         ]);
@@ -39,7 +39,7 @@ class UserTest extends TestCase
 
         $user = new User([]);
         $user->setToken(new AccessToken([
-            'access_token'  => 'mock-token',
+            'access_token' => 'mock-token',
             'refresh_token' => 'fake_refresh',
         ]));
         $this->assertSame('fake_refresh', $user->getRefreshToken());
