@@ -25,8 +25,7 @@ class UserTest extends TestCase
     public function test_it_can_get_refresh_token()
     {
         $user = new User([
-            'token' =>
-                new AccessToken([
+            'token' => new AccessToken([
                     'access_token' => 'mock-token',
                     'refresh_token' => 'fake_refresh',
                 ])
