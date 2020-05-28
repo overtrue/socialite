@@ -29,7 +29,7 @@ class QQProvider extends AbstractProvider
      */
     protected function getAuthUrl(): string
     {
-        return $this->buildAuthUrlFromBase($this->baseUrl . '/oauth2.0/authorize');
+        return $this->buildAuthUrlFromBase($this->baseUrl.'/oauth2.0/authorize');
     }
 
     /**
@@ -37,7 +37,7 @@ class QQProvider extends AbstractProvider
      */
     protected function getTokenUrl(): string
     {
-        return $this->baseUrl . '/oauth2.0/token';
+        return $this->baseUrl.'/oauth2.0/token';
     }
 
     /**
@@ -53,8 +53,9 @@ class QQProvider extends AbstractProvider
     /**
      * @param string $code
      *
-     * @return string
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     *
+     * @return string
      */
     public function tokenFromCode($code): string
     {
@@ -78,7 +79,6 @@ class QQProvider extends AbstractProvider
     }
 
     /**
-     *
      * @param string     $token
      * @param array|null $query
      *
@@ -86,7 +86,7 @@ class QQProvider extends AbstractProvider
      */
     protected function getUserByToken(string $token, ?array $query = []): array
     {
-        $url = $this->baseUrl . '/oauth2.0/me?access_token=' . $token;
+        $url = $this->baseUrl.'/oauth2.0/me?access_token='.$token;
         $this->withUnionId && $url .= '&unionid=1';
 
         $response = $this->getHttpClient()->get($url);
@@ -99,12 +99,12 @@ class QQProvider extends AbstractProvider
             'oauth_consumer_key' => $this->getClientId(),
         ];
 
-        $response = $this->getHttpClient()->get($this->baseUrl . '/user/get_user_info?' . http_build_query($queries));
+        $response = $this->getHttpClient()->get($this->baseUrl.'/user/get_user_info?'.http_build_query($queries));
 
         return \json_decode($this->removeCallback($response->getBody()->getContents()), true) ?? [] + [
-                'unionid' => $me['unionid'] ?? null,
-                'openid' => $me['openid'] ?? null,
-            ];
+            'unionid' => $me['unionid'] ?? null,
+            'openid' => $me['openid'] ?? null,
+        ];
     }
 
     /**

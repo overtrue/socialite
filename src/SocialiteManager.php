@@ -44,7 +44,7 @@ class SocialiteManager implements FactoryInterface
     protected $resolved = [];
 
     /**
-     * @param array        $config
+     * @param array $config
      */
     public function __construct(array $config)
     {
@@ -82,9 +82,9 @@ class SocialiteManager implements FactoryInterface
     /**
      * @param string $driver
      *
-     * @return ProviderInterface
      * @throws \InvalidArgumentException
      *
+     * @return ProviderInterface
      */
     protected function createDriver($driver)
     {

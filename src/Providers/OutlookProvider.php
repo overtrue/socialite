@@ -32,7 +32,7 @@ class OutlookProvider extends AbstractProvider
             'https://graph.microsoft.com/v1.0/me',
             ['headers' => [
                 'Accept' => 'application/json',
-                'Authorization' => 'Bearer ' . $token,
+                'Authorization' => 'Bearer '.$token,
             ],
             ]
         );
@@ -54,7 +54,7 @@ class OutlookProvider extends AbstractProvider
     protected function getTokenFields($code)
     {
         return parent::getTokenFields($code) + [
-                'grant_type' => 'authorization_code',
-            ];
+            'grant_type' => 'authorization_code',
+        ];
     }
 }

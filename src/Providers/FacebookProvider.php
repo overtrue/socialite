@@ -5,7 +5,6 @@ namespace Overtrue\Socialite\Providers;
 use Overtrue\Socialite\User;
 
 /**
- *
  * @see https://developers.facebook.com/docs/graph-api [Facebook - Graph API]
  */
 class FacebookProvider extends AbstractProvider
@@ -48,8 +47,9 @@ class FacebookProvider extends AbstractProvider
     /**
      * @param string $code
      *
-     * @return string
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     *
+     * @return string
      */
     public function tokenFromCode($code): string
     {
