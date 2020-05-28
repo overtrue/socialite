@@ -1,69 +1,37 @@
 <?php
 
-/*
- * This file is part of the overtrue/socialite.
- *
- * (c) overtrue <i@overtrue.me>
- *
- * This source file is subject to the MIT license that is bundled
- * with this source code in the file LICENSE.
- */
-
 namespace Overtrue\Socialite\Providers;
 
-use Overtrue\Socialite\AccessTokenInterface;
-use Overtrue\Socialite\InvalidArgumentException;
-use Overtrue\Socialite\ProviderInterface;
+use Overtrue\Socialite\Contracts\WeChatComponentInterface;
+use Overtrue\Socialite\Exceptions\InvalidArgumentException;
 use Overtrue\Socialite\User;
-use Overtrue\Socialite\WeChatComponentInterface;
 
 /**
- * Class WeChatProvider.
- *
  * @see http://mp.weixin.qq.com/wiki/9/01f711493b5a02f24b04365ac5d8fd95.html [WeChat - 公众平台OAuth文档]
  * @see https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419316505&token=&lang=zh_CN [网站应用微信登录开发指南]
  */
-class WeChatProvider extends AbstractProvider implements ProviderInterface
+class WeChatProvider extends AbstractProvider
 {
     /**
-     * The base url of WeChat API.
-     *
      * @var string
      */
     protected $baseUrl = 'https://api.weixin.qq.com/sns';
 
-    /**
-     * {@inheritdoc}.
-     */
     protected $openId;
 
-    /**
-     * {@inheritdoc}.
-     */
     protected $scopes = ['snsapi_login'];
 
     /**
-     * Indicates if the session state should be utilized.
-     *
-     * @var bool
-     */
-    protected $stateless = true;
-
-    /**
-     * Return country code instead of country name.
-     *
      * @var bool
      */
     protected $withCountryCode = false;
 
     /**
-     * @var WeChatComponentInterface
+     * @var \Overtrue\Socialite\Contracts\WeChatComponentInterface
      */
     protected $component;
 
     /**
-     * Return country code instead of country name.
-     *
      * @return $this
      */
     public function withCountryCode()
@@ -76,7 +44,7 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
     /**
      * WeChat OpenPlatform 3rd component.
      *
-     * @param WeChatComponentInterface $component
+     * @param \Overtrue\Socialite\Contracts\WeChatComponentInterface $component
      *
      * @return $this
      */
@@ -89,10 +57,7 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}.
-     */
-    public function getAccessToken($code)
+    public function tokenFromCode($code): string
     {
         $response = $this->getHttpClient()->get($this->getTokenUrl(), [
             'headers' => ['Accept' => 'application/json'],
@@ -102,10 +67,7 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
         return $this->parseAccessToken($response->getBody());
     }
 
-    /**
-     * {@inheritdoc}.
-     */
-    protected function getAuthUrl($state)
+    protected function getAuthUrl(): string
     {
         $path = 'oauth2/authorize';
 
@@ -113,42 +75,33 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
             $path = 'qrconnect';
         }
 
-        return $this->buildAuthUrlFromBase("https://open.weixin.qq.com/connect/{$path}", $state);
+        return $this->buildAuthUrlFromBase("https://open.weixin.qq.com/connect/{$path}");
     }
 
-    /**
-     * {@inheritdoc}.
-     */
-    protected function buildAuthUrlFromBase($url, $state)
+    protected function buildAuthUrlFromBase($url): string
     {
-        $query = http_build_query($this->getCodeFields($state), '', '&', $this->encodingType);
+        $query = http_build_query($this->getCodeFields(), '', '&', $this->encodingType);
 
         return $url.'?'.$query.'#wechat_redirect';
     }
 
-    /**
-     * {@inheritdoc}.
-     */
-    protected function getCodeFields($state = null)
+    protected function getCodeFields()
     {
         if ($this->component) {
             $this->with(array_merge($this->parameters, ['component_appid' => $this->component->getAppId()]));
         }
 
         return array_merge([
-            'appid' => $this->getConfig()->get('client_id'),
+            'appid' => $this->getClientId(),
             'redirect_uri' => $this->redirectUrl,
             'response_type' => 'code',
             'scope' => $this->formatScopes($this->scopes, $this->scopeSeparator),
-            'state' => $state ?: md5(time()),
+            'state' => $this->state ?: md5(time()),
             'connect_redirect' => 1,
         ], $this->parameters);
     }
 
-    /**
-     * {@inheritdoc}.
-     */
-    protected function getTokenUrl()
+    protected function getTokenUrl(): string
     {
         if ($this->component) {
             return $this->baseUrl.'/oauth2/component/access_token';
@@ -157,18 +110,15 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
         return $this->baseUrl.'/oauth2/access_token';
     }
 
-    /**
-     * {@inheritdoc}.
-     */
-    protected function getUserByToken(AccessTokenInterface $token)
+    protected function getUserByToken(string $token, ?array $query = []): array
     {
         $scopes = explode(',', $token->getAttribute('scope', ''));
 
         if (in_array('snsapi_base', $scopes)) {
-            return $token->toArray();
+            return $token->toArray(); //TODO: fixit
         }
 
-        if (empty($token['openid'])) {
+        if (empty($query['openid'])) {
             throw new InvalidArgumentException('openid of AccessToken is required.');
         }
 
@@ -176,59 +126,35 @@ class WeChatProvider extends AbstractProvider implements ProviderInterface
 
         $response = $this->getHttpClient()->get($this->baseUrl.'/userinfo', [
             'query' => array_filter([
-                'access_token' => $token->getToken(),
-                'openid' => $token['openid'],
+                'access_token' => $token,
+                'openid' => $query['openid'],
                 'lang' => $language,
             ]),
         ]);
 
-        return json_decode($response->getBody(), true);
+        return \json_decode($response->getBody(), true) ?? [];
     }
 
-    /**
-     * {@inheritdoc}.
-     */
-    protected function mapUserToObject(array $user)
+    protected function mapUserToObject(array $user): User
     {
         return new User([
-            'id' => $this->arrayItem($user, 'openid'),
-            'name' => $this->arrayItem($user, 'nickname'),
-            'nickname' => $this->arrayItem($user, 'nickname'),
-            'avatar' => $this->arrayItem($user, 'headimgurl'),
+            'id' => $user['openid'] ?? null,
+            'name' => $user['nickname'] ?? null,
+            'nickname' => $user['nickname'] ?? null,
+            'avatar' => $user['headimgurl'] ?? null,
             'email' => null,
         ]);
     }
 
-    /**
-     * {@inheritdoc}.
-     */
-    protected function getTokenFields($code)
+    protected function getTokenFields($code): array
     {
         return array_filter([
-            'appid' => $this->getConfig()->get('client_id'),
-            'secret' => $this->getConfig()->get('client_secret'),
+            'appid' => $this->getClientId(),
+            'secret' => $this->getClientSecret(),
             'component_appid' => $this->component ? $this->component->getAppId() : null,
             'component_access_token' => $this->component ? $this->component->getToken() : null,
             'code' => $code,
             'grant_type' => 'authorization_code',
         ]);
-    }
-
-    /**
-     * Remove the fucking callback parentheses.
-     *
-     * @param mixed $response
-     *
-     * @return string
-     */
-    protected function removeCallback($response)
-    {
-        if (false !== strpos($response, 'callback')) {
-            $lpos = strpos($response, '(');
-            $rpos = strrpos($response, ')');
-            $response = substr($response, $lpos + 1, $rpos - $lpos - 1);
-        }
-
-        return $response;
     }
 }

@@ -1,19 +1,7 @@
 <?php
 
-/*
- * This file is part of the overtrue/socialite.
- *
- * (c) overtrue <i@overtrue.me>
- *
- * This source file is subject to the MIT license that is bundled
- * with this source code in the file LICENSE.
- */
+namespace Overtrue\Socialite\Traits;
 
-namespace Overtrue\Socialite;
-
-/**
- * Trait HasAttributes.
- */
 trait HasAttributes
 {
     /**
@@ -22,8 +10,6 @@ trait HasAttributes
     protected $attributes = [];
 
     /**
-     * Return the attributes.
-     *
      * @return array
      */
     public function getAttributes()
@@ -32,8 +18,6 @@ trait HasAttributes
     }
 
     /**
-     * Return the extra attribute.
-     *
      * @param string $name
      * @param string $default
      *
@@ -45,8 +29,6 @@ trait HasAttributes
     }
 
     /**
-     * Set extra attributes.
-     *
      * @param string $name
      * @param mixed  $value
      *
@@ -60,8 +42,6 @@ trait HasAttributes
     }
 
     /**
-     * Map the given array onto the user's properties.
-     *
      * @param array $attributes
      *
      * @return $this
@@ -73,63 +53,38 @@ trait HasAttributes
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function offsetExists($offset)
     {
         return array_key_exists($offset, $this->attributes);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function offsetGet($offset)
     {
         return $this->getAttribute($offset);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function offsetSet($offset, $value)
     {
         $this->setAttribute($offset, $value);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function offsetUnset($offset)
     {
         unset($this->attributes[$offset]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function __get($property)
     {
         return $this->getAttribute($property);
     }
 
-    /**
-     * Return array.
-     *
-     * @return array
-     */
     public function toArray()
     {
         return $this->getAttributes();
     }
 
-    /**
-     * Return JSON.
-     *
-     * @return string
-     */
     public function toJSON()
     {
-        return json_encode($this->getAttributes(), JSON_UNESCAPED_UNICODE);
+        return \json_encode($this->getAttributes(), JSON_UNESCAPED_UNICODE);
     }
 }

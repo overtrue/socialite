@@ -13,17 +13,14 @@ namespace Overtrue\Socialite;
 
 use ArrayAccess;
 use JsonSerializable;
+use Overtrue\Socialite\Contracts\UserInterface;
+use Overtrue\Socialite\Traits\HasAttributes;
 
-/**
- * Class User.
- */
 class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializable
 {
     use HasAttributes;
 
     /**
-     * User constructor.
-     *
      * @param array $attributes
      */
     public function __construct(array $attributes)
@@ -32,8 +29,6 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
     }
 
     /**
-     * Get the unique identifier for the user.
-     *
      * @return string
      */
     public function getId()
@@ -42,63 +37,51 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
     }
 
     /**
-     * Get the username for the user.
-     *
      * @return string
      */
-    public function getUsername()
+    public function getUsername(): ?string
     {
         return $this->getAttribute('username', $this->getId());
     }
 
     /**
-     * Get the nickname / username for the user.
-     *
      * @return string
      */
-    public function getNickname()
+    public function getNickname(): ?string
     {
         return $this->getAttribute('nickname');
     }
 
     /**
-     * Get the full name of the user.
-     *
      * @return string
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->getAttribute('name');
     }
 
     /**
-     * Get the e-mail address of the user.
-     *
      * @return string
      */
-    public function getEmail()
+    public function getEmail(): ?string
     {
         return $this->getAttribute('email');
     }
 
     /**
-     * Get the avatar / image URL for the user.
-     *
      * @return string
      */
-    public function getAvatar()
+    public function getAvatar(): ?string
     {
         return $this->getAttribute('avatar');
     }
 
     /**
-     * Set the token on the user.
-     *
-     * @param \Overtrue\Socialite\AccessTokenInterface $token
+     * @param string $token
      *
      * @return $this
      */
-    public function setToken(AccessTokenInterface $token)
+    public function setToken(string $token)
     {
         $this->setAttribute('token', $token);
 
@@ -106,63 +89,55 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
     }
 
     /**
-     * @param string $provider
-     *
-     * @return $this
-     */
-    public function setProviderName($provider)
-    {
-        $this->setAttribute('provider', $provider);
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getProviderName()
-    {
-        return $this->getAttribute('provider');
-    }
-
-    /**
-     * Get the authorized token.
-     *
      * @return \Overtrue\Socialite\AccessToken
      */
-    public function getToken()
+    public function getToken(): ?string
     {
         return $this->getAttribute('token');
     }
 
     /**
-     * Get user access token.
-     *
      * @return string
      */
-    public function getAccessToken()
+    public function getAccessToken(): ?string
     {
-        return $this->getToken()->getToken();
+        return $this->getToken();
     }
 
     /**
-     * Get user refresh token.
-     *
      * @return string
      */
-    public function getRefreshToken()
+    public function getRefreshToken(): ?string
     {
-        return $this->getToken()->getRefreshToken();
+        return $this->getAttribute('refresh_token');
     }
 
     /**
-     * Get the original attributes.
+     * @return int|null
+     */
+    public function getExpiresIn(): ?int
+    {
+        return $this->getAttribute('expires_in');
+    }
+
+    /**
+     * @param array $user
      *
+     * @return $this
+     */
+    public function setRaw(array $user)
+    {
+        $this->setAttribute('raw', $user);
+
+        return $this;
+    }
+
+    /**
      * @return array
      */
-    public function getOriginal()
+    public function getRaw(): array
     {
-        return $this->getAttribute('original');
+        return $this->getAttribute('raw');
     }
 
     /**
@@ -179,8 +154,6 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
     }
 
     /**
-     * Constructs the object.
-     *
      * @see  https://php.net/manual/en/serializable.unserialize.php
      *
      * @param string $serialized <p>

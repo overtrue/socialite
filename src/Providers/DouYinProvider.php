@@ -2,96 +2,67 @@
 
 namespace Overtrue\Socialite\Providers;
 
-use Overtrue\Socialite\AccessToken;
-use Overtrue\Socialite\AccessTokenInterface;
-use Overtrue\Socialite\ProviderInterface;
+use Overtrue\Socialite\Exceptions\InvalidArgumentException;
 use Overtrue\Socialite\User;
 
 /**
- * Class DouYinProvider.
- *
  * @author haoliang@qiyuankeji.vip
  *
  * @see http://open.douyin.com/platform
  */
-class DouYinProvider extends AbstractProvider implements ProviderInterface
+class DouYinProvider extends AbstractProvider
 {
     /**
-     * 抖音接口域名.
-     *
      * @var string
      */
     protected $baseUrl = 'https://open.douyin.com';
 
     /**
-     * 应用授权作用域.
-     *
      * @var array
      */
     protected $scopes = ['user_info'];
 
-    /**
-     * 获取登录页面地址.
-     *
-     * {@inheritdoc}
-     */
-    protected function getAuthUrl($state)
+    protected function getAuthUrl(): string
     {
-        return $this->buildAuthUrlFromBase($this->baseUrl.'/platform/oauth/connect', $state);
+        return $this->buildAuthUrlFromBase($this->baseUrl.'/platform/oauth/connect');
     }
 
     /**
-     * 获取授权码接口参数.
-     *
-     * @param string|null $state
-     *
      * @return array
      */
-    public function getCodeFields($state = null)
+    public function getCodeFields()
     {
-        $fields = [
-            'client_key' => $this->getConfig()->get('client_id'),
+        return [
+            'client_key' => $this->getClientId(),
             'redirect_uri' => $this->redirectUrl,
             'scope' => $this->formatScopes($this->scopes, $this->scopeSeparator),
             'response_type' => 'code',
         ];
-
-        if ($this->usesState()) {
-            $fields['state'] = $state;
-        }
-
-        return $fields;
     }
 
-    /**
-     * 获取access_token地址.
-     *
-     * {@inheritdoc}
-     */
-    protected function getTokenUrl()
+    protected function getTokenUrl(): string
     {
         return $this->baseUrl.'/oauth/access_token';
     }
 
     /**
-     * 通过code获取access_token.
-     *
      * @param string $code
      *
-     * @return \Overtrue\Socialite\AccessToken
+     * @return string
+     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      */
-    public function getAccessToken($code)
+    public function tokenFromCode($code): string
     {
         $response = $this->getHttpClient()->get($this->getTokenUrl(), [
             'query' => $this->getTokenFields($code),
         ]);
 
-        return $this->parseAccessToken($response->getBody()->getContents());
+        $response = \json_decode($response->getBody()->getContents(), true) ?? [];
+
+        return $this->parseAccessToken($response);
     }
 
     /**
-     * 获取access_token接口参数.
-     *
      * @param string $code
      *
      * @return array
@@ -99,71 +70,53 @@ class DouYinProvider extends AbstractProvider implements ProviderInterface
     protected function getTokenFields($code)
     {
         return [
-            'client_key' => $this->getConfig()->get('client_id'),
-            'client_secret' => $this->getConfig()->get('client_secret'),
+            'client_key' => $this->getClientId(),
+            'client_secret' => $this->getClientSecret(),
             'code' => $code,
             'grant_type' => 'authorization_code',
         ];
     }
 
     /**
-     * 格式化token.
+     * @param string     $token
+     * @param array|null $query
      *
-     * @param \Psr\Http\Message\StreamInterface|array $body
-     *
-     * @return \Overtrue\Socialite\AccessTokenInterface
+     * @return array
+     * @throws \Overtrue\Socialite\Exceptions\InvalidArgumentException
      */
-    protected function parseAccessToken($body)
-    {
-        if (!is_array($body)) {
-            $body = json_decode($body, true);
-        }
-
-        if (empty($body['data']['access_token'])) {
-            throw new AuthorizeFailedException('Authorize Failed: '.json_encode($body, JSON_UNESCAPED_UNICODE), $body);
-        }
-
-        return new AccessToken($body['data']);
-    }
-
-    /**
-     * 通过token 获取用户信息.
-     *
-     * @param AccessTokenInterface $token
-     *
-     * @return array|mixed
-     */
-    protected function getUserByToken(AccessTokenInterface $token)
+    protected function getUserByToken(string $token, ?array $query = []): array
     {
         $userUrl = $this->baseUrl.'/oauth/userinfo/';
+
+        if (empty($query['open_id'])) {
+            throw new InvalidArgumentException('open_id cannot be empty.');
+        }
 
         $response = $this->getHttpClient()->get(
             $userUrl,
             [
                 'query' => [
-                    'access_token' => $token->getToken(),
-                    'open_id' => $token['open_id'],
+                    'access_token' => $token,
+                    'open_id' => $query['open_id'],
                 ],
             ]
         );
 
-        return json_decode($response->getBody(), true);
+        return \json_decode($response->getBody(), true) ?? [];
     }
 
     /**
-     * 格式化用户信息.
-     *
      * @param array $user
      *
-     * @return User
+     * @return \Overtrue\Socialite\User
      */
-    protected function mapUserToObject(array $user)
+    protected function mapUserToObject(array $user): User
     {
         return new User([
-            'id' => $this->arrayItem($user, 'open_id'),
-            'username' => $this->arrayItem($user, 'nickname'),
-            'nickname' => $this->arrayItem($user, 'nickname'),
-            'avatar' => $this->arrayItem($user, 'avatar'),
+            'id' => $user['open_id'] ?? null,
+            'username' => $user['nickname'] ?? null,
+            'nickname' => $user['nickname'] ?? null,
+            'avatar' => $user['avatar'] ?? null,
         ]);
     }
 }

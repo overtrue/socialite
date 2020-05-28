@@ -1,6 +1,5 @@
 <h1 align="center"> Socialite</h1>
 <p align="center">
-<a href="https://travis-ci.org/overtrue/socialite"><img src="https://travis-ci.org/overtrue/socialite.svg?branch=master" alt="Build Status"></a>
 <a href="https://packagist.org/packages/overtrue/socialite"><img src="https://poser.pugx.org/overtrue/socialite/v/stable.svg" alt="Latest Stable Version"></a>
 <a href="https://packagist.org/packages/overtrue/socialite"><img src="https://poser.pugx.org/overtrue/socialite/v/unstable.svg" alt="Latest Unstable Version"></a>
 <a href="https://scrutinizer-ci.com/g/overtrue/socialite/build-status/master"><img src="https://scrutinizer-ci.com/g/overtrue/socialite/badges/build.png?b=master" alt="Build Status"></a>
@@ -16,7 +15,7 @@
 # Requirement
 
 ```
-PHP >= 5.6
+PHP >= 7.2
 ```
 # Installation
 
@@ -45,9 +44,9 @@ $config = [
 
 $socialite = new SocialiteManager($config);
 
-$response = $socialite->driver('github')->redirect();
+$url = $socialite->driver('github')->redirect();
 
-echo $response;// or $response->send();
+return redirect($url); 
 ```
 
 `callback.php`:
@@ -67,14 +66,13 @@ $config = [
 
 $socialite = new SocialiteManager($config);
 
-$user = $socialite->driver('github')->user();
+$user = $socialite->driver('github')->user(request()->query('code'));
 
 $user->getId();        // 1472352
 $user->getNickname();  // "overtrue"
 $user->getUsername();  // "overtrue"
 $user->getName();      // "安正超"
 $user->getEmail();     // "anzhengchao@gmail.com"
-$user->getProviderName(); // GitHub
 ...
 ```
 
@@ -109,9 +107,11 @@ $response = $socialite->driver('github')
 
 ### Redirect URL
 
-You may also want to dynamicly set `redirect`，you can use the following methods to change the `redirect` URL:
+You may also want to dynamically set `redirect_uri`，you can use the following methods to change the `redirect_uri` URL:
 
 ```php
+$url = 'your callback url.';
+
 $socialite->redirect($url);
 // or
 $socialite->withRedirectUrl($url)->redirect();
@@ -137,8 +137,7 @@ $response = $socialite->driver('google')
 #### Standard user api:
 
 ```php
-
-$user = $socialite->driver('weibo')->user();
+$user = $socialite->driver('weibo')->userFromCode($code);
 ```
 
 ```json
@@ -148,7 +147,7 @@ $user = $socialite->driver('weibo')->user();
   "name": "安正超",
   "email": "anzhengchao@gmail.com",
   "avatar": "https://avatars.githubusercontent.com/u/1472352?v=3",
-  "original": {
+  "raw": {
     "login": "overtrue",
     "id": 1472352,
     "avatar_url": "https://avatars.githubusercontent.com/u/1472352?v=3",
@@ -178,67 +177,27 @@ $user['email'];     // "anzhengchao@gmail.com"
 Or using the method:
 
 ```php
-$user->getId();
-$user->getNickname();
-$user->getName();
-$user->getEmail();
-$user->getAvatar();
-$user->getOriginal();
-$user->getToken();// or $user->getAccessToken()
-$user->getProviderName(); // GitHub/Google/Facebook...
+mixed   $user->getId();
+?string $user->getNickname();
+?string $user->getName();
+?string $user->getEmail();
+?string $user->getAvatar();
+?string $user->getRaw();
+?string $user->getToken(); // or $user->getAccessToken()
+?string $user->getRefreshToken();
+?int    $user->getExpiresIn();
 ```
 
-#### Get original response from OAuth API
+#### Get raw response from OAuth API
 
-The `$user->getOriginal()` method will return an array of the API raw response.
-
-#### Get access token Object
-
-You can get the access token instance of current session by call `$user->getToken()` or `$user->getAccessToken()` or `$user['token']` .
-
+The `$user->getRaw()` method will return an array of the API raw response.
 
 ### Get user with access token
 
 ```php
-$accessToken = new AccessToken(['access_token' => $accessToken]);
-$user = $socialite->user($accessToken);
+$accessToken = 'xxxxxxxxxxx';
+$user = $socialite->userFromToken($accessToken);
 ```
-
-
-### Custom Session or Request instance.
-
-You can set the request with your custom `Request` instance which instanceof `Symfony\Component\HttpFoundation\Request` before you call `driver` method.
-
-
-```php
-
-$request = new Request(); // or use AnotherCustomRequest.
-
-$socialite = new SocialiteManager($config, $request);
-```
-
-Or set request to `SocialiteManager` instance:
-
-```php
-$socialite->setRequest($request);
-```
-
-You can get the request from the `SocialiteManager` instance by `getRequest()`:
-
-```php
-$request = $socialite->getRequest();
-```
-
-#### Set custom session manager.
-
-By default, the `SocialiteManager` uses the `Symfony\Component\HttpFoundation\Session\Session` instance as session manager, you can change it as follows:
-
-```php
-$session = new YourCustomSessionManager();
-$socialite->getRequest()->setSession($session);
-```
-
-> Your custom session manager must be implement the [`Symfony\Component\HttpFoundation\Session\SessionInterface`](http://api.symfony.com/3.0/Symfony/Component/HttpFoundation/Session/SessionInterface.html).
 
 Enjoy it! :heart:
 

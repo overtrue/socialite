@@ -1,22 +1,10 @@
 <?php
 
-/*
- * This file is part of the overtrue/socialite.
- *
- * (c) overtrue <i@overtrue.me>
- *
- * This source file is subject to the MIT license that is bundled
- * with this source code in the file LICENSE.
- */
-
 namespace Overtrue\Socialite;
 
 use ArrayAccess;
 use InvalidArgumentException;
 
-/**
- * Class Config.
- */
 class Config implements ArrayAccess
 {
     /**
@@ -25,8 +13,6 @@ class Config implements ArrayAccess
     protected $config;
 
     /**
-     * Config constructor.
-     *
      * @param array $config
      */
     public function __construct(array $config)
@@ -35,8 +21,6 @@ class Config implements ArrayAccess
     }
 
     /**
-     * Get an item from an array using "dot" notation.
-     *
      * @param string $key
      * @param mixed  $default
      *
@@ -63,8 +47,6 @@ class Config implements ArrayAccess
     }
 
     /**
-     * Set an array item to a given value using "dot" notation.
-     *
      * @param string $key
      * @param mixed  $value
      *
@@ -93,8 +75,6 @@ class Config implements ArrayAccess
     }
 
     /**
-     * Determine if the given configuration value exists.
-     *
      * @param string $key
      *
      * @return bool

@@ -1,68 +1,30 @@
 <?php
 
-/*
- * This file is part of the overtrue/socialite.
- *
- * (c) overtrue <i@overtrue.me>
- *
- * This source file is subject to the MIT license that is bundled
- * with this source code in the file LICENSE.
- */
-
 namespace Overtrue\Socialite\Providers;
 
-use Overtrue\Socialite\AccessTokenInterface;
-use Overtrue\Socialite\ProviderInterface;
 use Overtrue\Socialite\User;
 
 /**
- * Class LinkedinProvider.
- *
  * @see https://developer.linkedin.com/docs/oauth2 [Authenticating with OAuth 2.0]
  */
-class LinkedinProvider extends AbstractProvider implements ProviderInterface
+class LinkedinProvider extends AbstractProvider
 {
     /**
-     * The scopes being requested.
-     *
      * @var array
      */
     protected $scopes = ['r_liteprofile', 'r_emailaddress'];
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function getAuthUrl($state)
+    protected function getAuthUrl(): string
     {
-        return $this->buildAuthUrlFromBase('https://www.linkedin.com/oauth/v2/authorization', $state);
+        return $this->buildAuthUrlFromBase('https://www.linkedin.com/oauth/v2/authorization');
     }
 
-    /**
-     * Get the access token for the given code.
-     *
-     * @param string $code
-     *
-     * @return \Overtrue\Socialite\AccessToken
-     */
-    public function getAccessToken($code)
-    {
-        $response = $this->getHttpClient()
-            ->post($this->getTokenUrl(), ['form_params' => $this->getTokenFields($code)]);
-
-        return $this->parseAccessToken($response->getBody());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getTokenUrl()
+    protected function getTokenUrl(): string
     {
         return 'https://www.linkedin.com/oauth/v2/accessToken';
     }
 
     /**
-     * Get the POST fields for the token request.
-     *
      * @param string $code
      *
      * @return array
@@ -72,10 +34,7 @@ class LinkedinProvider extends AbstractProvider implements ProviderInterface
         return parent::getTokenFields($code) + ['grant_type' => 'authorization_code'];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function getUserByToken(AccessTokenInterface $token)
+    protected function getUserByToken(string $token, ?array $query = []): array
     {
         $basicProfile = $this->getBasicProfile($token);
         $emailAddress = $this->getEmailAddress($token);
@@ -84,8 +43,6 @@ class LinkedinProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * Get the basic profile fields for the user.
-     *
      * @param string $token
      *
      * @return array
@@ -101,12 +58,10 @@ class LinkedinProvider extends AbstractProvider implements ProviderInterface
             ],
         ]);
 
-        return (array) json_decode($response->getBody(), true);
+        return \json_decode($response->getBody(), true) ?? [];
     }
 
     /**
-     * Get the email address for the user.
-     *
      * @param string $token
      *
      * @return array
@@ -122,20 +77,17 @@ class LinkedinProvider extends AbstractProvider implements ProviderInterface
             ],
         ]);
 
-        return (array) $this->arrayItem(json_decode($response->getBody(), true), 'elements.0.handle~');
+        return \json_decode($response->getBody(), true)['elements.0.handle~'] ?? [];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function mapUserToObject(array $user)
+    protected function mapUserToObject(array $user): User
     {
-        $preferredLocale = $this->arrayItem($user, 'firstName.preferredLocale.language').'_'.$this->arrayItem($user, 'firstName.preferredLocale.country');
-        $firstName = $this->arrayItem($user, 'firstName.localized.'.$preferredLocale);
-        $lastName = $this->arrayItem($user, 'lastName.localized.'.$preferredLocale);
+        $preferredLocale = $user['firstName.preferredLocale.language'] ?? null.'_'.$user['firstName.preferredLocale.country'] ?? null;
+        $firstName = $user['firstName.localized.'.$preferredLocale] ?? null;
+        $lastName = $user['lastName.localized.'.$preferredLocale] ?? null;
         $name = $firstName.' '.$lastName;
 
-        $images = (array) $this->arrayItem($user, 'profilePicture.displayImage~.elements', []);
+        $images = $user['profilePicture.displayImage~.elements'] ?? [];
         $avatars = array_filter($images, function ($image) {
             return $image['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['storageSize']['width'] === 100;
         });
@@ -146,18 +98,16 @@ class LinkedinProvider extends AbstractProvider implements ProviderInterface
         $originalAvatar = array_shift($originalAvatars);
 
         return new User([
-            'id' => $this->arrayItem($user, 'id'),
+            'id' => $user['id'] ?? null,
             'nickname' => $name,
             'name' => $name,
-            'email' => $this->arrayItem($user, 'emailAddress'),
-            'avatar' => $avatar ? $this->arrayItem($avatar, 'identifiers.0.identifier') : null,
-            'avatar_original' => $originalAvatar ? $this->arrayItem($originalAvatar, 'identifiers.0.identifier') : null,
+            'email' => $user['emailAddress'] ?? null,
+            'avatar' => $avatar['identifiers.0.identifier'] ?? null,
+            'avatar_original' => $originalAvatar['identifiers.0.identifier'] ?? null,
         ]);
     }
 
     /**
-     * Set the user fields to request from LinkedIn.
-     *
      * @param array $fields
      *
      * @return $this
@@ -167,15 +117,5 @@ class LinkedinProvider extends AbstractProvider implements ProviderInterface
         $this->fields = $fields;
 
         return $this;
-    }
-
-    /**
-     * Determine if the provider is operating as stateless.
-     *
-     * @return bool
-     */
-    protected function isStateless()
-    {
-        return true;
     }
 }

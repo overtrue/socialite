@@ -1,131 +1,70 @@
 <?php
 
-/*
- * This file is part of the overtrue/socialite.
- *
- * (c) overtrue <i@overtrue.me>
- *
- * This source file is subject to the MIT license that is bundled
- * with this source code in the file LICENSE.
- */
-
 namespace Overtrue\Socialite\Providers;
 
-use Overtrue\Socialite\AccessTokenInterface;
-use Overtrue\Socialite\ProviderInterface;
 use Overtrue\Socialite\User;
 
 /**
- * Class QQProvider.
- *
  * @see http://wiki.connect.qq.com/oauth2-0%E7%AE%80%E4%BB%8B [QQ - OAuth 2.0 登录QQ]
  */
-class QQProvider extends AbstractProvider implements ProviderInterface
+class QQProvider extends AbstractProvider
 {
     /**
-     * The base url of QQ API.
-     *
-     * @var string
-     */
-    protected $baseUrl = 'https://graph.qq.com';
-
-    /**
-     * User openid.
-     *
-     * @var string
-     */
-    protected $openId;
-
-    /**
-     * get token(openid) with unionid.
-     *
      * @var bool
      */
     protected $withUnionId = false;
 
     /**
-     * User unionid.
-     *
      * @var string
      */
-    protected $unionId;
+    protected $baseUrl = 'https://graph.qq.com';
 
     /**
-     * The scopes being requested.
-     *
      * @var array
      */
     protected $scopes = ['get_user_info'];
 
     /**
-     * The uid of user authorized.
-     *
-     * @var int
-     */
-    protected $uid;
-
-    /**
-     * Get the authentication URL for the provider.
-     *
-     * @param string $state
-     *
      * @return string
      */
-    protected function getAuthUrl($state)
+    protected function getAuthUrl(): string
     {
-        return $this->buildAuthUrlFromBase($this->baseUrl.'/oauth2.0/authorize', $state);
+        return $this->buildAuthUrlFromBase($this->baseUrl . '/oauth2.0/authorize');
     }
 
     /**
-     * Get the token URL for the provider.
-     *
      * @return string
      */
-    protected function getTokenUrl()
+    protected function getTokenUrl(): string
     {
-        return $this->baseUrl.'/oauth2.0/token';
+        return $this->baseUrl . '/oauth2.0/token';
     }
 
     /**
-     * Get the Post fields for the token request.
-     *
      * @param string $code
      *
      * @return array
      */
-    protected function getTokenFields($code)
+    protected function getTokenFields($code): array
     {
         return parent::getTokenFields($code) + ['grant_type' => 'authorization_code'];
     }
 
     /**
-     * Get the access token for the given code.
-     *
      * @param string $code
      *
-     * @return \Overtrue\Socialite\AccessToken
+     * @return string
+     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      */
-    public function getAccessToken($code)
+    public function tokenFromCode($code): string
     {
         $response = $this->getHttpClient()->get($this->getTokenUrl(), [
             'query' => $this->getTokenFields($code),
         ]);
 
-        return $this->parseAccessToken($response->getBody()->getContents());
-    }
+        \parse_str($response->getBody()->getContents(), $token);
 
-    /**
-     * Get the access token from the token response body.
-     *
-     * @param string $body
-     *
-     * @return \Overtrue\Socialite\AccessToken
-     */
-    public function parseAccessToken($body)
-    {
-        parse_str($body, $token);
-
-        return parent::parseAccessToken($token);
+        return $this->parseAccessToken($token);
     }
 
     /**
@@ -139,56 +78,52 @@ class QQProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * Get the raw user for the given access token.
      *
-     * @param \Overtrue\Socialite\AccessTokenInterface $token
+     * @param string     $token
+     * @param array|null $query
      *
      * @return array
      */
-    protected function getUserByToken(AccessTokenInterface $token)
+    protected function getUserByToken(string $token, ?array $query = []): array
     {
-        $url = $this->baseUrl.'/oauth2.0/me?access_token='.$token->getToken();
+        $url = $this->baseUrl . '/oauth2.0/me?access_token=' . $token;
         $this->withUnionId && $url .= '&unionid=1';
 
         $response = $this->getHttpClient()->get($url);
 
         $me = json_decode($this->removeCallback($response->getBody()->getContents()), true);
-        $this->openId = $me['openid'];
-        $this->unionId = isset($me['unionid']) ? $me['unionid'] : '';
 
         $queries = [
-            'access_token' => $token->getToken(),
-            'openid' => $this->openId,
-            'oauth_consumer_key' => $this->getConfig()->get('client_id'),
+            'access_token' => $token,
+            'openid' => $me['openid'],
+            'oauth_consumer_key' => $this->getClientId(),
         ];
 
-        $response = $this->getHttpClient()->get($this->baseUrl.'/user/get_user_info?'.http_build_query($queries));
+        $response = $this->getHttpClient()->get($this->baseUrl . '/user/get_user_info?' . http_build_query($queries));
 
-        return json_decode($this->removeCallback($response->getBody()->getContents()), true);
+        return \json_decode($this->removeCallback($response->getBody()->getContents()), true) ?? [] + [
+                'unionid' => $me['unionid'] ?? null,
+                'openid' => $me['openid'] ?? null,
+            ];
     }
 
     /**
-     * Map the raw user array to a Socialite User instance.
-     *
      * @param array $user
      *
      * @return \Overtrue\Socialite\User
      */
-    protected function mapUserToObject(array $user)
+    protected function mapUserToObject(array $user): User
     {
         return new User([
-            'id' => $this->openId,
-            'unionid' => $this->unionId,
-            'nickname' => $this->arrayItem($user, 'nickname'),
-            'name' => $this->arrayItem($user, 'nickname'),
-            'email' => $this->arrayItem($user, 'email'),
-            'avatar' => $this->arrayItem($user, 'figureurl_qq_2'),
+            'id' => $user['openid'] ?? null,
+            'nickname' => $user['nickname'] ?? null,
+            'name' => $user['nickname'] ?? null,
+            'email' => $user['email'] ?? null,
+            'avatar' => $user['figureurl_qq_2'] ?? null,
         ]);
     }
 
     /**
-     * Remove the fucking callback parentheses.
-     *
      * @param string $response
      *
      * @return string

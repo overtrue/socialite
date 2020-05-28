@@ -1,86 +1,57 @@
 <?php
 
-/*
- * This file is part of the overtrue/socialite.
- *
- * (c) overtrue <i@overtrue.me>
- *
- * This source file is subject to the MIT license that is bundled
- * with this source code in the file LICENSE.
- */
-
 namespace Overtrue\Socialite\Providers;
 
-use Overtrue\Socialite\AccessTokenInterface;
-use Overtrue\Socialite\ProviderInterface;
 use Overtrue\Socialite\User;
 
 /**
- * Class FacebookProvider.
  *
  * @see https://developers.facebook.com/docs/graph-api [Facebook - Graph API]
  */
-class FacebookProvider extends AbstractProvider implements ProviderInterface
+class FacebookProvider extends AbstractProvider
 {
     /**
-     * The base Facebook Graph URL.
-     *
      * @var string
      */
     protected $graphUrl = 'https://graph.facebook.com';
 
     /**
-     * The Graph API version for the request.
-     *
      * @var string
      */
     protected $version = 'v3.3';
 
     /**
-     * The user fields being requested.
-     *
      * @var array
      */
     protected $fields = ['first_name', 'last_name', 'email', 'gender', 'verified'];
 
     /**
-     * The scopes being requested.
-     *
      * @var array
      */
     protected $scopes = ['email'];
 
     /**
-     * Display the dialog in a popup view.
-     *
      * @var bool
      */
     protected $popup = false;
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function getAuthUrl($state)
+    protected function getAuthUrl(): string
     {
-        return $this->buildAuthUrlFromBase('https://www.facebook.com/'.$this->version.'/dialog/oauth', $state);
+        return $this->buildAuthUrlFromBase('https://www.facebook.com/'.$this->version.'/dialog/oauth');
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function getTokenUrl()
+    protected function getTokenUrl(): string
     {
         return $this->graphUrl.'/oauth/access_token';
     }
 
     /**
-     * Get the access token for the given code.
-     *
      * @param string $code
      *
-     * @return \Overtrue\Socialite\AccessToken
+     * @return string
+     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      */
-    public function getAccessToken($code)
+    public function tokenFromCode($code): string
     {
         $response = $this->getHttpClient()->get($this->getTokenUrl(), [
             'query' => $this->getTokenFields($code),
@@ -90,48 +61,46 @@ class FacebookProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param string     $token
+     * @param array|null $query
+     *
+     * @return array
      */
-    protected function getUserByToken(AccessTokenInterface $token)
+    protected function getUserByToken(string $token, ?array $query = []): array
     {
-        $appSecretProof = hash_hmac('sha256', $token->getToken(), $this->getConfig()->get('client_secret'));
+        $appSecretProof = hash_hmac('sha256', $token, $this->getConfig()->get('client_secret'));
+        $endpont = $this->graphUrl.'/'.$this->version.'/me?access_token='.$token.'&appsecret_proof='.$appSecretProof.'&fields='.implode(',', $this->fields);
 
-        $response = $this->getHttpClient()->get($this->graphUrl.'/'.$this->version.'/me?access_token='.$token.'&appsecret_proof='.$appSecretProof.'&fields='.implode(',', $this->fields), [
+        $response = $this->getHttpClient()->get($endpont, [
             'headers' => [
                 'Accept' => 'application/json',
             ],
         ]);
 
-        return json_decode($response->getBody(), true);
+        return \json_decode($response->getBody(), true) ?? [];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function mapUserToObject(array $user)
+    protected function mapUserToObject(array $user): User
     {
-        $userId = $this->arrayItem($user, 'id');
+        $userId = $user['id'] ?? null;
         $avatarUrl = $this->graphUrl.'/'.$this->version.'/'.$userId.'/picture';
 
-        $firstName = $this->arrayItem($user, 'first_name');
-        $lastName = $this->arrayItem($user, 'last_name');
+        $firstName = $user['first_name'] ?? null;
+        $lastName = $user['last_name'] ?? null;
 
         return new User([
-            'id' => $this->arrayItem($user, 'id'),
+            'id' => $user['id'] ?? null,
             'nickname' => null,
             'name' => $firstName.' '.$lastName,
-            'email' => $this->arrayItem($user, 'email'),
+            'email' => $user['email'] ?? null,
             'avatar' => $userId ? $avatarUrl.'?type=normal' : null,
             'avatar_original' => $userId ? $avatarUrl.'?width=1920' : null,
         ]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function getCodeFields($state = null)
+    protected function getCodeFields()
     {
-        $fields = parent::getCodeFields($state);
+        $fields = parent::getCodeFields();
 
         if ($this->popup) {
             $fields['display'] = 'popup';
@@ -141,8 +110,6 @@ class FacebookProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * Set the user fields to request from Facebook.
-     *
      * @param array $fields
      *
      * @return $this
@@ -155,8 +122,6 @@ class FacebookProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * Set the dialog to be displayed as a popup.
-     *
      * @return $this
      */
     public function asPopup()

@@ -9,11 +9,8 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Overtrue\Socialite;
+namespace Overtrue\Socialite\Contracts;
 
-/**
- * Interface FactoryInterface.
- */
 interface FactoryInterface
 {
     /**
@@ -21,7 +18,7 @@ interface FactoryInterface
      *
      * @param string $driver
      *
-     * @return \Overtrue\Socialite\ProviderInterface
+     * @return \Overtrue\Socialite\Contracts\ProviderInterface
      */
-    public function driver($driver);
+    public function driver(string $driver = null): ProviderInterface;
 }

@@ -2,133 +2,104 @@
 
 namespace Overtrue\Socialite\Providers;
 
-use Overtrue\Socialite\AccessTokenInterface;
-use Overtrue\Socialite\ProviderInterface;
 use Overtrue\Socialite\User;
 
 /**
- * Class BaiduProvider.
- *
  * @see https://developer.baidu.com/wiki/index.php?title=docs/oauth [OAuth 2.0 授权机制说明]
  */
-class BaiduProvider extends AbstractProvider implements ProviderInterface
+class BaiduProvider extends AbstractProvider
 {
     /**
-     * The base url of Weibo API.
-     *
      * @var string
      */
     protected $baseUrl = 'https://openapi.baidu.com';
 
     /**
-     * The API version for the request.
-     *
      * @var string
      */
     protected $version = '2.0';
 
     /**
-     * The scopes being requested.
-     *
      * @var array
      */
     protected $scopes = [''];
 
     /**
-     * The uid of user authorized.
-     *
-     * @var int
+     * @var string
      */
-    protected $uid;
-
     protected $display = 'popup';
 
     /**
-     * Get the authentication URL for the provider.
-     *
      * @param string $state
      *
      * @return string
      */
-    protected function getAuthUrl($state)
+    protected function getAuthUrl(): string
     {
-        return $this->buildAuthUrlFromBase($this->baseUrl.'/oauth/'.$this->version.'/authorize', $state);
+        return $this->buildAuthUrlFromBase($this->baseUrl . '/oauth/' . $this->version . '/authorize');
+    }
+
+    protected function getCodeFields(): array
+    {
+        return [
+                'response_type' => 'code',
+                'client_id' => $this->getClientId(),
+                'redirect_uri' => $this->redirectUrl,
+                'scope' => $this->formatScopes($this->scopes, $this->scopeSeparator),
+                'display' => $this->display,
+            ] + $this->parameters;
     }
 
     /**
-     * {@inheritdoc}.
-     */
-    protected function getCodeFields($state = null)
-    {
-        return array_merge([
-            'response_type' => 'code',
-            'client_id' => $this->getConfig()->get('client_id'),
-            'redirect_uri' => $this->redirectUrl,
-            'scope' => $this->formatScopes($this->scopes, $this->scopeSeparator),
-            'display' => $this->display,
-        ], $this->parameters);
-    }
-
-    /**
-     * Get the token URL for the provider.
-     *
      * @return string
      */
-    protected function getTokenUrl()
+    protected function getTokenUrl(): string
     {
-        return $this->baseUrl.'/oauth/'.$this->version.'/token';
+        return $this->baseUrl . '/oauth/' . $this->version . '/token';
     }
 
     /**
-     * Get the Post fields for the token request.
-     *
      * @param string $code
      *
      * @return array
      */
-    protected function getTokenFields($code)
+    protected function getTokenFields($code): array
     {
         return parent::getTokenFields($code) + ['grant_type' => 'authorization_code'];
     }
 
     /**
-     * Get the raw user for the given access token.
-     *
-     * @param \Overtrue\Socialite\AccessTokenInterface $token
+     * @param string $token
      *
      * @return array
      */
-    protected function getUserByToken(AccessTokenInterface $token)
+    protected function getUserByToken(string $token, ?array $query = []): array
     {
-        $response = $this->getHttpClient()->get($this->baseUrl.'/rest/'.$this->version.'/passport/users/getInfo', [
+        $response = $this->getHttpClient()->get($this->baseUrl . '/rest/' . $this->version . '/passport/users/getInfo', [
             'query' => [
-                'access_token' => $token->getToken(),
+                'access_token' => $token,
             ],
             'headers' => [
                 'Accept' => 'application/json',
             ],
         ]);
 
-        return json_decode($response->getBody(), true);
+        return json_decode($response->getBody(), true) ?? [];
     }
 
     /**
-     * Map the raw user array to a Socialite User instance.
-     *
      * @param array $user
      *
      * @return \Overtrue\Socialite\User
      */
-    protected function mapUserToObject(array $user)
+    protected function mapUserToObject(array $user): User
     {
-        $realname = $this->arrayItem($user, 'realname');
-
         return new User([
-            'id' => $this->arrayItem($user, 'userid'),
-            'nickname' => empty($realname) ? '' : $realname,
-            'name' => $this->arrayItem($user, 'username'),
+            'id' => $user['userid'] ?? null,
+            'nickname' => $user['realname'] ?? null,
+            'name' => $user['username'] ?? null,
             'email' => '',
-            'avatar' => $this->arrayItem($user, 'portrait'),
+            'avatar' => $user['portrait'] ?? null,
         ]);
     }
 }

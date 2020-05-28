@@ -1,26 +1,10 @@
 <?php
 
-/*
- * This file is part of the overtrue/socialite.
- *
- * (c) overtrue <i@overtrue.me>
- *
- * This source file is subject to the MIT license that is bundled
- * with this source code in the file LICENSE.
- */
-
 namespace Overtrue\Socialite\Providers;
 
-use Overtrue\Socialite\AccessTokenInterface;
-use Overtrue\Socialite\ProviderInterface;
 use Overtrue\Socialite\User;
 
-/**
- * Class WeWorkProvider.
- *
- * @author mingyoung <mingyoungcheung@gmail.com>
- */
-class WeWorkProvider extends AbstractProvider implements ProviderInterface
+class WeWorkProvider extends AbstractProvider
 {
     /**
      * @var string
@@ -69,74 +53,65 @@ class WeWorkProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * @param string $state
-     *
      * @return string
      */
-    protected function getAuthUrl($state)
+    protected function getAuthUrl(): string
     {
         // 网页授权登录
         if (!empty($this->scopes)) {
-            return $this->getOAuthUrl($state);
+            return $this->getOAuthUrl();
         }
 
         // 第三方网页应用登录（扫码登录）
-        return $this->getQrConnectUrl($state);
+        return $this->getQrConnectUrl();
     }
 
     /**
-     * OAuth url.
-     *
-     * @param string $state
-     *
      * @return string
      */
-    protected function getOAuthUrl($state)
+    protected function getOAuthUrl(): string
     {
         $queries = [
-            'appid' => $this->getConfig()->get('client_id'),
+            'appid' => $this->getClientId(),
             'redirect_uri' => $this->redirectUrl,
             'response_type' => 'code',
             'scope' => $this->formatScopes($this->scopes, $this->scopeSeparator),
             'agentid' => $this->agentId,
-            'state' => $state,
+            'state' => $this->state,
         ];
 
         return sprintf('https://open.weixin.qq.com/connect/oauth2/authorize?%s#wechat_redirect', http_build_query($queries));
     }
 
     /**
-     * Qr connect url.
-     *
-     * @param string $state
-     *
      * @return string
      */
-    protected function getQrConnectUrl($state)
+    protected function getQrConnectUrl()
     {
         $queries = [
-            'appid' => $this->getConfig()->get('client_id'),
+            'appid' => $this->getClientId(),
             'agentid' => $this->agentId,
             'redirect_uri' => $this->redirectUrl,
-            'state' => $state,
+            'state' => $this->state,
         ];
 
         return 'https://open.work.weixin.qq.com/wwopen/sso/qrConnect?'.http_build_query($queries);
     }
 
-    protected function getTokenUrl()
+    protected function getTokenUrl(): string
     {
-        return null;
+        return '';
     }
 
     /**
-     * @param \Overtrue\Socialite\AccessTokenInterface $token
+     * @param string     $token
+     * @param array|null $query
      *
      * @return mixed
      */
-    protected function getUserByToken(AccessTokenInterface $token)
+    protected function getUserByToken(string $token, ?array $query = []): array
     {
-        $userInfo = $this->getUserInfo($token);
+        $userInfo = $this->getUserInfo($token, $query['code']);
 
         if ($this->detailed && isset($userInfo['user_ticket'])) {
             return $this->getUserDetail($token, $userInfo['user_ticket']);
@@ -150,42 +125,41 @@ class WeWorkProvider extends AbstractProvider implements ProviderInterface
     /**
      * Get user base info.
      *
-     * @param \Overtrue\Socialite\AccessTokenInterface $token
+     * @param string $token
+     * @param string $code
      *
      * @return mixed
      */
-    protected function getUserInfo(AccessTokenInterface $token)
+    protected function getUserInfo(string $token, string $code): array
     {
         $response = $this->getHttpClient()->get('https://qyapi.weixin.qq.com/cgi-bin/user/getuserinfo', [
             'query' => array_filter([
-                'access_token' => $token->getToken(),
-                'code' => $this->getCode(),
+                'access_token' => $token,
+                'code' => $code,
             ]),
         ]);
 
-        return json_decode($response->getBody(), true);
+        return \json_decode($response->getBody(), true) ?? [];
     }
 
     /**
-     * Get user detail info.
-     *
-     * @param \Overtrue\Socialite\AccessTokenInterface $token
-     * @param $ticket
+     * @param string $token
+     * @param string $ticket
      *
      * @return mixed
      */
-    protected function getUserDetail(AccessTokenInterface $token, $ticket)
+    protected function getUserDetail(string $token, string $ticket): array
     {
         $response = $this->getHttpClient()->post('https://qyapi.weixin.qq.com/cgi-bin/user/getuserdetail', [
             'query' => [
-                'access_token' => $token->getToken(),
+                'access_token' => $token,
             ],
             'json' => [
                 'user_ticket' => $ticket,
             ],
         ]);
 
-        return json_decode($response->getBody(), true);
+        return \json_decode($response->getBody(), true) ?? [];
     }
 
     /**
@@ -193,22 +167,22 @@ class WeWorkProvider extends AbstractProvider implements ProviderInterface
      *
      * @return \Overtrue\Socialite\User
      */
-    protected function mapUserToObject(array $user)
+    protected function mapUserToObject(array $user): User
     {
         if ($this->detailed) {
             return new User([
-                'id' => $this->arrayItem($user, 'userid'),
-                'name' => $this->arrayItem($user, 'name'),
-                'avatar' => $this->arrayItem($user, 'avatar'),
-                'email' => $this->arrayItem($user, 'email'),
+                'id' => $user['userid'] ?? null,
+                'name' => $user['name'] ?? null,
+                'avatar' => $user['avatar'] ?? null,
+                'email' => $user['email'] ?? null,
             ]);
         }
 
         return new User(array_filter([
-            'id' => $this->arrayItem($user, 'UserId') ?: $this->arrayItem($user, 'OpenId'),
-            'userId' => $this->arrayItem($user, 'UserId'),
-            'openid' => $this->arrayItem($user, 'OpenId'),
-            'deviceId' => $this->arrayItem($user, 'DeviceId'),
+            'id' => $user['UserId'] ?? null ?: $user['OpenId'] ?? null,
+            'userId' => $user['UserId'] ?? null,
+            'openid' => $user['OpenId'] ?? null,
+            'deviceId' => $user['DeviceId'] ?? null,
         ]));
     }
 }
