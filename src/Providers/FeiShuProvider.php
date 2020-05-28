@@ -62,7 +62,7 @@ class FeiShuProvider extends AbstractProvider implements ProviderInterface
     {
         $fields = [
             'redirect_uri' => $this->redirectUrl,
-            'app_id' => $this->clientId,
+            'app_id' => $this->getConfig()->get('client_id'),
         ];
 
         if ($this->usesState()) {
@@ -105,8 +105,8 @@ class FeiShuProvider extends AbstractProvider implements ProviderInterface
     protected function getTokenFields($code)
     {
         return [
-            'app_id' => $this->clientId,
-            'app_secret' => $this->clientSecret,
+            'app_id' => $this->getConfig()->get('client_id'),
+            'app_secret' => $this->getConfig()->get('client_secret'),
         ];
     }
 

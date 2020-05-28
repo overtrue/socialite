@@ -16,6 +16,7 @@ use GuzzleHttp\ClientInterface;
 use Overtrue\Socialite\AccessToken;
 use Overtrue\Socialite\AccessTokenInterface;
 use Overtrue\Socialite\AuthorizeFailedException;
+use Overtrue\Socialite\Config;
 use Overtrue\Socialite\InvalidStateException;
 use Overtrue\Socialite\ProviderInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -39,6 +40,13 @@ abstract class AbstractProvider implements ProviderInterface
      * @var \Symfony\Component\HttpFoundation\Request
      */
     protected $request;
+
+    /**
+     * Driver config.
+     *
+     * @var Config
+     */
+    protected $config;
 
     /**
      * The client ID.
@@ -112,16 +120,13 @@ abstract class AbstractProvider implements ProviderInterface
      * Create a new provider instance.
      *
      * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param string                                    $clientId
-     * @param string                                    $clientSecret
-     * @param string|null                               $redirectUrl
+     * @param array                                     $config
      */
-    public function __construct(Request $request, $clientId, $clientSecret, $redirectUrl = null)
+    public function __construct(Request $request, $config)
     {
+        $this->config = new Config($config);
         $this->request = $request;
-        $this->clientId = $clientId;
-        $this->clientSecret = $clientSecret;
-        $this->redirectUrl = $redirectUrl;
+        $this->redirectUrl = isset($config['redirect']) ? $config['redirect'] : null;
     }
 
     /**
@@ -350,6 +355,14 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
+     * @return array
+     */
+    public function getConfig()
+    {
+        return $this->config;
+    }
+
+    /**
      * Get the authentication URL for the provider.
      *
      * @param string $url
@@ -372,7 +385,7 @@ abstract class AbstractProvider implements ProviderInterface
     protected function getCodeFields($state = null)
     {
         $fields = array_merge([
-            'client_id' => $this->clientId,
+            'client_id' => $this->config['client_id'],
             'redirect_uri' => $this->redirectUrl,
             'scope' => $this->formatScopes($this->scopes, $this->scopeSeparator),
             'response_type' => 'code',
@@ -424,8 +437,8 @@ abstract class AbstractProvider implements ProviderInterface
     protected function getTokenFields($code)
     {
         return [
-            'client_id' => $this->clientId,
-            'client_secret' => $this->clientSecret,
+            'client_id' => $this->getConfig()->get('client_id'),
+            'client_secret' => $this->getConfig()->get('client_secret'),
             'code' => $code,
             'redirect_uri' => $this->redirectUrl,
         ];

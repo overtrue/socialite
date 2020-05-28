@@ -100,7 +100,7 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
      */
     public function setToken(AccessTokenInterface $token)
     {
-        $this->setAttribute('token', $token->getToken());
+        $this->setAttribute('token', $token);
 
         return $this;
     }
@@ -132,17 +132,27 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
      */
     public function getToken()
     {
-        return new AccessToken(['access_token' => $this->getAttribute('token')]);
+        return $this->getAttribute('token');
     }
 
     /**
-     * Alias of getToken().
+     * Get user access token.
      *
-     * @return \Overtrue\Socialite\AccessToken
+     * @return string
      */
     public function getAccessToken()
     {
-        return $this->getToken();
+        return $this->getToken()->getToken();
+    }
+
+    /**
+     * Get user refresh token.
+     *
+     * @return string
+     */
+    public function getRefreshToken()
+    {
+        return $this->getToken()->getRefreshToken();
     }
 
     /**
