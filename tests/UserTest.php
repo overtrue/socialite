@@ -26,9 +26,9 @@ class UserTest extends TestCase
     {
         $user = new User([
             'token' => new AccessToken([
-                    'access_token' => 'mock-token',
-                    'refresh_token' => 'fake_refresh',
-                ])
+                'access_token' => 'mock-token',
+                'refresh_token' => 'fake_refresh',
+            ])
         ]);
 
         // 能通过用 User 对象获取 refresh token

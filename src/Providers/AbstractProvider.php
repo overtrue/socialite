@@ -16,6 +16,7 @@ use GuzzleHttp\ClientInterface;
 use Overtrue\Socialite\AccessToken;
 use Overtrue\Socialite\AccessTokenInterface;
 use Overtrue\Socialite\AuthorizeFailedException;
+use Overtrue\Socialite\Config;
 use Overtrue\Socialite\InvalidStateException;
 use Overtrue\Socialite\ProviderInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -43,7 +44,7 @@ abstract class AbstractProvider implements ProviderInterface
     /**
      * Driver config.
      *
-     * @var array
+     * @var Config
      */
     protected $config;
 
@@ -123,10 +124,8 @@ abstract class AbstractProvider implements ProviderInterface
      */
     public function __construct(Request $request, $config)
     {
-        $this->config = $config;
+        $this->config = new Config($config);
         $this->request = $request;
-        $this->clientId = $config['client_id'];
-        $this->clientSecret = $config['client_secret'];
         $this->redirectUrl = isset($config['redirect']) ? $config['redirect'] : null;
     }
 
@@ -356,6 +355,14 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
+     * @return array
+     */
+    public function getConfig()
+    {
+        return $this->config;
+    }
+
+    /**
      * Get the authentication URL for the provider.
      *
      * @param string $url
@@ -378,7 +385,7 @@ abstract class AbstractProvider implements ProviderInterface
     protected function getCodeFields($state = null)
     {
         $fields = array_merge([
-            'client_id' => $this->clientId,
+            'client_id' => $this->config['client_id'],
             'redirect_uri' => $this->redirectUrl,
             'scope' => $this->formatScopes($this->scopes, $this->scopeSeparator),
             'response_type' => 'code',
@@ -430,8 +437,8 @@ abstract class AbstractProvider implements ProviderInterface
     protected function getTokenFields($code)
     {
         return [
-            'client_id' => $this->clientId,
-            'client_secret' => $this->clientSecret,
+            'client_id' => $this->getConfig()->get('client_id'),
+            'client_secret' => $this->getConfig()->get('client_secret'),
             'code' => $code,
             'redirect_uri' => $this->redirectUrl,
         ];
