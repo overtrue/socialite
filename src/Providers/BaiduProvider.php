@@ -36,18 +36,18 @@ class BaiduProvider extends AbstractProvider
      */
     protected function getAuthUrl(): string
     {
-        return $this->buildAuthUrlFromBase($this->baseUrl . '/oauth/' . $this->version . '/authorize');
+        return $this->buildAuthUrlFromBase($this->baseUrl.'/oauth/'.$this->version.'/authorize');
     }
 
     protected function getCodeFields(): array
     {
         return [
-                'response_type' => 'code',
-                'client_id' => $this->getClientId(),
-                'redirect_uri' => $this->redirectUrl,
-                'scope' => $this->formatScopes($this->scopes, $this->scopeSeparator),
-                'display' => $this->display,
-            ] + $this->parameters;
+            'response_type' => 'code',
+            'client_id' => $this->getClientId(),
+            'redirect_uri' => $this->redirectUrl,
+            'scope' => $this->formatScopes($this->scopes, $this->scopeSeparator),
+            'display' => $this->display,
+        ] + $this->parameters;
     }
 
     /**
@@ -55,7 +55,7 @@ class BaiduProvider extends AbstractProvider
      */
     protected function getTokenUrl(): string
     {
-        return $this->baseUrl . '/oauth/' . $this->version . '/token';
+        return $this->baseUrl.'/oauth/'.$this->version.'/token';
     }
 
     /**
@@ -75,7 +75,7 @@ class BaiduProvider extends AbstractProvider
      */
     protected function getUserByToken(string $token, ?array $query = []): array
     {
-        $response = $this->getHttpClient()->get($this->baseUrl . '/rest/' . $this->version . '/passport/users/getInfo', [
+        $response = $this->getHttpClient()->get($this->baseUrl.'/rest/'.$this->version.'/passport/users/getInfo', [
             'query' => [
                 'access_token' => $token,
             ],

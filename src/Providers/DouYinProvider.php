@@ -48,8 +48,9 @@ class DouYinProvider extends AbstractProvider
     /**
      * @param string $code
      *
-     * @return string
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     *
+     * @return string
      */
     public function tokenFromCode($code): string
     {
@@ -81,8 +82,9 @@ class DouYinProvider extends AbstractProvider
      * @param string     $token
      * @param array|null $query
      *
-     * @return array
      * @throws \Overtrue\Socialite\Exceptions\InvalidArgumentException
+     *
+     * @return array
      */
     protected function getUserByToken(string $token, ?array $query = []): array
     {

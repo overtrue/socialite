@@ -128,8 +128,9 @@ abstract class AbstractProvider implements ProviderInterface
     /**
      * @param string $code
      *
-     * @return \Overtrue\Socialite\User
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     *
+     * @return \Overtrue\Socialite\User
      */
     public function userFromCode(string $code): User
     {
@@ -152,8 +153,9 @@ abstract class AbstractProvider implements ProviderInterface
     /**
      * @param string $code
      *
-     * @return string
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     *
+     * @return string
      */
     public function tokenFromCode(string $code): string
     {
@@ -163,7 +165,6 @@ abstract class AbstractProvider implements ProviderInterface
 
         return $this->parseAccessToken($response->getBody()->getContents());
     }
-
 
     /**
      * @param $redirectUrl
@@ -226,7 +227,7 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * @param string      $url
+     * @param string $url
      *
      * @return string
      */
@@ -234,7 +235,7 @@ abstract class AbstractProvider implements ProviderInterface
     {
         $query = $this->getCodeFields() + ($this->state ? ['state' => $this->state] : []);
 
-        return $url . '?' . http_build_query($query, '', '&', $this->encodingType);
+        return $url.'?'.http_build_query($query, '', '&', $this->encodingType);
     }
 
     /**
@@ -312,8 +313,9 @@ abstract class AbstractProvider implements ProviderInterface
     /**
      * @param array|string $response
      *
-     * @return mixed
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     *
+     * @return mixed
      */
     protected function parseAccessToken($response)
     {
@@ -321,10 +323,10 @@ abstract class AbstractProvider implements ProviderInterface
             $response = json_decode($response, true);
         }
 
-        $token = (array)$response[$this->accessTokenKey] ?? null;
+        $token = (array) $response[$this->accessTokenKey] ?? null;
 
         if (empty($token)) {
-            throw new AuthorizeFailedException('Authorize Failed: ' . json_encode($response, JSON_UNESCAPED_UNICODE), $response);
+            throw new AuthorizeFailedException('Authorize Failed: '.json_encode($response, JSON_UNESCAPED_UNICODE), $response);
         }
 
         return $token;
@@ -341,7 +343,6 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     *
      * @return array|mixed|null
      */
     protected function getClientSecret()

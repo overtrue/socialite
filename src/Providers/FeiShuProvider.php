@@ -2,12 +2,7 @@
 
 namespace Overtrue\Socialite\Providers;
 
-use Overtrue\Socialite\AccessToken;
-use Overtrue\Socialite\AccessTokenInterface;
-use Overtrue\Socialite\AuthorizeFailedException;
 use Overtrue\Socialite\Exceptions\InvalidArgumentException;
-use Overtrue\Socialite\InvalidStateException;
-use Overtrue\Socialite\ProviderInterface;
 use Overtrue\Socialite\User;
 
 /**
@@ -86,8 +81,9 @@ class FeiShuProvider extends AbstractProvider
      * @param string     $token
      * @param array|null $query
      *
-     * @return array
      * @throws \Overtrue\Socialite\Exceptions\InvalidArgumentException
+     *
+     * @return array
      */
     protected function getUserByToken(string $token, ?array $query = []): array
     {

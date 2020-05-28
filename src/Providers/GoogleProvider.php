@@ -41,8 +41,9 @@ class GoogleProvider extends AbstractProvider
     /**
      * @param string $code
      *
-     * @return string
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     *
+     * @return string
      */
     public function tokenFromCode($code): string
     {

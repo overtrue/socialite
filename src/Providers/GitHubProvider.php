@@ -7,7 +7,6 @@ use Overtrue\Socialite\User;
 class GitHubProvider extends AbstractProvider
 {
     /**
-     *
      * @var array
      */
     protected $scopes = ['user:email'];
