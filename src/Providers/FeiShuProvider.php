@@ -4,6 +4,9 @@ namespace Overtrue\Socialite\Providers;
 
 use Overtrue\Socialite\User;
 
+/**
+ * @link https://open.feishu.cn
+ */
 class FeiShuProvider extends AbstractProvider
 {
     /**
@@ -22,7 +25,7 @@ class FeiShuProvider extends AbstractProvider
 
     protected function getAuthUrl(): string
     {
-        return $this->buildAuthUrlFromBase($this->baseUrl.'/authen/v1/index');
+        return $this->buildAuthUrlFromBase($this->baseUrl . '/authen/v1/index');
     }
 
     /**
@@ -36,14 +39,37 @@ class FeiShuProvider extends AbstractProvider
         ];
     }
 
-    /**
-     * 获取 app_access_token 地址.
-     *
-     * {@inheritdoc}
-     */
     protected function getTokenUrl(): string
     {
-        return $this->baseUrl.'/authen/v1/access_token';
+        return $this->baseUrl . '/authen/v1/access_token';
+    }
+
+    /**
+     * @param string $code
+     *
+     * @return array
+     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     */
+    public function tokenFromCode($code): array
+    {
+        return $this->normalizeAccessTokenResponse($this->getTokenFromCode($code));
+    }
+
+    /**
+     * @param string $token
+     *
+     * @return array
+     */
+    protected function getUserByToken(string $token): array
+    {
+        $response = $this->getHttpClient()->get($this->baseUrl . '/authen/v1/user_info', [
+            'headers' => ['Accept' => 'application/json'],
+            'query' => array_filter([
+                'user_access_token' => $token,
+            ]),
+        ]);
+
+        return \json_decode($response->getBody(), true) ?? [];
     }
 
     /**
@@ -51,31 +77,16 @@ class FeiShuProvider extends AbstractProvider
      *
      * @return array
      */
-    protected function getTokenFields($code): array
+    protected function getTokenFromCode(string $code): array
     {
-        return [
-            'code' => $code,
-            'grant_type' => 'authorization_code',
-            'app_access_token' => $this->config->get('app_access_token'),
-        ];
-    }
-
-    /**
-     * @param string     $token
-     * @param array|null $query
-     *
-     * @return array
-     */
-    protected function getUserByToken(string $token, ?array $query = []): array
-    {
-        $userUrl = $this->baseUrl.'/authen/v1/access_token';
+        $userUrl = $this->baseUrl . '/authen/v1/access_token';
 
         $response = $this->getHttpClient()->post(
             $userUrl,
             [
                 'json' => [
                     'app_access_token' => $this->config->get('app_access_token'),
-                    'code' => $query['code'],
+                    'code' => $code,
                     'grant_type' => 'authorization_code',
                 ],
             ]
@@ -92,7 +103,7 @@ class FeiShuProvider extends AbstractProvider
     protected function mapUserToObject(array $user): User
     {
         return new User([
-            'id' => $user['open_id'] ?? null,
+            'id' => $user['user_id'] ?? null,
             'name' => $user['name'] ?? null,
             'nickname' => $user['name'] ?? null,
             'avatar' => $user['avatar_url'] ?? null,

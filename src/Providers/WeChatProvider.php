@@ -184,11 +184,9 @@ class WeChatProvider extends AbstractProvider
      */
     protected function getTokenFromCode(string $code): \Psr\Http\Message\ResponseInterface
     {
-        $response = $this->getHttpClient()->get($this->getTokenUrl(), [
+        return $this->getHttpClient()->get($this->getTokenUrl(), [
             'headers' => ['Accept' => 'application/json'],
             'query' => $this->getTokenFields($code),
         ]);
-
-        return $response;
     }
 }
