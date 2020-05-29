@@ -96,7 +96,7 @@ abstract class AbstractProvider implements ProviderInterface
     abstract protected function getTokenUrl(): string;
 
     /**
-     * @param string     $token
+     * @param string $token
      *
      * @return array
      */
@@ -155,8 +155,9 @@ abstract class AbstractProvider implements ProviderInterface
     /**
      * @param string $code
      *
-     * @return array
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     *
+     * @return array
      */
     public function tokenFromCode(string $code): array
     {
@@ -274,7 +275,6 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     *
      * @return array|mixed|null
      */
     protected function getClientSecret()
@@ -358,13 +358,13 @@ abstract class AbstractProvider implements ProviderInterface
         }
 
         if (empty($response[$this->accessTokenKey])) {
-            throw new AuthorizeFailedException('Authorize Failed: ' . json_encode($response, JSON_UNESCAPED_UNICODE), $response);
+            throw new AuthorizeFailedException('Authorize Failed: '.json_encode($response, JSON_UNESCAPED_UNICODE), $response);
         }
 
         return $response + [
-                'access_token' => $response[$this->accessTokenKey],
-                'refresh_token' => $response[$this->refreshTokenKey] ?? null,
-                'expires_in' => \intval($response[$this->expiresInKey] ?? 0),
-            ];
+            'access_token' => $response[$this->accessTokenKey],
+            'refresh_token' => $response[$this->refreshTokenKey] ?? null,
+            'expires_in' => \intval($response[$this->expiresInKey] ?? 0),
+        ];
     }
 }
