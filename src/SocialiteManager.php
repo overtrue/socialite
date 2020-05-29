@@ -68,7 +68,7 @@ class SocialiteManager implements FactoryInterface
      *
      * @return \Overtrue\Socialite\Contracts\ProviderInterface
      */
-    public function driver(string $driver = null): ProviderInterface
+    public function driver(string $driver): ProviderInterface
     {
         $driver = strtolower($driver);
 
@@ -86,7 +86,7 @@ class SocialiteManager implements FactoryInterface
      *
      * @return ProviderInterface
      */
-    protected function createDriver($driver)
+    protected function createDriver(string $driver)
     {
         if (isset($this->customCreators[$driver])) {
             return $this->callCustomCreator($driver);
@@ -108,7 +108,7 @@ class SocialiteManager implements FactoryInterface
      *
      * @return ProviderInterface
      */
-    protected function callCustomCreator($driver)
+    protected function callCustomCreator(string $driver): ProviderInterface
     {
         return $this->customCreators[$driver]($this->config);
     }
@@ -121,7 +121,7 @@ class SocialiteManager implements FactoryInterface
      *
      * @return $this
      */
-    public function extend($driver, Closure $callback)
+    public function extend(string $driver, Closure $callback): self
     {
         $driver = strtolower($driver);
 
@@ -135,7 +135,7 @@ class SocialiteManager implements FactoryInterface
      *
      * @return \Overtrue\Socialite\Contracts\ProviderInterface[]
      */
-    public function getResolvedDrivers()
+    public function getResolvedDrivers(): array
     {
         return $this->resolved;
     }
@@ -148,7 +148,7 @@ class SocialiteManager implements FactoryInterface
      *
      * @return \Overtrue\Socialite\Contracts\ProviderInterface
      */
-    public function buildProvider($provider, $config)
+    public function buildProvider(string $provider, array $config): ProviderInterface
     {
         return new $provider($config);
     }

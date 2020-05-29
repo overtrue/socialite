@@ -88,7 +88,7 @@ abstract class AbstractProvider implements ProviderInterface
     /**
      * @return string
      */
-    abstract protected function getAuthUrl();
+    abstract protected function getAuthUrl(): string;
 
     /**
      * @return string
@@ -114,9 +114,9 @@ abstract class AbstractProvider implements ProviderInterface
      *
      * @return string
      */
-    public function redirect(string $redirectUrl = null): string
+    public function redirect(string $redirectUrl = ''): string
     {
-        if (!is_null($redirectUrl)) {
+        if (!empty($redirectUrl)) {
             $this->withRedirectUrl($redirectUrl);
         }
 
@@ -132,12 +132,11 @@ abstract class AbstractProvider implements ProviderInterface
      */
     public function userFromCode(string $code): User
     {
-        $token = $this->tokenFromCode($code);
+        $tokenResponse = $this->tokenFromCode($code);
+        $user = $this->getUserByToken($tokenResponse[$this->accessTokenKey]);
+        $user += $tokenResponse;
 
-        $user = $this->userFromToken($token[$this->accessTokenKey]);
-
-        return $user->setRefreshToken($token['refresh_token'])
-                    ->setExpiresIn($token['expires_in']);
+        return $this->mapUserToObject($user)->setRaw($user);
     }
 
     /**
@@ -145,7 +144,7 @@ abstract class AbstractProvider implements ProviderInterface
      *
      * @return \Overtrue\Socialite\User
      */
-    public function userFromToken(string $token): \Overtrue\Socialite\User
+    public function userFromToken(string $token): User
     {
         $user = $this->getUserByToken($token);
 
@@ -209,7 +208,7 @@ abstract class AbstractProvider implements ProviderInterface
      *
      * @return $this
      */
-    public function scopes(array $scopes)
+    public function scopes(array $scopes): self
     {
         $this->scopes = $scopes;
 
@@ -223,7 +222,7 @@ abstract class AbstractProvider implements ProviderInterface
      *
      * @return $this
      */
-    public function with(array $parameters)
+    public function with(array $parameters): self
     {
         $this->parameters = $parameters;
 
@@ -233,7 +232,7 @@ abstract class AbstractProvider implements ProviderInterface
     /**
      * @return \Overtrue\Socialite\Config
      */
-    public function getConfig()
+    public function getConfig(): Config
     {
         return $this->config;
     }
@@ -243,7 +242,7 @@ abstract class AbstractProvider implements ProviderInterface
      *
      * @return string
      */
-    protected function buildAuthUrlFromBase(string $url)
+    protected function buildAuthUrlFromBase(string $url): string
     {
         $query = $this->getCodeFields() + ($this->state ? ['state' => $this->state] : []);
 
@@ -253,7 +252,7 @@ abstract class AbstractProvider implements ProviderInterface
     /**
      * @return array
      */
-    protected function getCodeFields()
+    protected function getCodeFields(): array
     {
         $fields = array_merge([
             'client_id' => $this->getClientId(),
@@ -269,7 +268,7 @@ abstract class AbstractProvider implements ProviderInterface
         return $fields;
     }
 
-    public function getClientId()
+    public function getClientId(): string
     {
         return $this->config->get('client_id');
     }
@@ -277,7 +276,7 @@ abstract class AbstractProvider implements ProviderInterface
     /**
      * @return array|mixed|null
      */
-    protected function getClientSecret()
+    protected function getClientSecret(): string
     {
         return $this->config->get('client_secret');
     }
@@ -287,7 +286,7 @@ abstract class AbstractProvider implements ProviderInterface
      *
      * @return \GuzzleHttp\Client
      */
-    public function getHttpClient()
+    public function getHttpClient(): Client
     {
         return $this->httpClient ?? new Client($this->guzzleOptions);
     }
@@ -297,7 +296,7 @@ abstract class AbstractProvider implements ProviderInterface
      *
      * @return \Overtrue\Socialite\Contracts\ProviderInterface
      */
-    public function setGuzzleOptions($config = []): ProviderInterface
+    public function setGuzzleOptions($config = []): self
     {
         $this->guzzleOptions = $config;
 
@@ -318,7 +317,7 @@ abstract class AbstractProvider implements ProviderInterface
      *
      * @return string
      */
-    protected function formatScopes(array $scopes, $scopeSeparator)
+    protected function formatScopes(array $scopes, $scopeSeparator): string
     {
         return implode($scopeSeparator, $scopes);
     }
@@ -330,7 +329,7 @@ abstract class AbstractProvider implements ProviderInterface
      *
      * @return array
      */
-    protected function getTokenFields(string $code)
+    protected function getTokenFields(string $code): array
     {
         return [
             'client_id' => $this->getClientId(),
@@ -345,9 +344,9 @@ abstract class AbstractProvider implements ProviderInterface
      *
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      *
-     * @return mixed
+     * @return array
      */
-    protected function normalizeAccessTokenResponse($response)
+    protected function normalizeAccessTokenResponse($response): array
     {
         if (\is_string($response)) {
             $response = json_decode($response, true) ?? [];

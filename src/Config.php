@@ -26,7 +26,7 @@ class Config implements ArrayAccess, \JsonSerializable
      *
      * @return mixed
      */
-    public function get($key, $default = null)
+    public function get(string $key, $default = null)
     {
         $config = $this->config;
 
@@ -54,7 +54,7 @@ class Config implements ArrayAccess, \JsonSerializable
      *
      * @return array
      */
-    public function set($key, $value)
+    public function set(string $key, $value)
     {
         if (is_null($key)) {
             throw new InvalidArgumentException('Invalid config key.');
@@ -81,7 +81,7 @@ class Config implements ArrayAccess, \JsonSerializable
      *
      * @return bool
      */
-    public function has($key)
+    public function has(string $key): bool
     {
         return (bool) $this->get($key);
     }

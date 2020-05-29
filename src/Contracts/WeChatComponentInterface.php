@@ -9,12 +9,12 @@ interface WeChatComponentInterface
      *
      * @return string
      */
-    public function getAppId();
+    public function getAppId(): string;
 
     /**
      * Return the open-platform component access token string.
      *
      * @return string
      */
-    public function getToken();
+    public function getToken(): string;
 }

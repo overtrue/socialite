@@ -4,7 +4,7 @@ namespace Overtrue\Socialite\Contracts;
 
 interface UserInterface
 {
-    public function getId();
+    public function getId(): ?string;
 
     public function getNickname(): ?string;
 

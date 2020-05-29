@@ -16,7 +16,7 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
         $this->attributes = $attributes;
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->getAttribute('id');
     }
@@ -53,7 +53,7 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
         return $this->getAttribute('token');
     }
 
-    public function setRefreshToken(?string $refreshToken)
+    public function setRefreshToken(?string $refreshToken): self
     {
         $this->setAttribute('refresh_token', $refreshToken);
 
@@ -65,7 +65,7 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
         return $this->getAttribute('refresh_token');
     }
 
-    public function setExpiresIn(int $expiresIn)
+    public function setExpiresIn(int $expiresIn): self
     {
         $this->setAttribute('expires_in', $expiresIn);
 
@@ -77,7 +77,7 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
         return $this->getAttribute('expires_in');
     }
 
-    public function setRaw(array $user)
+    public function setRaw(array $user): self
     {
         $this->setAttribute('raw', $user);
 
@@ -89,7 +89,7 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
         return $this->getAttribute('raw');
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->attributes;
     }

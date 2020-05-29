@@ -78,12 +78,12 @@ trait HasAttributes
         return $this->getAttribute($property);
     }
 
-    public function toArray()
+    public function toArray(): array
     {
         return $this->getAttributes();
     }
 
-    public function toJSON()
+    public function toJSON(): string
     {
         return \json_encode($this->getAttributes(), JSON_UNESCAPED_UNICODE);
     }
