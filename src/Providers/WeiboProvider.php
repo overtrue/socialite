@@ -51,8 +51,9 @@ class WeiboProvider extends AbstractProvider
     /**
      * @param string $token
      *
-     * @return array
      * @throws \Overtrue\Socialite\Exceptions\InvalidTokenException
+     *
+     * @return array
      */
     protected function getUserByToken(string $token): array
     {
@@ -78,8 +79,9 @@ class WeiboProvider extends AbstractProvider
     /**
      * @param string $token
      *
-     * @return array
      * @throws \Overtrue\Socialite\Exceptions\InvalidTokenException
+     *
+     * @return array
      */
     protected function getTokenPayload(string $token): array
     {

@@ -2,7 +2,6 @@
 
 namespace Overtrue\Socialite\Providers;
 
-use Overtrue\Socialite\Exceptions\InvalidArgumentException;
 use Overtrue\Socialite\User;
 
 class FeiShuProvider extends AbstractProvider

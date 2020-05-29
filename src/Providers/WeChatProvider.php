@@ -3,7 +3,6 @@
 namespace Overtrue\Socialite\Providers;
 
 use Overtrue\Socialite\Contracts\WeChatComponentInterface;
-use Overtrue\Socialite\Exceptions\InvalidArgumentException;
 use Overtrue\Socialite\User;
 
 /**
@@ -70,8 +69,9 @@ class WeChatProvider extends AbstractProvider
     /**
      * @param string $code
      *
-     * @return array
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     *
+     * @return array
      */
     public function tokenFromCode($code): array
     {
