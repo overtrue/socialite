@@ -85,7 +85,7 @@ class TaobaoProvider extends AbstractProvider
             'query' => $this->getTokenFields($code),
         ]);
 
-        return $this->parseAccessToken($response->getBody()->getContents());
+        return $this->normalizeAccessTokenResponse($response->getBody()->getContents());
     }
 
     /**

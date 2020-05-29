@@ -50,7 +50,7 @@ class GoogleProvider extends AbstractProvider
             'body' => $this->getTokenFields($code),
         ]);
 
-        return $this->parseAccessToken($response->getBody());
+        return $this->normalizeAccessTokenResponse($response->getBody());
     }
 
     /**

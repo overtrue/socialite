@@ -2,6 +2,7 @@
 
 namespace Overtrue\Socialite\Providers;
 
+use Overtrue\Socialite\Exceptions\InvalidTokenException;
 use Overtrue\Socialite\User;
 
 /**
@@ -48,16 +49,22 @@ class WeiboProvider extends AbstractProvider
     }
 
     /**
-     * @param string     $token
-     * @param array|null $query
+     * @param string $token
      *
      * @return array
+     * @throws \Overtrue\Socialite\Exceptions\InvalidTokenException
      */
-    protected function getUserByToken(string $token, ?array $query = []): array
+    protected function getUserByToken(string $token): array
     {
-        $response = $this->getHttpClient()->get($this->baseUrl.'/'.$this->version.'/users/show.json', [
+        $uid = $this->getTokenPayload($token)['uid'] ?? null;
+
+        if (empty($uid)) {
+            throw new InvalidTokenException('Invalid token.', $token);
+        }
+
+        $response = $this->getHttpClient()->get($this->baseUrl.'/2/users/show.json', [
             'query' => [
-                'uid' => $token['uid'],
+                'uid' => $uid,
                 'access_token' => $token,
             ],
             'headers' => [
@@ -66,6 +73,32 @@ class WeiboProvider extends AbstractProvider
         ]);
 
         return \json_decode($response->getBody(), true) ?? [];
+    }
+
+    /**
+     * @param string $token
+     *
+     * @return array
+     * @throws \Overtrue\Socialite\Exceptions\InvalidTokenException
+     */
+    protected function getTokenPayload(string $token): array
+    {
+        $response = $this->getHttpClient()->post($this->baseUrl.'/oauth2/get_token_info', [
+            'query' => [
+                'access_token' => $token,
+            ],
+            'headers' => [
+                'Accept' => 'application/json',
+            ],
+        ]);
+
+        $response = \json_decode($response->getBody(), true) ?? [];
+
+        if (empty($response['uid'])) {
+            throw new InvalidTokenException(\sprintf('Invalid token %s', $token), $token);
+        }
+
+        return $response;
     }
 
     /**

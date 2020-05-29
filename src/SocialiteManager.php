@@ -22,20 +22,20 @@ class SocialiteManager implements FactoryInterface
     /**
      * @var array
      */
-    protected $initialDrivers = [
-        'facebook' => Providers\FacebookProvider::class,
+    protected $drivers = [
+        'qq' => Providers\QQProvider::class,
         'github' => Providers\GitHubProvider::class,
         'google' => Providers\GoogleProvider::class,
-        'linkedin' => Providers\LinkedinProvider::class,
         'weibo' => Providers\WeiboProvider::class,
-        'qq' => Providers\QQProvider::class,
         'wechat' => Providers\WeChatProvider::class,
         'douban' => Providers\DoubanProvider::class,
         'wework' => Providers\WeWorkProvider::class,
-        'outlook' => Providers\OutlookProvider::class,
         'douyin' => Providers\DouYinProvider::class,
         'taobao' => Providers\TaobaoProvider::class,
         'feishu' => Providers\FeiShuProvider::class,
+        'outlook' => Providers\OutlookProvider::class,
+        'linkedin' => Providers\LinkedinProvider::class,
+        'facebook' => Providers\FacebookProvider::class,
     ];
 
     /**
@@ -44,7 +44,7 @@ class SocialiteManager implements FactoryInterface
     protected $resolved = [];
 
     /**
-     * @param array        $config
+     * @param array $config
      */
     public function __construct(array $config)
     {
@@ -92,10 +92,10 @@ class SocialiteManager implements FactoryInterface
             return $this->callCustomCreator($driver);
         }
 
-        if (isset($this->initialDrivers[$driver])) {
-            $provider = $this->initialDrivers[$driver];
+        if (isset($this->drivers[$driver])) {
+            $provider = $this->drivers[$driver];
 
-            return $this->buildProvider($provider, $this->config->get($driver));
+            return $this->buildProvider($provider, $this->config->get($driver, []));
         }
 
         throw new InvalidArgumentException("Driver [$driver] not supported.");

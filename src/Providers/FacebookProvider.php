@@ -57,7 +57,7 @@ class FacebookProvider extends AbstractProvider
             'query' => $this->getTokenFields($code),
         ]);
 
-        return $this->parseAccessToken($response->getBody());
+        return $this->normalizeAccessTokenResponse($response->getBody());
     }
 
     /**

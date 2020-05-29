@@ -66,7 +66,9 @@ $config = [
 
 $socialite = new SocialiteManager($config);
 
-$user = $socialite->driver('github')->user(request()->query('code'));
+$code = request()->query('code');
+
+$user = $socialite->driver('github')->user($code);
 
 $user->getId();        // 1472352
 $user->getNickname();  // "overtrue"
@@ -119,10 +121,6 @@ $socialite->withRedirectUrl($url)->redirect();
 $socialite->setRedirectUrl($url)->redirect();
 ```
 
-> WeChat scopes:
-- `snsapi_base`, `snsapi_userinfo` - Used to Media Platform Authentication.
-- `snsapi_login` - Used to web Authentication.
-
 ### Additional parameters
 
 To include any optional parameters in the request, call the with method with an associative array:
@@ -137,7 +135,7 @@ $response = $socialite->driver('google')
 #### Standard user api:
 
 ```php
-$user = $socialite->driver('weibo')->userFromCode($code);
+$user = $socialite->driver('github')->userFromCode($code);
 ```
 
 ```json

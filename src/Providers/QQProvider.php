@@ -64,7 +64,7 @@ class QQProvider extends AbstractProvider
 
         \parse_str($response->getBody()->getContents(), $token);
 
-        return $this->parseAccessToken($token);
+        return $this->normalizeAccessTokenResponse($token);
     }
 
     /**

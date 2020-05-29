@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use Overtrue\Socialite\Config;
 use Overtrue\Socialite\Contracts\ProviderInterface;
 use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
+use Overtrue\Socialite\Exceptions\MethodDoesNotSupportException;
 use Overtrue\Socialite\User;
 
 abstract class AbstractProvider implements ProviderInterface
@@ -73,6 +74,11 @@ abstract class AbstractProvider implements ProviderInterface
     /**
      * @var array
      */
+    protected $tokenResponse;
+
+    /**
+     * @var array
+     */
     protected $guzzleOptions = [];
 
     /**
@@ -85,8 +91,6 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * @param string $state
-     *
      * @return string
      */
     abstract protected function getAuthUrl();
@@ -98,11 +102,10 @@ abstract class AbstractProvider implements ProviderInterface
 
     /**
      * @param string     $token
-     * @param array|null $query
      *
      * @return array
      */
-    abstract protected function getUserByToken(string $token, ?array $query = []): array;
+    abstract protected function getUserByToken(string $token): array;
 
     /**
      * @param array $user
@@ -133,18 +136,22 @@ abstract class AbstractProvider implements ProviderInterface
      */
     public function userFromCode(string $code): User
     {
-        return $this->userFromToken($this->tokenFromCode($code));
+        $token = $this->tokenFromCode($code);
+
+        $user = $this->userFromToken($token[$this->accessTokenKey]);
+
+        return $user->setRefreshToken($token['refresh_token'])
+                    ->setExpiresIn($token['expires_in']);
     }
 
     /**
-     * @param string     $token
-     * @param array|null $query
+     * @param string $token
      *
      * @return \Overtrue\Socialite\User
      */
-    public function userFromToken(string $token, ?array $query = []): \Overtrue\Socialite\User
+    public function userFromToken(string $token): \Overtrue\Socialite\User
     {
-        $user = $this->getUserByToken($token, $query);
+        $user = $this->getUserByToken($token);
 
         return $this->mapUserToObject($user)->setRaw($user)->setToken($token);
     }
@@ -152,18 +159,22 @@ abstract class AbstractProvider implements ProviderInterface
     /**
      * @param string $code
      *
-     * @return string
+     * @return array
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      */
-    public function tokenFromCode(string $code): string
+    public function tokenFromCode(string $code): array
     {
         $response = $this->getHttpClient()->post($this->getTokenUrl(), [
             'json' => $this->getTokenFields($code),
         ]);
 
-        return $this->parseAccessToken($response->getBody()->getContents());
+        return $this->normalizeAccessTokenResponse($response->getBody()->getContents());
     }
 
+    public function refreshToken(string $refreshToken)
+    {
+        throw new MethodDoesNotSupportException('refreshToken does not support.');
+    }
 
     /**
      * @param $redirectUrl
@@ -238,8 +249,6 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * Get the GET parameters for the code request.
-     *
      * @return array
      */
     protected function getCodeFields()
@@ -264,8 +273,45 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * Format the given scopes.
      *
+     * @return array|mixed|null
+     */
+    protected function getClientSecret()
+    {
+        return $this->config->get('client_secret');
+    }
+
+    /**
+     * Get a fresh instance of the Guzzle HTTP client.
+     *
+     * @return \GuzzleHttp\Client
+     */
+    public function getHttpClient()
+    {
+        return $this->httpClient ?? new Client($this->guzzleOptions);
+    }
+
+    /**
+     * @param array $config
+     *
+     * @return \Overtrue\Socialite\Contracts\ProviderInterface
+     */
+    public function setGuzzleOptions($config = []): ProviderInterface
+    {
+        $this->guzzleOptions = $config;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getGuzzleOptions(): array
+    {
+        return $this->guzzleOptions;
+    }
+
+    /**
      * @param array  $scopes
      * @param string $scopeSeparator
      *
@@ -274,22 +320,6 @@ abstract class AbstractProvider implements ProviderInterface
     protected function formatScopes(array $scopes, $scopeSeparator)
     {
         return implode($scopeSeparator, $scopes);
-    }
-
-    /**
-     * Determine if the current request / session has a mismatching "state".
-     *
-     * @return bool
-     */
-    protected function hasInvalidState()
-    {
-        if ($this->isStateless()) {
-            return false;
-        }
-
-        $state = $this->request->getSession()->get('state');
-
-        return !(strlen($state) > 0 && $this->request->get('state') === $state);
     }
 
     /**
@@ -315,57 +345,24 @@ abstract class AbstractProvider implements ProviderInterface
      * @return mixed
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      */
-    protected function parseAccessToken($response)
+    protected function normalizeAccessTokenResponse($response)
     {
         if (\is_string($response)) {
-            $response = json_decode($response, true);
+            $response = json_decode($response, true) ?? [];
         }
 
-        $token = (array)$response[$this->accessTokenKey] ?? null;
+        if (!\is_array($response)) {
+            throw new AuthorizeFailedException('Invalid token response', $response);
+        }
 
-        if (empty($token)) {
+        if (empty($response[$this->accessTokenKey])) {
             throw new AuthorizeFailedException('Authorize Failed: ' . json_encode($response, JSON_UNESCAPED_UNICODE), $response);
         }
 
-        return $token;
-    }
-
-    /**
-     * Get a fresh instance of the Guzzle HTTP client.
-     *
-     * @return \GuzzleHttp\Client
-     */
-    protected function getHttpClient()
-    {
-        return $this->httpClient ?? new Client($this->guzzleOptions);
-    }
-
-    /**
-     *
-     * @return array|mixed|null
-     */
-    protected function getClientSecret()
-    {
-        return $this->config->get('client_secret');
-    }
-
-    /**
-     * @param array $config
-     *
-     * @return \Overtrue\Socialite\Contracts\ProviderInterface
-     */
-    public function setGuzzleOptions($config = []): ProviderInterface
-    {
-        $this->guzzleOptions = $config;
-
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getGuzzleOptions(): array
-    {
-        return $this->guzzleOptions;
+        return $response + [
+                'access_token' => $response[$this->accessTokenKey],
+                'refresh_token' => $response[$this->refreshTokenKey] ?? null,
+                'expires_in' => \intval($response[$this->expiresInKey] ?? 0),
+            ];
     }
 }

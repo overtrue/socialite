@@ -24,7 +24,7 @@ class FeiShuProvider extends AbstractProvider
      *
      * @var string
      */
-    protected $baseUrl = 'https://open.feishu.cn';
+    protected $baseUrl = 'https://open.feishu.cn/open-apis/';
 
     /**
      * 应用授权作用域.
@@ -33,19 +33,9 @@ class FeiShuProvider extends AbstractProvider
      */
     protected $scopes = ['user_info'];
 
-    /**
-     * @var string
-     */
-    protected $accessTokenKey = 'app_access_token';
-
-    /**
-     * 获取登录页面地址.
-     *
-     * {@inheritdoc}
-     */
-    protected function getAuthUrl()
+    protected function getAuthUrl(): string
     {
-        return $this->buildAuthUrlFromBase($this->baseUrl.'/open-apis/authen/v1/index');
+        return $this->buildAuthUrlFromBase($this->baseUrl.'/authen/v1/index');
     }
 
     /**
@@ -66,7 +56,7 @@ class FeiShuProvider extends AbstractProvider
      */
     protected function getTokenUrl(): string
     {
-        return $this->baseUrl.'/open-apis/auth/v3/app_access_token/internal';
+        return $this->baseUrl.'/authen/v1/access_token';
     }
 
     /**
@@ -77,8 +67,9 @@ class FeiShuProvider extends AbstractProvider
     protected function getTokenFields($code): array
     {
         return [
-            'app_id' => $this->getClientId(),
-            'app_secret' => $this->getClientSecret(),
+            'code' => $code,
+            'grant_type' => 'authorization_code',
+            'app_access_token' => $this->config->get('app_access_token'),
         ];
     }
 
@@ -87,21 +78,16 @@ class FeiShuProvider extends AbstractProvider
      * @param array|null $query
      *
      * @return array
-     * @throws \Overtrue\Socialite\Exceptions\InvalidArgumentException
      */
     protected function getUserByToken(string $token, ?array $query = []): array
     {
-        $userUrl = $this->baseUrl.'/open-apis/authen/v1/access_token';
-
-        if (empty($query['open_id'])) {
-            throw new InvalidArgumentException('code cannot be empty.');
-        }
+        $userUrl = $this->baseUrl.'/authen/v1/access_token';
 
         $response = $this->getHttpClient()->post(
             $userUrl,
             [
                 'json' => [
-                    'app_access_token' => $token,
+                    'app_access_token' => $this->config->get('app_access_token'),
                     'code' => $query['code'],
                     'grant_type' => 'authorization_code',
                 ],
@@ -112,8 +98,6 @@ class FeiShuProvider extends AbstractProvider
     }
 
     /**
-     * 格式化用户信息.
-     *
      * @param array $user
      *
      * @return User
@@ -122,7 +106,7 @@ class FeiShuProvider extends AbstractProvider
     {
         return new User([
             'id' => $user['open_id'] ?? null,
-            'username' => $user['name'] ?? null,
+            'name' => $user['name'] ?? null,
             'nickname' => $user['name'] ?? null,
             'avatar' => $user['avatar_url'] ?? null,
         ]);

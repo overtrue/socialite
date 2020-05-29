@@ -78,7 +78,6 @@ class GitHubProvider extends AbstractProvider
     {
         return new User([
             'id' => $user['id'] ?? null,
-            'username' => $user['login'] ?? null,
             'nickname' => $user['login'] ?? null,
             'name' => $user['name'] ?? null,
             'email' => $user['email'] ?? null,

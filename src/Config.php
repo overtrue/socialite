@@ -5,7 +5,7 @@ namespace Overtrue\Socialite;
 use ArrayAccess;
 use InvalidArgumentException;
 
-class Config implements ArrayAccess
+class Config implements ArrayAccess, \JsonSerializable
 {
     /**
      * @var array
@@ -33,9 +33,11 @@ class Config implements ArrayAccess
         if (is_null($key)) {
             return $config;
         }
+
         if (isset($config[$key])) {
             return $config[$key];
         }
+
         foreach (explode('.', $key) as $segment) {
             if (!is_array($config) || !array_key_exists($segment, $config)) {
                 return $default;
@@ -84,77 +86,33 @@ class Config implements ArrayAccess
         return (bool) $this->get($key);
     }
 
-    /**
-     * Whether a offset exists.
-     *
-     * @see  http://php.net/manual/en/arrayaccess.offsetexists.php
-     *
-     * @param mixed $offset <p>
-     *                      An offset to check for.
-     *                      </p>
-     *
-     * @return bool true on success or false on failure.
-     *              </p>
-     *              <p>
-     *              The return value will be casted to boolean if non-boolean was returned
-     *
-     * @since 5.0.0
-     */
     public function offsetExists($offset)
     {
         return array_key_exists($offset, $this->config);
     }
 
-    /**
-     * Offset to retrieve.
-     *
-     * @see  http://php.net/manual/en/arrayaccess.offsetget.php
-     *
-     * @param mixed $offset <p>
-     *                      The offset to retrieve.
-     *                      </p>
-     *
-     * @return mixed Can return all value types
-     *
-     * @since 5.0.0
-     */
     public function offsetGet($offset)
     {
         return $this->get($offset);
     }
 
-    /**
-     * Offset to set.
-     *
-     * @see  http://php.net/manual/en/arrayaccess.offsetset.php
-     *
-     * @param mixed $offset <p>
-     *                      The offset to assign the value to.
-     *                      </p>
-     * @param mixed $value  <p>
-     *                      The value to set.
-     *                      </p>
-     *
-     * @since 5.0.0
-     */
     public function offsetSet($offset, $value)
     {
         $this->set($offset, $value);
     }
 
-    /**
-     * Offset to unset.
-     *
-     * @see  http://php.net/manual/en/arrayaccess.offsetunset.php
-     *
-     * @param mixed $offset <p>
-     *                      The offset to unset.
-     *                      </p>
-     *
-     * @since 5.0.0
-     */
     public function offsetUnset($offset)
     {
         $this->set($offset, null);
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->config;
+    }
+
+    public function __toString()
+    {
+        return \json_encode($this, \JSON_UNESCAPED_UNICODE);
     }
 }

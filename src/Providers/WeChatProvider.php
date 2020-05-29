@@ -17,8 +17,9 @@ class WeChatProvider extends AbstractProvider
      */
     protected $baseUrl = 'https://api.weixin.qq.com/sns';
 
-    protected $openId;
-
+    /**
+     * @var string[]
+     */
     protected $scopes = ['snsapi_login'];
 
     /**
@@ -32,8 +33,17 @@ class WeChatProvider extends AbstractProvider
     protected $component;
 
     /**
-     * @return $this
+     * @var string
      */
+    protected $openid;
+
+    public function withOpenid(string $openid)
+    {
+        $this->openid = $openid;
+
+        return $this;
+    }
+
     public function withCountryCode()
     {
         $this->withCountryCode = true;
@@ -57,14 +67,17 @@ class WeChatProvider extends AbstractProvider
         return $this;
     }
 
-    public function tokenFromCode($code): string
+    /**
+     * @param string $code
+     *
+     * @return array
+     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     */
+    public function tokenFromCode($code): array
     {
-        $response = $this->getHttpClient()->get($this->getTokenUrl(), [
-            'headers' => ['Accept' => 'application/json'],
-            'query' => $this->getTokenFields($code),
-        ]);
+        $response = $this->getTokenFromCode($code);
 
-        return $this->parseAccessToken($response->getBody());
+        return $this->normalizeAccessTokenResponse($response->getBody()->getContents());
     }
 
     protected function getAuthUrl(): string
@@ -110,24 +123,30 @@ class WeChatProvider extends AbstractProvider
         return $this->baseUrl.'/oauth2/access_token';
     }
 
-    protected function getUserByToken(string $token, ?array $query = []): array
+    public function userFromCode(string $code): User
     {
-        $scopes = explode(',', $token->getAttribute('scope', ''));
-
-        if (in_array('snsapi_base', $scopes)) {
-            return $token->toArray(); //TODO: fixit
+        if (in_array('snsapi_base', $this->scopes)) {
+            return $this->mapUserToObject(\json_decode($this->getTokenFromCode($code), true) ?? []);
         }
 
-        if (empty($query['openid'])) {
-            throw new InvalidArgumentException('openid of AccessToken is required.');
-        }
+        $token = $this->tokenFromCode($code);
 
+        $this->withOpenid($token['openid']);
+
+        $user = $this->userFromToken($token[$this->accessTokenKey]);
+
+        return $user->setRefreshToken($token['refresh_token'])
+            ->setExpiresIn($token['expires_in']);
+    }
+
+    protected function getUserByToken(string $token): array
+    {
         $language = $this->withCountryCode ? null : (isset($this->parameters['lang']) ? $this->parameters['lang'] : 'zh_CN');
 
         $response = $this->getHttpClient()->get($this->baseUrl.'/userinfo', [
             'query' => array_filter([
                 'access_token' => $token,
-                'openid' => $query['openid'],
+                'openid' => $this->openid,
                 'lang' => $language,
             ]),
         ]);
@@ -156,5 +175,20 @@ class WeChatProvider extends AbstractProvider
             'code' => $code,
             'grant_type' => 'authorization_code',
         ]);
+    }
+
+    /**
+     * @param string $code
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    protected function getTokenFromCode(string $code): \Psr\Http\Message\ResponseInterface
+    {
+        $response = $this->getHttpClient()->get($this->getTokenUrl(), [
+            'headers' => ['Accept' => 'application/json'],
+            'query' => $this->getTokenFields($code),
+        ]);
+
+        return $response;
     }
 }

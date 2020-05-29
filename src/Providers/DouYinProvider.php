@@ -59,7 +59,7 @@ class DouYinProvider extends AbstractProvider
 
         $response = \json_decode($response->getBody()->getContents(), true) ?? [];
 
-        return $this->parseAccessToken($response);
+        return $this->normalizeAccessTokenResponse($response);
     }
 
     /**
