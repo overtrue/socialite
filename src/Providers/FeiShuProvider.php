@@ -2,21 +2,9 @@
 
 namespace Overtrue\Socialite\Providers;
 
-use Overtrue\Socialite\AccessToken;
-use Overtrue\Socialite\AccessTokenInterface;
-use Overtrue\Socialite\AuthorizeFailedException;
 use Overtrue\Socialite\Exceptions\InvalidArgumentException;
-use Overtrue\Socialite\InvalidStateException;
-use Overtrue\Socialite\ProviderInterface;
 use Overtrue\Socialite\User;
 
-/**
- * Class FeiShuProvider.
- *
- * @author qijian.song@show.world
- *
- * @see https://open.feishu.cn/
- */
 class FeiShuProvider extends AbstractProvider
 {
     /**

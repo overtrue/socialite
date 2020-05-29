@@ -82,9 +82,9 @@ class SocialiteManager implements FactoryInterface
     /**
      * @param string $driver
      *
-     * @return ProviderInterface
      * @throws \InvalidArgumentException
      *
+     * @return ProviderInterface
      */
     protected function createDriver($driver)
     {

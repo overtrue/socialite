@@ -2,7 +2,6 @@
 
 namespace Overtrue\Socialite\Providers;
 
-use Overtrue\Socialite\ProviderInterface;
 use Overtrue\Socialite\User;
 
 /**
@@ -35,7 +34,7 @@ class TaobaoProvider extends AbstractProvider
      */
     protected function getAuthUrl(): string
     {
-        return $this->buildAuthUrlFromBase($this->baseUrl . '/authorize');
+        return $this->buildAuthUrlFromBase($this->baseUrl.'/authorize');
     }
 
     /**
@@ -58,7 +57,7 @@ class TaobaoProvider extends AbstractProvider
      */
     protected function getTokenUrl(): string
     {
-        return $this->baseUrl . '/token';
+        return $this->baseUrl.'/token';
     }
 
     /**
@@ -76,8 +75,9 @@ class TaobaoProvider extends AbstractProvider
     /**
      * @param string $code
      *
-     * @return string
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     *
+     * @return string
      */
     public function tokenFromCode($code): string
     {
@@ -173,6 +173,6 @@ class TaobaoProvider extends AbstractProvider
 
         $query = http_build_query($this->getPublicFields($token, $apiFields), '', '&', $this->encodingType);
 
-        return $url . '?' . $query;
+        return $url.'?'.$query;
     }
 }

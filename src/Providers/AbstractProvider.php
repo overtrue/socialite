@@ -131,8 +131,9 @@ abstract class AbstractProvider implements ProviderInterface
     /**
      * @param string $code
      *
-     * @return \Overtrue\Socialite\User
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     *
+     * @return \Overtrue\Socialite\User
      */
     public function userFromCode(string $code): User
     {
@@ -160,7 +161,8 @@ abstract class AbstractProvider implements ProviderInterface
      * @param string $code
      *
      * @return array
-     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     *
+     * @return string
      */
     public function tokenFromCode(string $code): array
     {
@@ -237,7 +239,7 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * @param string      $url
+     * @param string $url
      *
      * @return string
      */
@@ -245,7 +247,7 @@ abstract class AbstractProvider implements ProviderInterface
     {
         $query = $this->getCodeFields() + ($this->state ? ['state' => $this->state] : []);
 
-        return $url . '?' . http_build_query($query, '', '&', $this->encodingType);
+        return $url.'?'.http_build_query($query, '', '&', $this->encodingType);
     }
 
     /**
@@ -342,8 +344,9 @@ abstract class AbstractProvider implements ProviderInterface
     /**
      * @param array|string $response
      *
-     * @return mixed
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     *
+     * @return mixed
      */
     protected function normalizeAccessTokenResponse($response)
     {
@@ -351,6 +354,7 @@ abstract class AbstractProvider implements ProviderInterface
             $response = json_decode($response, true) ?? [];
         }
 
+<<<<<<< HEAD
         if (!\is_array($response)) {
             throw new AuthorizeFailedException('Invalid token response', $response);
         }
@@ -364,5 +368,52 @@ abstract class AbstractProvider implements ProviderInterface
                 'refresh_token' => $response[$this->refreshTokenKey] ?? null,
                 'expires_in' => \intval($response[$this->expiresInKey] ?? 0),
             ];
+=======
+        $token = (array) $response[$this->accessTokenKey] ?? null;
+
+        if (empty($token)) {
+            throw new AuthorizeFailedException('Authorize Failed: '.json_encode($response, JSON_UNESCAPED_UNICODE), $response);
+        }
+
+        return $token;
+    }
+
+    /**
+     * Get a fresh instance of the Guzzle HTTP client.
+     *
+     * @return \GuzzleHttp\Client
+     */
+    protected function getHttpClient()
+    {
+        return $this->httpClient ?? new Client($this->guzzleOptions);
+    }
+
+    /**
+     * @return array|mixed|null
+     */
+    protected function getClientSecret()
+    {
+        return $this->config->get('client_secret');
+    }
+
+    /**
+     * @param array $config
+     *
+     * @return \Overtrue\Socialite\Contracts\ProviderInterface
+     */
+    public function setGuzzleOptions($config = []): ProviderInterface
+    {
+        $this->guzzleOptions = $config;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getGuzzleOptions(): array
+    {
+        return $this->guzzleOptions;
+>>>>>>> 090d419a066877ef3b987735e3d15ca5a4692edb
     }
 }
