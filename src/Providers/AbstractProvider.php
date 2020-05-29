@@ -133,10 +133,11 @@ abstract class AbstractProvider implements ProviderInterface
     public function userFromCode(string $code): User
     {
         $tokenResponse = $this->tokenFromCode($code);
-        $user = $this->getUserByToken($tokenResponse[$this->accessTokenKey]);
-        $user += $tokenResponse;
+        $user = $this->userFromToken($tokenResponse[$this->accessTokenKey]);
 
-        return $this->mapUserToObject($user)->setRaw($user);
+        return $user->setRefreshToken($tokenResponse[$this->refreshTokenKey] ?? null)
+            ->setExpiresIn($tokenResponse[$this->expiresInKey] ?? null)
+            ->setAttribute('tokenResponse', $tokenResponse);
     }
 
     /**
@@ -235,6 +236,39 @@ abstract class AbstractProvider implements ProviderInterface
     public function getConfig(): Config
     {
         return $this->config;
+    }
+
+    /**
+     * @param string $accessTokenKey
+     *
+     * @return self
+     */
+    public function setAccessTokenKey(string $accessTokenKey): self
+    {
+        $this->accessTokenKey = $accessTokenKey;
+        return $this;
+    }
+
+    /**
+     * @param string $refreshTokenKey
+     *
+     * @return self
+     */
+    public function setRefreshTokenKey(string $refreshTokenKey): self
+    {
+        $this->refreshTokenKey = $refreshTokenKey;
+        return $this;
+    }
+
+    /**
+     * @param string $expiresInKey
+     *
+     * @return self
+     */
+    public function setExpiresInKey(string $expiresInKey): self
+    {
+        $this->expiresInKey = $expiresInKey;
+        return $this;
     }
 
     /**
