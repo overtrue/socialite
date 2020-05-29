@@ -25,7 +25,7 @@ class FeiShuProvider extends AbstractProvider
 
     protected function getAuthUrl(): string
     {
-        return $this->buildAuthUrlFromBase($this->baseUrl . '/authen/v1/index');
+        return $this->buildAuthUrlFromBase($this->baseUrl.'/authen/v1/index');
     }
 
     /**
@@ -41,14 +41,15 @@ class FeiShuProvider extends AbstractProvider
 
     protected function getTokenUrl(): string
     {
-        return $this->baseUrl . '/authen/v1/access_token';
+        return $this->baseUrl.'/authen/v1/access_token';
     }
 
     /**
      * @param string $code
      *
-     * @return array
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     *
+     * @return array
      */
     public function tokenFromCode($code): array
     {
@@ -62,7 +63,7 @@ class FeiShuProvider extends AbstractProvider
      */
     protected function getUserByToken(string $token): array
     {
-        $response = $this->getHttpClient()->get($this->baseUrl . '/authen/v1/user_info', [
+        $response = $this->getHttpClient()->get($this->baseUrl.'/authen/v1/user_info', [
             'headers' => ['Accept' => 'application/json'],
             'query' => array_filter([
                 'user_access_token' => $token,
@@ -79,7 +80,7 @@ class FeiShuProvider extends AbstractProvider
      */
     protected function getTokenFromCode(string $code): array
     {
-        $userUrl = $this->baseUrl . '/authen/v1/access_token';
+        $userUrl = $this->baseUrl.'/authen/v1/access_token';
 
         $response = $this->getHttpClient()->post(
             $userUrl,
