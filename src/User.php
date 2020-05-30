@@ -41,16 +41,16 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
         return $this->getAttribute('avatar');
     }
 
-    public function setToken(string $token): self
+    public function setAccessToken(string $token): self
     {
-        $this->setAttribute('token', $token);
+        $this->setAttribute('access_token', $token);
 
         return $this;
     }
 
-    public function getToken(): ?string
+    public function getAccessToken(): ?string
     {
-        return $this->getAttribute('token');
+        return $this->getAttribute('access_token');
     }
 
     public function setRefreshToken(?string $refreshToken): self
