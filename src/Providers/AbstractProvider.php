@@ -283,7 +283,7 @@ abstract class AbstractProvider implements ProviderInterface
     {
         $query = $this->getCodeFields() + ($this->state ? ['state' => $this->state] : []);
 
-        return $url.'?'.http_build_query($query, '', '&', $this->encodingType);
+        return $url.'?'.\http_build_query($query, '', '&', $this->encodingType);
     }
 
     /**

@@ -4,6 +4,7 @@ namespace Overtrue\Socialite\Providers;
 
 use Overtrue\Socialite\Contracts\WeChatComponentInterface;
 use Overtrue\Socialite\User;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * @see http://mp.weixin.qq.com/wiki/9/01f711493b5a02f24b04365ac5d8fd95.html [WeChat - 公众平台OAuth文档]
@@ -98,7 +99,7 @@ class WeChatProvider extends AbstractProvider
         return $url.'?'.$query.'#wechat_redirect';
     }
 
-    protected function getCodeFields()
+    protected function getCodeFields(): array
     {
         if ($this->component) {
             $this->with(array_merge($this->parameters, ['component_appid' => $this->component->getAppId()]));
@@ -182,7 +183,7 @@ class WeChatProvider extends AbstractProvider
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    protected function getTokenFromCode(string $code): \Psr\Http\Message\ResponseInterface
+    protected function getTokenFromCode(string $code): ResponseInterface
     {
         return $this->getHttpClient()->get($this->getTokenUrl(), [
             'headers' => ['Accept' => 'application/json'],

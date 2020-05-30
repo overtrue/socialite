@@ -30,7 +30,6 @@ class BaiduProvider extends AbstractProvider
     protected $display = 'popup';
 
     /**
-     * @param string $state
      *
      * @return string
      */
@@ -73,7 +72,7 @@ class BaiduProvider extends AbstractProvider
      *
      * @return array
      */
-    protected function getUserByToken(string $token, ?array $query = []): array
+    protected function getUserByToken(string $token): array
     {
         $response = $this->getHttpClient()->get($this->baseUrl.'/rest/'.$this->version.'/passport/users/getInfo', [
             'query' => [

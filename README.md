@@ -97,6 +97,15 @@ Example:
 ...
 ```
 
+##### Douyin
+Note using the Douyin driver that if you get user information directly using access token, set up the openid first. the openid can be obtained by code when access is obtained, so call userFromCode() automatically configured for you openid, if call userFromToken () first call setopenId()
+
+```php
+$user = $socialite->driver('douyin')->userFromCode('here is auth code');
+
+$user = $socialite->driver('douyin')->setOpenId('openId')->userFromToken('here is a access token');
+```
+
 ### Scope
 
 Before redirecting the user, you may also set "scopes" on the request using the scope method. This method will overwrite all existing scopes:
@@ -202,6 +211,7 @@ Enjoy it! :heart:
 # Reference
 
 - [Google - OpenID Connect](https://developers.google.com/identity/protocols/OpenIDConnect)
+- [Github - Authorizing OAuth Apps](https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/)
 - [Facebook - Graph API](https://developers.facebook.com/docs/graph-api)
 - [Linkedin - Authenticating with OAuth 2.0](https://developer.linkedin.com/docs/oauth2)
 - [微博 - OAuth 2.0 授权机制说明](http://open.weibo.com/wiki/%E6%8E%88%E6%9D%83%E6%9C%BA%E5%88%B6%E8%AF%B4%E6%98%8E)
