@@ -246,6 +246,7 @@ abstract class AbstractProvider implements ProviderInterface
     public function setAccessTokenKey(string $accessTokenKey): self
     {
         $this->accessTokenKey = $accessTokenKey;
+
         return $this;
     }
 
@@ -257,6 +258,7 @@ abstract class AbstractProvider implements ProviderInterface
     public function setRefreshTokenKey(string $refreshTokenKey): self
     {
         $this->refreshTokenKey = $refreshTokenKey;
+
         return $this;
     }
 
@@ -268,6 +270,7 @@ abstract class AbstractProvider implements ProviderInterface
     public function setExpiresInKey(string $expiresInKey): self
     {
         $this->expiresInKey = $expiresInKey;
+
         return $this;
     }
 
