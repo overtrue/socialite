@@ -40,4 +40,21 @@ class UserTest extends TestCase
         $this->assertSame('fake_refreshToken', $user->getRefreshToken());
         $this->assertSame('{"refresh_token":"fake_refreshToken"}', json_encode($user));
     }
+
+    public function test_it_can_set_raw_data()
+    {
+        $user = new User([]);
+        $data = ['data' => 'raw'];
+
+        $user->setRaw($data);
+        $this->assertSame($data, $user->getRaw());
+        $this->assertSame(json_encode(['raw' => ['data' => 'raw']]), json_encode($user));
+    }
+
+    public function test_ie_can_get_attribute_by_magic_method()
+    {
+        $user = new User(['xx' => 'data']);
+
+        $this->assertSame('data', $user->xx);
+    }
 }

@@ -49,7 +49,7 @@ abstract class AbstractProvider implements ProviderInterface
     /**
      * @var int Can be either PHP_QUERY_RFC3986 or PHP_QUERY_RFC1738
      */
-    protected $encodingType = PHP_QUERY_RFC1738;
+    protected $encodingType = PHP_QUERY_RFC3986;
 
     /**
      * @var string
@@ -270,6 +270,17 @@ abstract class AbstractProvider implements ProviderInterface
     public function setExpiresInKey(string $expiresInKey): self
     {
         $this->expiresInKey = $expiresInKey;
+
+        return $this;
+    }
+
+    /**
+     * @param string $scopeSeparator
+     * @return self
+     */
+    public function setScopeSeparator(string $scopeSeparator): self
+    {
+        $this->scopeSeparator = $scopeSeparator;
 
         return $this;
     }
