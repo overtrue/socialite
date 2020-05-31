@@ -82,7 +82,7 @@ abstract class AbstractProvider implements ProviderInterface
     public function __construct(array $config)
     {
         $this->config = new Config($config);
-        $this->redirectUrl = $this->config->get('redirect_url');
+        $this->redirectUrl = $this->config->get('redirect_url') ?? $this->config->get('redirect');
     }
 
     /**
@@ -316,7 +316,7 @@ abstract class AbstractProvider implements ProviderInterface
         return $fields;
     }
 
-    public function getClientId(): string
+    public function getClientId(): ?string
     {
         return $this->config->get('client_id');
     }
@@ -324,7 +324,7 @@ abstract class AbstractProvider implements ProviderInterface
     /**
      * @return array|mixed|null
      */
-    protected function getClientSecret(): string
+    protected function getClientSecret(): ?string
     {
         return $this->config->get('client_secret');
     }
