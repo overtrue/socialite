@@ -24,6 +24,7 @@ class SocialiteManager implements FactoryInterface
      */
     protected $drivers = [
         'qq' => Providers\QQProvider::class,
+        'qcloud' => Providers\QCloudProvider::class,
         'github' => Providers\GitHubProvider::class,
         'google' => Providers\GoogleProvider::class,
         'weibo' => Providers\WeiboProvider::class,
