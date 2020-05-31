@@ -126,16 +126,10 @@ class DouYinProvider extends AbstractProvider
     {
         return new User([
             'id' => $user['open_id'] ?? null,
-            'username' => $user['nickname'] ?? null,
+            'name' => $user['nickname'] ?? null,
             'nickname' => $user['nickname'] ?? null,
             'avatar' => $user['avatar'] ?? null,
-            'open_id' => $user['open_id'] ?? null,
-            'union_id' => $user['union_id'] ?? null,
-            'city' => $user['city'] ?? null,
-            'province' => $user['province'] ?? null,
-            'country' => $user['country'] ?? null,
-            'gender' => $user['gender'],
-            'e_account_role' => $user['e_account_role'] ?? null
+            'email' => $user['email'] ?? null
         ]);
     }
 

@@ -125,6 +125,7 @@ class TaobaoProvider extends AbstractProvider
             'nickname' => $user['nick'] ?? null,
             'name' => $user['nick'] ?? null,
             'avatar' => $user['avatar'] ?? null,
+            'email' => $user['email'] ?? null,
         ]);
     }
 

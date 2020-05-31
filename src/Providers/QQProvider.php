@@ -104,12 +104,6 @@ class QQProvider extends AbstractProvider
             'name' => $user['nickname'] ?? null,
             'email' => $user['email'] ?? null,
             'avatar' => $user['figureurl_qq_2'] ?? null,
-            'figureurl' => $user['figureurl'] ?? null,
-            'figureurl_1' => $user['figureurl_1'] ?? null,
-            'figureurl_2' => $user['figureurl_2'] ?? null,
-            'figureurl_qq_1' => $user['figureurl_qq_1'] ?? null,
-            'figureurl_qq_2' => $user['figureurl_qq_2'] ?? null,
-            'gender' => $user['gender'] ?? null,
         ]);
     }
 

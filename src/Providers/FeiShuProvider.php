@@ -114,13 +114,7 @@ class FeiShuProvider extends AbstractProvider
             'name' => $user['name'] ?? null,
             'nickname' => $user['name'] ?? null,
             'avatar' => $user['avatar_url'] ?? null,
-            'avatar_url' => $user['avatar_url'] ?? null,
-            'avatar_thumb' => $user['avatar_thumb'] ?? null,
-            'avatar_middle' => $user['avatar_big'] ?? null,
             'email' => $user['email'] ?? null,
-            'user_id' => $user['user_id'] ?? null,
-            'mobile' => $user['mobile'] ?? null,
-            'status' => $user['status'] ?? null
         ]);
     }
 }

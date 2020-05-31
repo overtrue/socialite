@@ -22,12 +22,36 @@ class BaiduProvider extends AbstractProvider
     /**
      * @var array
      */
-    protected $scopes = [''];
+    protected $scopes = ['basic'];
 
     /**
      * @var string
      */
     protected $display = 'popup';
+
+    /**
+     * @param string $display
+     *
+     * @return self
+     */
+    public function setDisplay(string $display): self
+    {
+        $this->display = $display;
+
+        return $this;
+    }
+
+    /**
+     * @param array $scopes
+     *
+     * @return self
+     */
+    public function setScopes(array $scopes): self
+    {
+        $this->scopes = $scopes;
+
+        return $this;
+    }
 
     /**
      *
@@ -98,7 +122,7 @@ class BaiduProvider extends AbstractProvider
             'nickname' => $user['realname'] ?? null,
             'name' => $user['username'] ?? null,
             'email' => '',
-            'avatar' => $user['portrait'] ?? null,
+            'avatar' => $user['portrait'] ? 'http://tb.himg.baidu.com/sys/portraitn/item/' . $user['portrait'] : null,
         ]);
     }
 }
