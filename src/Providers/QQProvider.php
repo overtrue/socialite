@@ -10,11 +10,6 @@ use Overtrue\Socialite\User;
 class QQProvider extends AbstractProvider
 {
     /**
-     * @var bool
-     */
-    protected $withUnionId = false;
-
-    /**
      * @var string
      */
     protected $baseUrl = 'https://graph.qq.com';
@@ -23,6 +18,10 @@ class QQProvider extends AbstractProvider
      * @var array
      */
     protected $scopes = ['get_user_info'];
+    /**
+     * @var bool
+     */
+    protected $withUnionId = false;
 
     /**
      * @return string
@@ -55,9 +54,9 @@ class QQProvider extends AbstractProvider
      *
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      *
-     * @return string
+     * @return array
      */
-    public function tokenFromCode($code): string
+    public function tokenFromCode($code): array
     {
         $response = $this->getHttpClient()->get($this->getTokenUrl(), [
             'query' => $this->getTokenFields($code),
@@ -67,8 +66,8 @@ class QQProvider extends AbstractProvider
 
         return $this->normalizeAccessTokenResponse($token);
     }
-
     /**
+     *
      * @return self
      */
     public function withUnionId()
@@ -80,11 +79,10 @@ class QQProvider extends AbstractProvider
 
     /**
      * @param string     $token
-     * @param array|null $query
      *
      * @return array
      */
-    protected function getUserByToken(string $token, ?array $query = []): array
+    protected function getUserByToken(string $token): array
     {
         $url = $this->baseUrl.'/oauth2.0/me?access_token='.$token;
         $this->withUnionId && $url .= '&unionid=1';
@@ -116,7 +114,6 @@ class QQProvider extends AbstractProvider
     {
         return new User([
             'id' => $user['openid'] ?? null,
-            'nickname' => $user['nickname'] ?? null,
             'name' => $user['nickname'] ?? null,
             'email' => $user['email'] ?? null,
             'avatar' => $user['figureurl_qq_2'] ?? null,

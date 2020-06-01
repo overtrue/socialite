@@ -30,6 +30,18 @@ class TaobaoProvider extends AbstractProvider
     protected $scopes = ['user_info'];
 
     /**
+     * @param string $view
+     *
+     * @return self
+     */
+    public function withView(string $view): self
+    {
+        $this->view = $view;
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     protected function getAuthUrl(): string
@@ -40,7 +52,7 @@ class TaobaoProvider extends AbstractProvider
     /**
      * @return array
      */
-    public function getCodeFields()
+    public function getCodeFields(): array
     {
         return [
             'client_id' => $this->getClientId(),
@@ -67,7 +79,7 @@ class TaobaoProvider extends AbstractProvider
      *
      * @return array
      */
-    protected function getTokenFields($code)
+    protected function getTokenFields($code): array
     {
         return parent::getTokenFields($code) + ['grant_type' => 'authorization_code', 'view' => $this->view];
     }
@@ -77,9 +89,9 @@ class TaobaoProvider extends AbstractProvider
      *
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      *
-     * @return string
+     * @return array
      */
-    public function tokenFromCode($code): string
+    public function tokenFromCode($code): array
     {
         $response = $this->getHttpClient()->post($this->getTokenUrl(), [
             'query' => $this->getTokenFields($code),
@@ -113,6 +125,7 @@ class TaobaoProvider extends AbstractProvider
             'nickname' => $user['nick'] ?? null,
             'name' => $user['nick'] ?? null,
             'avatar' => $user['avatar'] ?? null,
+            'email' => $user['email'] ?? null,
         ]);
     }
 

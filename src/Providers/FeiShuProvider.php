@@ -2,10 +2,12 @@
 
 namespace Overtrue\Socialite\Providers;
 
+use GuzzleHttp\Exception\BadResponseException;
+use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
 use Overtrue\Socialite\User;
 
 /**
- * @link https://open.feishu.cn
+ * @see https://open.feishu.cn/document/uQjL04CN/ucDOz4yN4MjL3gzM
  */
 class FeiShuProvider extends AbstractProvider
 {
@@ -16,22 +18,17 @@ class FeiShuProvider extends AbstractProvider
      */
     protected $baseUrl = 'https://open.feishu.cn/open-apis/';
 
-    /**
-     * 应用授权作用域.
-     *
-     * @var array
-     */
-    protected $scopes = ['user_info'];
+    protected $expiresInKey = 'refresh_expires_in';
 
     protected function getAuthUrl(): string
     {
-        return $this->buildAuthUrlFromBase($this->baseUrl.'/authen/v1/index');
+        return $this->buildAuthUrlFromBase($this->baseUrl . 'authen/v1/index');
     }
 
     /**
      * @return array
      */
-    protected function getCodeFields()
+    protected function getCodeFields(): array
     {
         return [
             'redirect_uri' => $this->redirectUrl,
@@ -41,7 +38,7 @@ class FeiShuProvider extends AbstractProvider
 
     protected function getTokenUrl(): string
     {
-        return $this->baseUrl.'/authen/v1/access_token';
+        return $this->baseUrl . 'authen/v1/access_token';
     }
 
     /**
@@ -57,33 +54,15 @@ class FeiShuProvider extends AbstractProvider
     }
 
     /**
-     * @param string $token
-     *
-     * @return array
-     */
-    protected function getUserByToken(string $token): array
-    {
-        $response = $this->getHttpClient()->get($this->baseUrl.'/authen/v1/user_info', [
-            'headers' => ['Accept' => 'application/json'],
-            'query' => array_filter([
-                'user_access_token' => $token,
-            ]),
-        ]);
-
-        return \json_decode($response->getBody(), true) ?? [];
-    }
-
-    /**
      * @param string $code
      *
      * @return array
+     * @throws AuthorizeFailedException
      */
     protected function getTokenFromCode(string $code): array
     {
-        $userUrl = $this->baseUrl.'/authen/v1/access_token';
-
         $response = $this->getHttpClient()->post(
-            $userUrl,
+            $this->getTokenUrl(),
             [
                 'json' => [
                     'app_access_token' => $this->config->get('app_access_token'),
@@ -92,8 +71,37 @@ class FeiShuProvider extends AbstractProvider
                 ],
             ]
         );
+        $response = \json_decode($response->getBody(), true) ?? [];
 
-        return \json_decode($response->getBody(), true)['data'] ?? [];
+        if (empty($response['data'])) {
+            throw new AuthorizeFailedException('Invalid token response', $response);
+        }
+        $this->setExpiresInKey('refresh_expires_in');
+
+        return $this->normalizeAccessTokenResponse($response['data']);
+    }
+
+    /**
+     * @param string $token
+     *
+     * @return array
+     */
+    protected function getUserByToken(string $token): array
+    {
+        $response = $this->getHttpClient()->get($this->baseUrl.'/authen/v1/user_info', [
+            'headers' => ['Content-Type' => 'application/json', 'AuthoriBearer ' . $token],
+            'query' => array_filter([
+                'user_access_token' => $token,
+            ]),
+        ]);
+
+        $response = \json_decode($response->getBody(), true) ?? [];
+
+        if (empty($response['data'])) {
+            throw new BadResponseException('This query response is not except.', $response);
+        }
+
+        return $response['data'];
     }
 
     /**
@@ -108,6 +116,7 @@ class FeiShuProvider extends AbstractProvider
             'name' => $user['name'] ?? null,
             'nickname' => $user['name'] ?? null,
             'avatar' => $user['avatar_url'] ?? null,
+            'email' => $user['email'] ?? null,
         ]);
     }
 }

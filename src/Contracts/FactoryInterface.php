@@ -20,5 +20,5 @@ interface FactoryInterface
      *
      * @return \Overtrue\Socialite\Contracts\ProviderInterface
      */
-    public function driver(string $driver = null): ProviderInterface;
+    public function driver(string $driver): ProviderInterface;
 }

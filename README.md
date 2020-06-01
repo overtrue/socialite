@@ -97,6 +97,33 @@ Example:
 ...
 ```
 
+##### Douyin (https://open.douyin.com/platform/doc/OpenAPI-oauth2)
+Note using the Douyin driver that if you get user information directly using access token, set up the openid first. the openid can be obtained by code when access is obtained, so call userFromCode() automatically configured for you openid, if call userFromToken () first call setopenId()
+
+```php
+$user = $socialite->driver('douyin')->userFromCode('here is auth code');
+
+$user = $socialite->driver('douyin')->withOpenId('openId')->userFromToken('here is a access token');
+```
+
+##### Baidu (https://developer.baidu.com/wiki/index.php?title=docs/oauth)
+You can choose the form you want display by using `withDisplay()`.
+
+```php
+$authUrl = $socialite->driver('baidu')->withDisplay('mobile')->redirect();
+
+```
+`popup` mode is the default setting with display. `basic` is the default with scopes.
+
+##### Taobao (https://open.taobao.com/doc.htm?docId=102635&docType=1&source=search)
+You can choose the form you want display by using `withView()`.
+```php
+$authUrl = $socialite->driver('taobao')->withView('wap')->redirect();
+
+```
+`web` mode is the default setting with display. `user_info` is the default with scopes.
+
+
 ### Scope
 
 Before redirecting the user, you may also set "scopes" on the request using the scope method. This method will overwrite all existing scopes:
@@ -117,8 +144,7 @@ $url = 'your callback url.';
 $socialite->redirect($url);
 // or
 $socialite->withRedirectUrl($url)->redirect();
-// or
-$socialite->setRedirectUrl($url)->redirect();
+
 ```
 
 ### Additional parameters
@@ -181,14 +207,19 @@ mixed   $user->getId();
 ?string $user->getEmail();
 ?string $user->getAvatar();
 ?string $user->getRaw();
-?string $user->getToken(); // or $user->getAccessToken()
+?string $user->getAccessToken(); 
 ?string $user->getRefreshToken();
 ?int    $user->getExpiresIn();
+
 ```
 
 #### Get raw response from OAuth API
 
-The `$user->getRaw()` method will return an array of the API raw response.
+The `$user->getRaw()` method will return an **array** of the API raw response.
+
+#### Get the token response when you use userFromCode()
+The `$user->getTokenResponse()` method will return an **array** of the get token(access token) API response.
+Note: This method only return a **valid array** when you use `userFromCode()`, else will return **null** because use `userFromToken()` have no token response. 
 
 ### Get user with access token
 
@@ -202,10 +233,12 @@ Enjoy it! :heart:
 # Reference
 
 - [Google - OpenID Connect](https://developers.google.com/identity/protocols/OpenIDConnect)
+- [Github - Authorizing OAuth Apps](https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/)
 - [Facebook - Graph API](https://developers.facebook.com/docs/graph-api)
 - [Linkedin - Authenticating with OAuth 2.0](https://developer.linkedin.com/docs/oauth2)
 - [微博 - OAuth 2.0 授权机制说明](http://open.weibo.com/wiki/%E6%8E%88%E6%9D%83%E6%9C%BA%E5%88%B6%E8%AF%B4%E6%98%8E)
 - [QQ - OAuth 2.0 登录QQ](http://wiki.connect.qq.com/oauth2-0%E7%AE%80%E4%BB%8B)
+- [腾讯云 - OAuth2.0](https://cloud.tencent.com/document/product/628/38393)
 - [微信公众平台 - OAuth文档](http://mp.weixin.qq.com/wiki/9/01f711493b5a02f24b04365ac5d8fd95.html)
 - [微信开放平台 - 网站应用微信登录开发指南](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419316505&token=&lang=zh_CN)
 - [微信开放平台 - 代公众号发起网页授权](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419318590&token=&lang=zh_CN)

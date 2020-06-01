@@ -1,5 +1,6 @@
 <?php
 
+use Overtrue\Socialite\Contracts\WeChatComponentInterface;
 use Overtrue\Socialite\Providers\WeChatProvider as RealWeChatProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -8,23 +9,22 @@ class WechatProviderTest extends TestCase
 {
     public function testWeChatProviderHasCorrectlyRedirectResponse()
     {
-        $response = (new WeChatProvider(Request::create('foo'), [
+        $response = (new WeChatProvider([
             'client_id' => 'client_id',
             'client_secret' => 'client_secret',
-            'redirect' => 'http://localhost/socialite/callback.php',
+            'redirect_url' => 'http://localhost/socialite/callback.php',
         ]))->redirect();
 
-        $this->assertInstanceOf('Symfony\Component\HttpFoundation\RedirectResponse', $response);
-        $this->assertStringStartsWith('https://open.weixin.qq.com/connect/qrconnect', $response->getTargetUrl());
-        $this->assertRegExp('/redirect_uri=http%3A%2F%2Flocalhost%2Fsocialite%2Fcallback.php/', $response->getTargetUrl());
+        $this->assertStringStartsWith('https://open.weixin.qq.com/connect/qrconnect', $response);
+        $this->assertRegExp('/redirect_uri=http%3A%2F%2Flocalhost%2Fsocialite%2Fcallback.php/', $response);
     }
 
     public function testWeChatProviderTokenUrlAndRequestFields()
     {
-        $provider = new WeChatProvider(Request::create('foo'), [
+        $provider = new WeChatProvider([
             'client_id' => 'client_id',
             'client_secret' => 'client_secret',
-            'redirect' => 'http://localhost/socialite/callback.php',
+            'redirect_url' => 'http://localhost/socialite/callback.php',
         ]);
 
         $this->assertSame('https://api.weixin.qq.com/sns/oauth2/access_token', $provider->tokenUrl());
@@ -42,12 +42,12 @@ class WechatProviderTest extends TestCase
             'scope' => 'snsapi_login',
             'state' => 'wechat-state',
             'connect_redirect' => 1,
-        ], $provider->codeFields('wechat-state'));
+        ], $provider->withState('wechat-state')->codeFields());
     }
 
     public function testOpenPlatformComponent()
     {
-        $provider = new WeChatProvider(Request::create('foo'), [
+        $provider = new WeChatProvider([
             'client_id' => 'client_id',
             'client_secret' => null,
             'redirect' => 'redirect-url',
@@ -61,7 +61,7 @@ class WechatProviderTest extends TestCase
             'state' => 'state',
             'connect_redirect' => 1,
             'component_appid' => 'component-app-id',
-        ], $provider->codeFields('state'));
+        ], $provider->withState('state')->codeFields());
 
         $this->assertSame([
             'appid' => 'client_id',
@@ -76,7 +76,7 @@ class WechatProviderTest extends TestCase
 
     public function testOpenPlatformComponentWithCustomParameters()
     {
-        $provider = new WeChatProvider(Request::create('foo'), [
+        $provider = new WeChatProvider([
             'client_id' => 'client_id',
             'client_secret' => null,
             'redirect' => 'redirect-url',
@@ -84,7 +84,7 @@ class WechatProviderTest extends TestCase
         $provider->component(new WeChatComponent());
         $provider->with(['foo' => 'bar']);
 
-        $fields = $provider->codeFields('wechat-state');
+        $fields = $provider->withState('wechat-state')->codeFields();
 
         $this->assertArrayHasKey('foo', $fields);
         $this->assertSame('bar', $fields['foo']);
@@ -103,9 +103,9 @@ trait ProviderTrait
         return $this->getTokenFields($code);
     }
 
-    public function codeFields($state = null)
+    public function codeFields()
     {
-        return $this->getCodeFields($state);
+        return $this->getCodeFields();
     }
 }
 
@@ -114,14 +114,14 @@ class WeChatProvider extends RealWeChatProvider
     use ProviderTrait;
 }
 
-class WeChatComponent implements \Overtrue\Socialite\WeChatComponentInterface
+class WeChatComponent implements WeChatComponentInterface
 {
-    public function getAppId()
+    public function getAppId(): string
     {
         return 'component-app-id';
     }
 
-    public function getToken()
+    public function getToken(): string
     {
         return 'token';
     }

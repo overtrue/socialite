@@ -13,155 +13,180 @@ class OAuthTest extends TestCase
         m::close();
     }
 
-    public function testRedirectGeneratesTheProperSymfonyRedirectResponse()
+    public function test_it_can_get_auth_url_without_redirect()
     {
-        $request = Request::create('foo');
-        $request->setSession($session = m::mock('Symfony\Component\HttpFoundation\Session\SessionInterface'));
-        $session->shouldReceive('put')->once();
-        $provider = new OAuthTwoTestProviderStub($request, [
-            'client_id' => 'client_id',
-            'client_secret' => 'client_secret',
-            'redirect' => 'redirect',
-        ]);
-        $response = $provider->redirect();
+        $config = [
+            'client_id' => 'fake_client_id',
+            'client_secret' => 'fake_client_secret'
+        ];
+        $provider = new OAuthTestProviderStub($config);
 
-        $this->assertInstanceOf('Symfony\Component\HttpFoundation\RedirectResponse', $response);
-        $this->assertSame('http://auth.url', $response->getTargetUrl());
+        $this->assertSame('http://auth.url?client_id=fake_client_id&scope=info&response_type=code', $provider->redirect());
     }
 
-    public function testRedirectUrl()
+    public function test_it_can_get_auth_url_with_redirect()
     {
-        $request = Request::create('foo', 'GET', ['state' => str_repeat('A', 40), 'code' => 'code']);
-        $request->setSession($session = m::mock('Symfony\Component\HttpFoundation\Session\SessionInterface'));
+        // 手动配置
+        $config = [
+            'client_id' => 'fake_client_id',
+            'client_secret' => 'fake_client_secret'
+        ];
+        $provider = new OAuthTestProviderStub($config);
 
-        $provider = new OAuthTwoTestProviderStub($request, [
-            'client_id' => 'client_id',
-            'client_secret' => 'client_secret',
-        ]);
-        $this->assertNull($provider->getRedirectUrl());
+        $this->assertSame('http://auth.url?client_id=fake_client_id&redirect_uri=fake_redirect&scope=info&response_type=code', $provider->redirect('fake_redirect'));
 
-        $provider = new OAuthTwoTestProviderStub($request, [
-            'client_id' => 'client_id',
-            'client_secret' => 'client_secret',
-            'redirect' => 'redirect_uri',
-        ]);
-        $this->assertSame('redirect_uri', $provider->getRedirectUrl());
-        $provider->setRedirectUrl('overtrue.me');
-        $this->assertSame('overtrue.me', $provider->getRedirectUrl());
+        // 用配置属性配置
+        $config += ['redirect_url' => 'fake_redirect'];
+        $provider = new OAuthTestProviderStub($config);
 
-        $provider->withRedirectUrl('http://overtrue.me');
-        $this->assertSame('http://overtrue.me', $provider->getRedirectUrl());
+        $this->assertSame('http://auth.url?client_id=fake_client_id&redirect_uri=fake_redirect&scope=info&response_type=code', $provider->redirect('fake_redirect'));
     }
 
-    public function testUserReturnsAUserInstanceForTheAuthenticatedRequest()
+    public function test_it_can_get_auth_url_with_scopes()
     {
-        $request = Request::create('foo', 'GET', ['state' => str_repeat('A', 40), 'code' => 'code']);
-        $request->setSession($session = m::mock('Symfony\Component\HttpFoundation\Session\SessionInterface'));
+        $config = [
+            'client_id' => 'fake_client_id',
+            'client_secret' => 'fake_client_secret'
+        ];
+        $provider = new OAuthTestProviderStub($config);
+        $url = $provider->scopes(['test_info', 'test_email'])->redirect();
 
-        $session->shouldReceive('get')->once()->with('state')->andReturn(str_repeat('A', 40));
-        $provider = new OAuthTwoTestProviderStub($request, [
-            'client_id' => 'client_id',
-            'client_secret' => 'client_secret',
-            'redirect' => 'redirect_uri',
+        $this->assertSame('http://auth.url?client_id=fake_client_id&scope=test_info%2Ctest_email&response_type=code', $url);
+
+        // 切换scope分割符
+        $url = $provider->scopes(['test_info', 'test_email'])->withScopeSeparator(' ')->redirect();
+        $this->assertSame('http://auth.url?client_id=fake_client_id&scope=test_info%20test_email&response_type=code', $url);
+
+    }
+
+    public function test_it_can_get_auth_url_with_state()
+    {
+        $config = [
+            'client_id' => 'fake_client_id',
+            'client_secret' => 'fake_client_secret'
+        ];
+        $provider = new OAuthTestProviderStub($config);
+        $url = $provider->withState(123456)->redirect();
+
+        $this->assertSame('http://auth.url?client_id=fake_client_id&scope=info&response_type=code&state=123456', $url);
+    }
+
+    public function test_it_can_get_token()
+    {
+        $config = [
+            'client_id' => 'fake_client_id',
+            'client_secret' => 'fake_client_secret'
+        ];
+        $provider = new OAuthTestProviderStub($config);
+        $response = m::mock('stdClass');
+
+        $response->shouldReceive('getBody')->andReturn($response);
+        $response->shouldReceive('getContents')->andReturn([
+            'access_token' => 'fake_access_token',
+            'refresh_token' => 'fake_refresh_token',
+            'expires_in' => 123456
         ]);
-        $provider->http = m::mock('StdClass');
-        $provider->http->shouldReceive('post')->once()->with('http://token.url', [
-            'headers' => ['Accept' => 'application/json'], 'form_params' => ['client_id' => 'client_id', 'client_secret' => 'client_secret', 'code' => 'code', 'redirect_uri' => 'redirect_uri'],
-        ])->andReturn($response = m::mock('StdClass'));
-        $response->shouldReceive('getBody')->once()->andReturn('{"access_token":"access_token"}');
-        $user = $provider->user();
 
-        $this->assertInstanceOf('Overtrue\Socialite\User', $user);
+        $provider->getHttpClient()->shouldReceive('post')->with('http://token.url', [
+            'json' => [
+                'client_id' => 'fake_client_id',
+                'client_secret' => 'fake_client_secret',
+                'code' => 'fake_code',
+                'redirect_uri' => null
+            ],
+        ])->andReturn($response);
+
+        $this->assertSame([
+            'access_token' => 'fake_access_token',
+            'refresh_token' => 'fake_refresh_token',
+            'expires_in' => 123456
+        ], $provider->tokenFromCode('fake_code'));
+    }
+
+    public function test_it_can_get_user_by_token()
+    {
+        $config = [
+            'client_id' => 'fake_client_id',
+            'client_secret' => 'fake_client_secret'
+        ];
+        $provider = new OAuthTestProviderStub($config);
+
+        $user = $provider->userFromToken('fake_access_token');
+
         $this->assertSame('foo', $user->getId());
+        $this->assertSame(['id' => 'foo'], $user->getRaw());
+        $this->assertSame('fake_access_token', $user->getAccessToken());
     }
 
-    /**
-     * @expectedException \Overtrue\Socialite\InvalidStateException
-     */
-    public function testExceptionIsThrownIfStateIsInvalid()
+    public function test_it_can_get_user_by_code()
     {
-        $request = Request::create('foo', 'GET', ['state' => str_repeat('B', 40), 'code' => 'code']);
-        $request->setSession($session = m::mock('Symfony\Component\HttpFoundation\Session\SessionInterface'));
-        $session->shouldReceive('get')->once()->with('state')->andReturn(str_repeat('A', 40));
-        $provider = new OAuthTwoTestProviderStub($request, [
-            'client_id' => 'client_id',
-            'client_secret' => 'client_secret',
-            'redirect' => 'redirect',
-        ]);
-        $user = $provider->user();
-    }
+        $config = [
+            'client_id' => 'fake_client_id',
+            'client_secret' => 'fake_client_secret'
+        ];
+        $provider = new OAuthTestProviderStub($config);
 
-    /**
-     * @expectedException \Overtrue\Socialite\AuthorizeFailedException
-     * @expectedExceptionMessage Authorize Failed: {"error":"scope is invalid"}
-     */
-    public function testExceptionisThrownIfAuthorizeFailed()
-    {
-        $request = Request::create('foo', 'GET', ['state' => str_repeat('A', 40), 'code' => 'code']);
-        $request->setSession($session = m::mock('Symfony\Component\HttpFoundation\Session\SessionInterface'));
-        $session->shouldReceive('get')->once()->with('state')->andReturn(str_repeat('A', 40));
-        $provider = new OAuthTwoTestProviderStub($request, [
-            'client_id' => 'client_id',
-            'client_secret' => 'client_secret',
-            'redirect' => 'redirect_uri',
-        ]);
-        $provider->http = m::mock('StdClass');
-        $provider->http->shouldReceive('post')->once()->with('http://token.url', [
-            'headers' => ['Accept' => 'application/json'], 'form_params' => ['client_id' => 'client_id', 'client_secret' => 'client_secret', 'code' => 'code', 'redirect_uri' => 'redirect_uri'],
-        ])->andReturn($response = m::mock('StdClass'));
-        $response->shouldReceive('getBody')->once()->andReturn('{"error":"scope is invalid"}');
-        $user = $provider->user();
-    }
-
-    /**
-     * @expectedException \Overtrue\Socialite\InvalidStateException
-     */
-    public function testExceptionIsThrownIfStateIsNotSet()
-    {
-        $request = Request::create('foo', 'GET', ['state' => 'state', 'code' => 'code']);
-        $request->setSession($session = m::mock('Symfony\Component\HttpFoundation\Session\SessionInterface'));
-        $session->shouldReceive('get')->once()->with('state');
-        $provider = new OAuthTwoTestProviderStub($request, [
-            'client_id' => 'client_id',
-            'client_secret' => 'client_secret',
-            'redirect' => 'redirect',
-        ]);
-        $user = $provider->user();
-    }
-
-    public function testDriverName()
-    {
-        $request = Request::create('foo', 'GET', ['state' => 'state', 'code' => 'code']);
-        $provider = new OAuthTwoTestProviderStub($request, [
-            'client_id' => 'client_id',
-            'client_secret' => 'client_secret',
-            'redirect' => 'redirect',
+        $response = m::mock('stdClass');
+        $response->shouldReceive('getBody')->andReturn($response);
+        $response->shouldReceive('getContents')->andReturn([
+            'access_token' => 'fake_access_token',
+            'refresh_token' => 'fake_refresh_token',
+            'expires_in' => 123456
         ]);
 
-        $this->assertSame('OAuthTwoTest', $provider->getName());
+        $provider->getHttpClient()->shouldReceive('post')->with('http://token.url', [
+            'json' => [
+                'client_id' => 'fake_client_id',
+                'client_secret' => 'fake_client_secret',
+                'code' => 'fake_code',
+                'redirect_uri' => null
+            ],
+        ])->andReturn($response);
+
+        $this->assertSame([
+            'access_token' => 'fake_access_token',
+            'refresh_token' => 'fake_refresh_token',
+            'expires_in' => 123456
+        ], $provider->tokenFromCode('fake_code'));
+
+        $user = $provider->userFromCode('fake_code');
+        $tokenResponse = [
+            'access_token' => 'fake_access_token',
+            'refresh_token' => 'fake_refresh_token',
+            'expires_in' => 123456
+        ];
+
+        $this->assertSame('foo', $user->getId());
+        $this->assertSame($tokenResponse, $user->getTokenResponse());
+        $this->assertSame('fake_access_token', $user->getAccessToken());
+        $this->assertSame('fake_refresh_token', $user->getRefreshToken());
     }
 }
 
-class OAuthTwoTestProviderStub extends AbstractProvider
+class OAuthTestProviderStub extends AbstractProvider
 {
     public $http;
 
-    protected function getAuthUrl($state)
+    public $scopes = ['info'];
+
+    protected function getAuthUrl(): string
     {
-        return 'http://auth.url';
+        $url = 'http://auth.url';
+
+        return $this->buildAuthUrlFromBase($url);
     }
 
-    protected function getTokenUrl()
+    protected function getTokenUrl(): string
     {
         return 'http://token.url';
     }
 
-    protected function getUserByToken(AccessTokenInterface $token)
+    protected function getUserByToken(string $token): array
     {
         return ['id' => 'foo'];
     }
 
-    protected function mapUserToObject(array $user)
+    protected function mapUserToObject(array $user): User
     {
         return new User(['id' => $user['id']]);
     }
@@ -171,12 +196,12 @@ class OAuthTwoTestProviderStub extends AbstractProvider
      *
      * @return \GuzzleHttp\Client
      */
-    protected function getHttpClient()
+    public function getHttpClient(): \GuzzleHttp\Client
     {
         if ($this->http) {
             return $this->http;
         }
 
-        return $this->http = m::mock('StdClass');
+        return $this->http = m::mock(\GuzzleHttp\Client::class);
     }
 }

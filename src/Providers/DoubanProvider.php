@@ -36,17 +36,17 @@ class DoubanProvider extends AbstractProvider
             'id' => $user['id'] ?? null,
             'nickname' => $user['name'] ?? null,
             'name' => $user['name'] ?? null,
-            'avatar' => $user['large_avatar'] ?? null,
+            'avatar' => $user['avatar'] ?? null,
             'email' => null,
         ]);
     }
 
-    protected function getTokenFields($code)
+    protected function getTokenFields($code): array
     {
         return parent::getTokenFields($code) + ['grant_type' => 'authorization_code'];
     }
 
-    public function tokenFromCode(string $code): string
+    public function tokenFromCode(string $code): array
     {
         $response = $this->getHttpClient()->post($this->getTokenUrl(), [
             'form_params' => $this->getTokenFields($code),

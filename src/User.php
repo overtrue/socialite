@@ -41,19 +41,19 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
         return $this->getAttribute('avatar');
     }
 
-    public function setToken(string $token): self
+    public function setAccessToken(string $token): self
     {
-        $this->setAttribute('token', $token);
+        $this->setAttribute('access_token', $token);
 
         return $this;
     }
 
-    public function getToken(): ?string
+    public function getAccessToken(): ?string
     {
-        return $this->getAttribute('token');
+        return $this->getAttribute('access_token');
     }
 
-    public function setRefreshToken(?string $refreshToken)
+    public function setRefreshToken(?string $refreshToken): self
     {
         $this->setAttribute('refresh_token', $refreshToken);
 
@@ -65,7 +65,7 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
         return $this->getAttribute('refresh_token');
     }
 
-    public function setExpiresIn(int $expiresIn)
+    public function setExpiresIn(int $expiresIn): self
     {
         $this->setAttribute('expires_in', $expiresIn);
 
@@ -77,7 +77,7 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
         return $this->getAttribute('expires_in');
     }
 
-    public function setRaw(array $user)
+    public function setRaw(array $user): self
     {
         $this->setAttribute('raw', $user);
 
@@ -89,7 +89,19 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
         return $this->getAttribute('raw');
     }
 
-    public function jsonSerialize()
+    public function setTokenResponse(array $response)
+    {
+        $this->setAttribute('token_response', $response);
+
+        return $this;
+    }
+
+    public function getTokenResponse()
+    {
+        return $this->getAttribute('token_response');
+    }
+
+    public function jsonSerialize(): array
     {
         return $this->attributes;
     }

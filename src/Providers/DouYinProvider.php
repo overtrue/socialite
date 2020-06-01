@@ -2,13 +2,16 @@
 
 namespace Overtrue\Socialite\Providers;
 
+use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
 use Overtrue\Socialite\Exceptions\InvalidArgumentException;
 use Overtrue\Socialite\User;
 
 /**
  * @author haoliang@qiyuankeji.vip
+ * @editBy uptutu <alexkung@outlook.com>
  *
  * @see http://open.douyin.com/platform
+ * @see https://open.douyin.com/platform/doc/OpenAPI-overview
  */
 class DouYinProvider extends AbstractProvider
 {
@@ -22,15 +25,17 @@ class DouYinProvider extends AbstractProvider
      */
     protected $scopes = ['user_info'];
 
+    protected $openId;
+
     protected function getAuthUrl(): string
     {
-        return $this->buildAuthUrlFromBase($this->baseUrl.'/platform/oauth/connect');
+        return $this->buildAuthUrlFromBase($this->baseUrl.'/platform/oauth/connect/');
     }
 
     /**
      * @return array
      */
-    public function getCodeFields()
+    public function getCodeFields(): array
     {
         return [
             'client_key' => $this->getClientId(),
@@ -42,7 +47,7 @@ class DouYinProvider extends AbstractProvider
 
     protected function getTokenUrl(): string
     {
-        return $this->baseUrl.'/oauth/access_token';
+        return $this->baseUrl.'/oauth/access_token/';
     }
 
     /**
@@ -50,9 +55,9 @@ class DouYinProvider extends AbstractProvider
      *
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      *
-     * @return string
+     * @return array
      */
-    public function tokenFromCode($code): string
+    public function tokenFromCode($code): array
     {
         $response = $this->getHttpClient()->get($this->getTokenUrl(), [
             'query' => $this->getTokenFields($code),
@@ -60,7 +65,13 @@ class DouYinProvider extends AbstractProvider
 
         $response = \json_decode($response->getBody()->getContents(), true) ?? [];
 
-        return $this->normalizeAccessTokenResponse($response);
+        if (empty($response['data'])) {
+            throw new AuthorizeFailedException('Invalid token response', $response);
+        }
+
+        $this->withOpenId($response['data']['openid']);
+
+        return $this->normalizeAccessTokenResponse($response['data']);
     }
 
     /**
@@ -68,7 +79,7 @@ class DouYinProvider extends AbstractProvider
      *
      * @return array
      */
-    protected function getTokenFields($code)
+    protected function getTokenFields($code): array
     {
         return [
             'client_key' => $this->getClientId(),
@@ -80,18 +91,17 @@ class DouYinProvider extends AbstractProvider
 
     /**
      * @param string     $token
-     * @param array|null $query
      *
      * @throws \Overtrue\Socialite\Exceptions\InvalidArgumentException
      *
      * @return array
      */
-    protected function getUserByToken(string $token, ?array $query = []): array
+    protected function getUserByToken(string $token): array
     {
         $userUrl = $this->baseUrl.'/oauth/userinfo/';
 
-        if (empty($query['open_id'])) {
-            throw new InvalidArgumentException('open_id cannot be empty.');
+        if (empty($this->openId)) {
+            throw new InvalidArgumentException('please set open_id before your query.');
         }
 
         $response = $this->getHttpClient()->get(
@@ -99,7 +109,7 @@ class DouYinProvider extends AbstractProvider
             [
                 'query' => [
                     'access_token' => $token,
-                    'open_id' => $query['open_id'],
+                    'open_id' => $this->openId,
                 ],
             ]
         );
@@ -116,9 +126,17 @@ class DouYinProvider extends AbstractProvider
     {
         return new User([
             'id' => $user['open_id'] ?? null,
-            'username' => $user['nickname'] ?? null,
+            'name' => $user['nickname'] ?? null,
             'nickname' => $user['nickname'] ?? null,
             'avatar' => $user['avatar'] ?? null,
+            'email' => $user['email'] ?? null
         ]);
+    }
+
+    public function withOpenId(string $openId): self
+    {
+        $this->openId = $openId;
+
+        return $this;
     }
 }

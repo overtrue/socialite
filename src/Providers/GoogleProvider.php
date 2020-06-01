@@ -25,7 +25,7 @@ class GoogleProvider extends AbstractProvider
     /**
      * {@inheritdoc}
      */
-    protected function getAuthUrl()
+    protected function getAuthUrl(): string
     {
         return $this->buildAuthUrlFromBase('https://accounts.google.com/o/oauth2/v2/auth');
     }
@@ -43,9 +43,9 @@ class GoogleProvider extends AbstractProvider
      *
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      *
-     * @return string
+     * @return array
      */
-    public function tokenFromCode($code): string
+    public function tokenFromCode($code): array
     {
         $response = $this->getHttpClient()->post($this->getTokenUrl(), [
             'body' => $this->getTokenFields($code),
@@ -59,7 +59,7 @@ class GoogleProvider extends AbstractProvider
      *
      * @return array
      */
-    protected function getTokenFields($code)
+    protected function getTokenFields($code): array
     {
         return parent::getTokenFields($code) + ['grant_type' => 'authorization_code'];
     }

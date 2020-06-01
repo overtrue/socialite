@@ -14,7 +14,7 @@ interface UserInterface
 
     public function getAvatar(): ?string;
 
-    public function getToken(): ?string;
+    public function getAccessToken(): ?string;
 
     public function getRefreshToken(): ?string;
 

@@ -9,7 +9,7 @@ class GitHubProvider extends AbstractProvider
     /**
      * @var array
      */
-    protected $scopes = ['user:email'];
+    protected $scopes = ['read:user'];
 
     /**
      * {@inheritdoc}
@@ -30,7 +30,7 @@ class GitHubProvider extends AbstractProvider
     /**
      * {@inheritdoc}
      */
-    protected function getUserByToken(string $token, ?array $query = []): array
+    protected function getUserByToken(string $token): array
     {
         $userUrl = 'https://api.github.com/user';
 
