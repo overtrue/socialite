@@ -16,7 +16,7 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
         $this->attributes = $attributes;
     }
 
-    public function getId(): ?string
+    public function getId()
     {
         return $this->getAttribute('id');
     }
@@ -87,6 +87,18 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
     public function getRaw(): array
     {
         return $this->getAttribute('raw');
+    }
+
+    public function setTokenResponse(array $response)
+    {
+        $this->setAttribute('token_response', $response);
+
+        return $this;
+    }
+
+    public function getTokenResponse()
+    {
+        return $this->getAttribute('token_response');
     }
 
     public function jsonSerialize(): array

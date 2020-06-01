@@ -31,6 +31,12 @@ class QCloudProvider extends AbstractProvider implements ProviderInterface
      */
     protected $scopes = ['login'];
 
+    protected $accessTokenKey = 'userAccessToken';
+
+    protected $refreshTokenKey = 'userRefreshToken';
+
+    protected $expiresInKey = 'expiresAt';
+
     /**
      * @var string
      */
@@ -75,10 +81,7 @@ class QCloudProvider extends AbstractProvider implements ProviderInterface
             'query' => $this->getTokenFields($code),
         ]);
 
-        return $this->setAccessTokenKey('userAccessToken')
-            ->setRefreshTokenKey('userRefreshToken')
-            ->setExpiresInKey('expiresAt')
-            ->parseAccessToken($response->getBody()->getContents());
+        return $this->parseAccessToken($response->getBody()->getContents());
     }
 
     /**
@@ -94,7 +97,7 @@ class QCloudProvider extends AbstractProvider implements ProviderInterface
         $timestamp = time();
         $fields = [
             'action' => 'GetUserAccessToken',
-            'SecretId' => $this->config['secret_id'],
+            'SecretId' => $this->config->get('secret_id'),
             'userAuthCode' => $code,
             'Nonce' => $nonce,
             'Timestamp' => $timestamp,
@@ -108,16 +111,18 @@ class QCloudProvider extends AbstractProvider implements ProviderInterface
      * Get the raw user for the given access token.
      *
      * @param string $token
+     *
+     * @throws BadResponseException
      * @return array|mixed
      */
     protected function getUserByToken(string $token): array
     {
-        $secret = $this->getTmpSecretIdAndKey($token);
+        $secret = $this->getFederationToken($token);
         $nonce = rand();
         $timestamp = time();
         $queries = [
             'Action' => 'GetUserBaseInfo',
-            'SecretId' => $this->config['secret_id'],
+            'SecretId' => $this->config->get('secret_id'),
             'Nonce' => $nonce,
             'Timestamp' => $timestamp,
             'Token' => $secret['token'],
@@ -127,8 +132,13 @@ class QCloudProvider extends AbstractProvider implements ProviderInterface
         $response = $this->getHttpClient()->get($this->baseUrl, [
             'query' => $queries,
         ]);
+        $response = json_decode($response->getBody()->getContents(), true) ?? [];
 
-        return json_decode($response->getBody()->getContents(), true)['data'];
+        if (empty($response['data'])) {
+            throw new BadResponseException('未能获取到用户信息', $response);
+        }
+
+        return $response['data'];
     }
 
     /**
@@ -141,7 +151,6 @@ class QCloudProvider extends AbstractProvider implements ProviderInterface
     {
         return new User([
             'id' => $this->openId ?? null,
-            'unionid' => $this->unionId ?? null,
             'name' => $user['nickname'] ?? null,
             'nickname' => $user['nickname'] ?? null,
             'email' => $user['email'] ?? null,
@@ -209,19 +218,19 @@ class QCloudProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * Get temple secretId and secretKey for get user info.
+     * Get temporary secretId and secretKey for get user info.
      *
      * @param string $accessToken
      *
      * @return array
      */
-    protected function getTmpSecretIdAndKey(string $accessToken)
+    protected function getFederationToken(string $accessToken)
     {
         $nonce = rand();
         $timestamp = time();
         $params = [
             'Action' => 'ThGetFederationToken',
-            'SecretId' => $this->config['secret_id'],
+            'SecretId' => $this->config->get('secret_id'),
             'Nonce' => $nonce,
             'Timestamp' => $timestamp,
             'openAccessToken' => $accessToken,

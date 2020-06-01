@@ -13,7 +13,7 @@ class OAuthTest extends TestCase
         m::close();
     }
 
-    public function test_it_can_get_authUrl_without_redirect()
+    public function test_it_can_get_auth_url_without_redirect()
     {
         $config = [
             'client_id' => 'fake_client_id',
@@ -24,7 +24,7 @@ class OAuthTest extends TestCase
         $this->assertSame('http://auth.url?client_id=fake_client_id&scope=info&response_type=code', $provider->redirect());
     }
 
-    public function test_it_can_get_authUrl_with_redirect()
+    public function test_it_can_get_auth_url_with_redirect()
     {
         // 手动配置
         $config = [
@@ -42,7 +42,7 @@ class OAuthTest extends TestCase
         $this->assertSame('http://auth.url?client_id=fake_client_id&redirect_uri=fake_redirect&scope=info&response_type=code', $provider->redirect('fake_redirect'));
     }
 
-    public function test_it_can_get_authUrl_with_scopes()
+    public function test_it_can_get_auth_url_with_scopes()
     {
         $config = [
             'client_id' => 'fake_client_id',
@@ -54,12 +54,12 @@ class OAuthTest extends TestCase
         $this->assertSame('http://auth.url?client_id=fake_client_id&scope=test_info%2Ctest_email&response_type=code', $url);
 
         // 切换scope分割符
-        $url = $provider->scopes(['test_info', 'test_email'])->setScopeSeparator(' ')->redirect();
+        $url = $provider->scopes(['test_info', 'test_email'])->withScopeSeparator(' ')->redirect();
         $this->assertSame('http://auth.url?client_id=fake_client_id&scope=test_info%20test_email&response_type=code', $url);
 
     }
 
-    public function test_it_can_get_authUrl_with_state()
+    public function test_it_can_get_auth_url_with_state()
     {
         $config = [
             'client_id' => 'fake_client_id',
@@ -157,7 +157,7 @@ class OAuthTest extends TestCase
         ];
 
         $this->assertSame('foo', $user->getId());
-        $this->assertSame($tokenResponse, $user->getAttribute('tokenResponse'));
+        $this->assertSame($tokenResponse, $user->getTokenResponse());
         $this->assertSame('fake_access_token', $user->getAccessToken());
         $this->assertSame('fake_refresh_token', $user->getRefreshToken());
     }

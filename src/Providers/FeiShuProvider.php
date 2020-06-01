@@ -18,6 +18,8 @@ class FeiShuProvider extends AbstractProvider
      */
     protected $baseUrl = 'https://open.feishu.cn/open-apis/';
 
+    protected $expiresInKey = 'refresh_expires_in';
+
     protected function getAuthUrl(): string
     {
         return $this->buildAuthUrlFromBase($this->baseUrl . 'authen/v1/index');

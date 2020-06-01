@@ -34,7 +34,7 @@ class BaiduProvider extends AbstractProvider
      *
      * @return self
      */
-    public function setDisplay(string $display): self
+    public function withDisplay(string $display): self
     {
         $this->display = $display;
 
@@ -46,7 +46,7 @@ class BaiduProvider extends AbstractProvider
      *
      * @return self
      */
-    public function setScopes(array $scopes): self
+    public function withScopes(array $scopes): self
     {
         $this->scopes = $scopes;
 

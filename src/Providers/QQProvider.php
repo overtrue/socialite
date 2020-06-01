@@ -18,6 +18,10 @@ class QQProvider extends AbstractProvider
      * @var array
      */
     protected $scopes = ['get_user_info'];
+    /**
+     * @var bool
+     */
+    protected $withUnionId = false;
 
     /**
      * @return string
@@ -62,16 +66,28 @@ class QQProvider extends AbstractProvider
 
         return $this->normalizeAccessTokenResponse($token);
     }
+    /**
+     *
+     * @return self
+     */
+    public function withUnionId()
+    {
+        {
+            $this->withUnionId = true;
+
+            return $this;
+        }
+    }
 
     /**
      * @param string     $token
-     * @param array|null $query
      *
      * @return array
      */
-    protected function getUserByToken(string $token, ?array $query = []): array
+    protected function getUserByToken(string $token): array
     {
         $url = $this->baseUrl.'/oauth2.0/me?access_token='.$token;
+        $this->withUnionId && $url .= '&unionid=1';
 
         $response = $this->getHttpClient()->get($url);
 
@@ -100,7 +116,6 @@ class QQProvider extends AbstractProvider
     {
         return new User([
             'id' => $user['openid'] ?? null,
-            'nickname' => $user['nickname'] ?? null,
             'name' => $user['nickname'] ?? null,
             'email' => $user['email'] ?? null,
             'avatar' => $user['figureurl_qq_2'] ?? null,

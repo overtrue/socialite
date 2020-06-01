@@ -103,7 +103,7 @@ Note using the Douyin driver that if you get user information directly using acc
 ```php
 $user = $socialite->driver('douyin')->userFromCode('here is auth code');
 
-$user = $socialite->driver('douyin')->setOpenId('openId')->userFromToken('here is a access token');
+$user = $socialite->driver('douyin')->withOpenId('openId')->userFromToken('here is a access token');
 ```
 
 ### Scope

@@ -137,7 +137,7 @@ abstract class AbstractProvider implements ProviderInterface
 
         return $user->setRefreshToken($tokenResponse[$this->refreshTokenKey] ?? null)
             ->setExpiresIn($tokenResponse[$this->expiresInKey] ?? null)
-            ->setAttribute('tokenResponse', $tokenResponse);
+            ->setTokenResponse($tokenResponse);
     }
 
     /**
@@ -239,51 +239,16 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * @param string $accessTokenKey
-     *
-     * @return self
-     */
-    public function setAccessTokenKey(string $accessTokenKey): self
-    {
-        $this->accessTokenKey = $accessTokenKey;
-
-        return $this;
-    }
-
-    /**
-     * @param string $refreshTokenKey
-     *
-     * @return self
-     */
-    public function setRefreshTokenKey(string $refreshTokenKey): self
-    {
-        $this->refreshTokenKey = $refreshTokenKey;
-
-        return $this;
-    }
-
-    /**
-     * @param string $expiresInKey
-     *
-     * @return self
-     */
-    public function setExpiresInKey(string $expiresInKey): self
-    {
-        $this->expiresInKey = $expiresInKey;
-
-        return $this;
-    }
-
-    /**
      * @param string $scopeSeparator
      * @return self
      */
-    public function setScopeSeparator(string $scopeSeparator): self
+    public function withScopeSeparator(string $scopeSeparator): self
     {
         $this->scopeSeparator = $scopeSeparator;
 
         return $this;
     }
+
 
     /**
      * @param string $url

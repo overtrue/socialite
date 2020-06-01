@@ -69,7 +69,7 @@ class DouYinProvider extends AbstractProvider
             throw new AuthorizeFailedException('Invalid token response', $response);
         }
 
-        $this->setOpenId($response['data']['openid']);
+        $this->withOpenId($response['data']['openid']);
 
         return $this->normalizeAccessTokenResponse($response['data']);
     }
@@ -133,7 +133,7 @@ class DouYinProvider extends AbstractProvider
         ]);
     }
 
-    public function setOpenId(string $openId): self
+    public function withOpenId(string $openId): self
     {
         $this->openId = $openId;
 

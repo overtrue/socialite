@@ -34,7 +34,7 @@ class TaobaoProvider extends AbstractProvider
      *
      * @return self
      */
-    public function setView(string $view): self
+    public function withView(string $view): self
     {
         $this->view = $view;
 
