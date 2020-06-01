@@ -3,7 +3,6 @@
 use Overtrue\Socialite\Contracts\WeChatComponentInterface;
 use Overtrue\Socialite\Providers\WeChatProvider as RealWeChatProvider;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpFoundation\Request;
 
 class WechatProviderTest extends TestCase
 {
