@@ -97,7 +97,7 @@ Example:
 ...
 ```
 
-##### Douyin
+##### Douyin (https://open.douyin.com/platform/doc/OpenAPI-oauth2)
 Note using the Douyin driver that if you get user information directly using access token, set up the openid first. the openid can be obtained by code when access is obtained, so call userFromCode() automatically configured for you openid, if call userFromToken () first call setopenId()
 
 ```php
@@ -105,6 +105,24 @@ $user = $socialite->driver('douyin')->userFromCode('here is auth code');
 
 $user = $socialite->driver('douyin')->withOpenId('openId')->userFromToken('here is a access token');
 ```
+
+##### Baidu (https://developer.baidu.com/wiki/index.php?title=docs/oauth)
+You can choose the form you want display by using `withDisplay()`.
+
+```php
+$authUrl = $socialite->driver('baidu')->withDisplay('mobile')->redirect();
+
+```
+`popup` mode is the default setting with display. `basic` is the default with scopes.
+
+##### Taobao (https://open.taobao.com/doc.htm?docId=102635&docType=1&source=search)
+You can choose the form you want display by using `withView()`.
+```php
+$authUrl = $socialite->driver('taobao')->withView('wap')->redirect();
+
+```
+`web` mode is the default setting with display. `user_info` is the default with scopes.
+
 
 ### Scope
 
@@ -126,8 +144,7 @@ $url = 'your callback url.';
 $socialite->redirect($url);
 // or
 $socialite->withRedirectUrl($url)->redirect();
-// or
-$socialite->setRedirectUrl($url)->redirect();
+
 ```
 
 ### Additional parameters
@@ -190,14 +207,19 @@ mixed   $user->getId();
 ?string $user->getEmail();
 ?string $user->getAvatar();
 ?string $user->getRaw();
-?string $user->getToken(); // or $user->getAccessToken()
+?string $user->getAccessToken(); 
 ?string $user->getRefreshToken();
 ?int    $user->getExpiresIn();
+
 ```
 
 #### Get raw response from OAuth API
 
-The `$user->getRaw()` method will return an array of the API raw response.
+The `$user->getRaw()` method will return an **array** of the API raw response.
+
+#### Get the token response when you use userFromCode()
+The `$user->getTokenResponse()` method will return an **array** of the get token(access token) API response.
+Note: This method only return a **valid array** when you use `userFromCode()`, else will return **null** because use `userFromToken()` have no token response. 
 
 ### Get user with access token
 
