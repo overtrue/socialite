@@ -90,7 +90,7 @@ class DouYinProvider extends AbstractProvider
     }
 
     /**
-     * @param string     $token
+     * @param string $token
      *
      * @throws \Overtrue\Socialite\Exceptions\InvalidArgumentException
      *
@@ -129,7 +129,7 @@ class DouYinProvider extends AbstractProvider
             'name' => $user['nickname'] ?? null,
             'nickname' => $user['nickname'] ?? null,
             'avatar' => $user['avatar'] ?? null,
-            'email' => $user['email'] ?? null
+            'email' => $user['email'] ?? null,
         ]);
     }
 

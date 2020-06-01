@@ -66,8 +66,8 @@ class QQProvider extends AbstractProvider
 
         return $this->normalizeAccessTokenResponse($token);
     }
+
     /**
-     *
      * @return self
      */
     public function withUnionId()
@@ -78,7 +78,7 @@ class QQProvider extends AbstractProvider
     }
 
     /**
-     * @param string     $token
+     * @param string $token
      *
      * @return array
      */

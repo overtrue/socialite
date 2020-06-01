@@ -240,6 +240,7 @@ abstract class AbstractProvider implements ProviderInterface
 
     /**
      * @param string $scopeSeparator
+     *
      * @return self
      */
     public function withScopeSeparator(string $scopeSeparator): self
@@ -248,7 +249,6 @@ abstract class AbstractProvider implements ProviderInterface
 
         return $this;
     }
-
 
     /**
      * @param string $url

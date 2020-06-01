@@ -54,7 +54,6 @@ class BaiduProvider extends AbstractProvider
     }
 
     /**
-     *
      * @return string
      */
     protected function getAuthUrl(): string
@@ -122,7 +121,7 @@ class BaiduProvider extends AbstractProvider
             'nickname' => $user['realname'] ?? null,
             'name' => $user['username'] ?? null,
             'email' => '',
-            'avatar' => $user['portrait'] ? 'http://tb.himg.baidu.com/sys/portraitn/item/' . $user['portrait'] : null,
+            'avatar' => $user['portrait'] ? 'http://tb.himg.baidu.com/sys/portraitn/item/'.$user['portrait'] : null,
         ]);
     }
 }
