@@ -72,11 +72,9 @@ class QQProvider extends AbstractProvider
      */
     public function withUnionId()
     {
-        {
-            $this->withUnionId = true;
+        $this->withUnionId = true;
 
-            return $this;
-        }
+        return $this;
     }
 
     /**
