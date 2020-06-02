@@ -191,7 +191,7 @@ $user = $socialite->driver('github')->userFromCode($code);
 // authorized
 ```
 
-- [Read more about `state` parameter](https://auth0.com/docs/protocols/oauth2/oauth-state)
+[Read more about `state` parameter](https://auth0.com/docs/protocols/oauth2/oauth-state)
 
 ### Additional parameters
 
