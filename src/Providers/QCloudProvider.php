@@ -10,7 +10,6 @@
 
 namespace Overtrue\Socialite\Providers;
 
-use GuzzleHttp\Exception\BadResponseException;
 use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
 use Overtrue\Socialite\Contracts\ProviderInterface;
 use Overtrue\Socialite\User;
@@ -112,7 +111,6 @@ class QCloudProvider extends AbstractProvider implements ProviderInterface
      *
      * @param string $token
      *
-     * @throws BadResponseException
      * @return array|mixed
      */
     protected function getUserByToken(string $token): array
@@ -135,7 +133,7 @@ class QCloudProvider extends AbstractProvider implements ProviderInterface
         $response = json_decode($response->getBody()->getContents(), true) ?? [];
 
         if (empty($response['data'])) {
-            throw new BadResponseException('未能获取到用户信息', $response);
+            throw new \InvalidArgumentException('You have error! ' . json_encode($response, JSON_UNESCAPED_UNICODE));
         }
 
         return $response['data'];
@@ -208,7 +206,7 @@ class QCloudProvider extends AbstractProvider implements ProviderInterface
         }
 
         if (empty($body['data'])) {
-            throw new BadResponseException('Bad Response', $body);
+            throw new \InvalidArgumentException('You have error! ' . json_encode($body, JSON_UNESCAPED_UNICODE));
         }
 
         $this->openId = $body['data']['userOpenId'] ?? null;
