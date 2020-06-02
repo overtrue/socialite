@@ -6,6 +6,7 @@ use Closure;
 use InvalidArgumentException;
 use Overtrue\Socialite\Contracts\FactoryInterface;
 use Overtrue\Socialite\Contracts\ProviderInterface;
+use Overtrue\Socialite\Providers\AlipayProvider;
 
 class SocialiteManager implements FactoryInterface
 {
@@ -23,6 +24,7 @@ class SocialiteManager implements FactoryInterface
      * @var array
      */
     protected $drivers = [
+        'alipay' =>Providers\AlipayProvider::class,
         'qq' => Providers\QQProvider::class,
         'qcloud' => Providers\QCloudProvider::class,
         'github' => Providers\GitHubProvider::class,

@@ -2,7 +2,6 @@
 
 namespace Overtrue\Socialite\Providers;
 
-use GuzzleHttp\Exception\BadResponseException;
 use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
 use Overtrue\Socialite\User;
 
@@ -98,7 +97,7 @@ class FeiShuProvider extends AbstractProvider
         $response = \json_decode($response->getBody(), true) ?? [];
 
         if (empty($response['data'])) {
-            throw new BadResponseException('This query response is not except.', $response);
+            throw new \InvalidArgumentException('You have error! ' . json_encode($response, JSON_UNESCAPED_UNICODE));
         }
 
         return $response['data'];
