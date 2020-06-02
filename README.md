@@ -98,6 +98,7 @@ Example:
 ```
 
 ##### [Douyin](https://open.douyin.com/platform/doc/OpenAPI-oauth2)
+
 Note using the Douyin driver that if you get user information directly using access token, set up the openid first. the openid can be obtained by code when access is obtained, so call `userFromCode()` automatically configured for you openid, if call `userFromToken()` first call `withOpenId()`
 
 ```php
@@ -107,6 +108,7 @@ $user = $socialite->driver('douyin')->withOpenId('openId')->userFromToken('here 
 ```
 
 ##### [Baidu](https://developer.baidu.com/wiki/index.php?title=docs/oauth)
+
 You can choose the form you want display by using `withDisplay()`.
 
 ```php
@@ -115,6 +117,7 @@ $authUrl = $socialite->driver('baidu')->withDisplay('mobile')->redirect();
 `popup` mode is the default setting with display. `basic` is the default with scopes.
 
 ##### [Taobao](https://open.taobao.com/doc.htm?docId=102635&docType=1&source=search)
+
 You can choose the form you want display by using `withView()`.
 
 ```php
@@ -144,7 +147,9 @@ $socialite->withRedirectUrl($url)->redirect();
 ```
 
 ### State
+
 Your app can use a state parameter for making sure the response belongs to a request initiated by the same user, therefore preventing cross-site request forgery (CSFR) attacks. A CSFR attack occurs when a malicious attacker tricks the user into performing unwanted actions that only the user is authorized to perform on a trusted web application, and all will be done without involving or alerting the user.
+
 Here's the simplest example of how providing the state can make your app more secure. in this example, we use the session ID as the state parameter, but you can use whatever logic you want to create value for the state.
 
 #### Redirect with `state` parameter 
