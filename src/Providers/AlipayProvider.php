@@ -103,10 +103,13 @@ class AlipayProvider extends AbstractProvider
 
     protected function getCodeFields(): array
     {
+        if (empty($this->redirect())) {
+            throw new InvalidArgumentException('Please set seem redirect URL like your Alipay Admin');
+        }
         return [
             'app_id' => $this->getConfig()->get('client_id') ?? $this->getConfig()->get('app_id'),
             'scope' => implode(',', $this->scopes),
-            'redirect_uri' => $this->redirectUrl ?? '/'
+            'redirect_uri' => $this->redirectUrl
         ];
     }
 
@@ -155,7 +158,7 @@ class AlipayProvider extends AbstractProvider
 
     protected function signWithSHA256RSA($signContent, $key)
     {
-        if (empty($privateKey)) {
+        if (empty($key)) {
             throw new InvalidArgumentException('no private RSA key set.');
         }
 
