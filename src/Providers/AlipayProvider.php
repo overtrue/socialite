@@ -105,8 +105,8 @@ class AlipayProvider extends AbstractProvider
     {
         return [
             'app_id' => $this->getConfig()->get('client_id') ?? $this->getConfig()->get('app_id'),
-            'scope' => $this->scopes,
-            'redirect_uri' => $this->redirectUrl
+            'scope' => implode(',', $this->scopes),
+            'redirect_uri' => $this->redirectUrl ?? '/'
         ];
     }
 
