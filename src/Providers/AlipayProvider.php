@@ -61,19 +61,20 @@ class AlipayProvider extends AbstractProvider
     protected function getUserByToken(string $token): array
     {
         $params = $this->getPublicFields();
-        $params += ['method' => 'alipay.user.userinfo.share', 'auth_token' => $token];
+        $params += ['method' => 'alipay.user.info.share', 'auth_token' => $token];
         $params['sign'] = $this->generateSign($params);
 
         $response = $this->getHttpClient()->post($this->baseUrl, [
-            'body' => $params,
+            'form_params' => $params,
             'headers' => [
                 "content-type" => "application/x-www-form-urlencoded;charset=utf-8"
             ]
         ]);
 
         $response = json_decode($response->getBody()->getContents(), true);
-        if (empty($response['alipay_user_info_share_response'])) {
-            throw new BadResponseException('Can not get the user info in this response. Please check setting before.', $response);
+
+        if (!empty($response['error_response'])) {
+            throw new \InvalidArgumentException('You have error! ' . json_encode($response, JSON_UNESCAPED_UNICODE));
         }
 
         return $response['alipay_user_info_share_response'];
@@ -92,34 +93,41 @@ class AlipayProvider extends AbstractProvider
     public function tokenFromCode(string $code): array
     {
         $response = $this->getHttpClient()->post($this->getTokenUrl(), [
-            'body' => $this->getTokenFields($code),
+            'form_params' => $this->getTokenFields($code),
             'headers' => [
                 "content-type" => "application/x-www-form-urlencoded;charset=utf-8"
             ]
         ]);
+        $response = json_decode($response->getBody()->getContents(), true);
 
-        return $this->normalizeAccessTokenResponse(json_decode($response->getBody()->getContents(), true)['alipay_system_oauth_token_response']);
-    }
+        if (!empty($response['error_response'])) {
+            throw new \InvalidArgumentException('You have error! ' . json_encode($response, JSON_UNESCAPED_UNICODE));
+        }
+
+        return $this->normalizeAccessTokenResponse($response['alipay_system_oauth_token_response']);    }
 
     protected function getCodeFields(): array
     {
-        if (empty($this->redirect())) {
+        if (empty($this->redirectUrl)) {
             throw new InvalidArgumentException('Please set seem redirect URL like your Alipay Admin');
         }
-        return [
+
+        $fields = array_merge([
             'app_id' => $this->getConfig()->get('client_id') ?? $this->getConfig()->get('app_id'),
             'scope' => implode(',', $this->scopes),
             'redirect_uri' => $this->redirectUrl
-        ];
+        ], $this->parameters);
+
+        return $fields;
     }
 
     protected function getTokenFields(string $code): array
     {
         $params = $this->getPublicFields() + ['method' => 'alipay.system.oauth.token'];
-        $params['biz_content'] = [
-                'code' => $code,
-                'grant_type' => 'authorization_code'
-            ];
+        $params += [
+            'code' => $code,
+            'grant_type' => 'authorization_code'
+        ];
         $params['sign'] = $this->generateSign($params);
 
         return $params;
@@ -128,12 +136,12 @@ class AlipayProvider extends AbstractProvider
     public function getPublicFields(): array
     {
         return [
-                'app_id' => $this->getConfig()->get('client_id') ?? $this->getConfig()->get('app_id'),
-                'format' => $this->format,
-                'charset' => $this->postCharset,
-                'sign_type' => $this->signType,
-                'timestamp' => date('y-m-d H:m:s'),
-                'version' => $this->apiVersion,
+            'app_id' => $this->getConfig()->get('client_id') ?? $this->getConfig()->get('app_id'),
+            'format' => $this->format,
+            'charset' => $this->postCharset,
+            'sign_type' => $this->signType,
+            'timestamp' => date('Y-m-d H:m:s'),
+            'version' => $this->apiVersion,
         ];
     }
 
@@ -148,15 +156,15 @@ class AlipayProvider extends AbstractProvider
     {
         ksort($params);
 
-        $signContent = http_build_query($params);
+        $signContent = $this->buildParams($params);
         // TODO: 写进　README
         $key = $this->withPrivateKey ? $this->getConfig()->get('private_RSA_key') : $this->getConfig()->get('public_RSA_key');
         $signValue = $this->signWithSHA256RSA($signContent, $key);
 
-        return urlencode($signValue);
+        return $signValue;
     }
 
-    protected function signWithSHA256RSA($signContent, $key)
+    protected function signWithSHA256RSA(string $signContent, string $key)
     {
         if (empty($key)) {
             throw new InvalidArgumentException('no private RSA key set.');
@@ -164,16 +172,30 @@ class AlipayProvider extends AbstractProvider
 
         if ($this->withPrivateKey) {
             $key = "-----BEGIN RSA PRIVATE KEY-----\n" .
-                wordwrap($key, 64, "\n", true) .
-                "\n-----END RSA PRIVATE KEY-----";
+                chunk_split($key, 64, "\n") .
+                "-----END RSA PRIVATE KEY-----";
         } else {
             $key = "-----BEGIN PUBLIC KEY-----\n" .
-                wordwrap($key, 64, "\n", true) .
+                chunk_split($key, 64, "\n") .
                 "-----END PUBLIC KEY-----";
         }
 
         openssl_sign($signContent, $signValue, $key, OPENSSL_ALGO_SHA256);
 
         return base64_encode($signValue);
+    }
+
+    public static function buildParams(array $params, bool $urlencode = false, array $except = ['sign'])
+    {
+        $param_str = '';
+        foreach ($params as $k => $v) {
+            if (in_array($k, $except)) {
+                continue;
+            }
+            $param_str .= $k . '=';
+            $param_str .= $urlencode ? rawurlencode($v) : $v;
+            $param_str .= '&';
+        }
+        return rtrim($param_str, '&');
     }
 }
