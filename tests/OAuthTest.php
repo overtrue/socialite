@@ -4,7 +4,6 @@ use Mockery as m;
 use Overtrue\Socialite\Providers\AbstractProvider;
 use Overtrue\Socialite\User;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpFoundation\Request;
 
 class OAuthTest extends TestCase
 {
@@ -17,7 +16,7 @@ class OAuthTest extends TestCase
     {
         $config = [
             'client_id' => 'fake_client_id',
-            'client_secret' => 'fake_client_secret'
+            'client_secret' => 'fake_client_secret',
         ];
         $provider = new OAuthTestProviderStub($config);
 
@@ -29,7 +28,7 @@ class OAuthTest extends TestCase
         // 手动配置
         $config = [
             'client_id' => 'fake_client_id',
-            'client_secret' => 'fake_client_secret'
+            'client_secret' => 'fake_client_secret',
         ];
         $provider = new OAuthTestProviderStub($config);
 
@@ -46,7 +45,7 @@ class OAuthTest extends TestCase
     {
         $config = [
             'client_id' => 'fake_client_id',
-            'client_secret' => 'fake_client_secret'
+            'client_secret' => 'fake_client_secret',
         ];
         $provider = new OAuthTestProviderStub($config);
         $url = $provider->scopes(['test_info', 'test_email'])->redirect();
@@ -56,14 +55,13 @@ class OAuthTest extends TestCase
         // 切换scope分割符
         $url = $provider->scopes(['test_info', 'test_email'])->withScopeSeparator(' ')->redirect();
         $this->assertSame('http://auth.url?client_id=fake_client_id&scope=test_info%20test_email&response_type=code', $url);
-
     }
 
     public function test_it_can_get_auth_url_with_state()
     {
         $config = [
             'client_id' => 'fake_client_id',
-            'client_secret' => 'fake_client_secret'
+            'client_secret' => 'fake_client_secret',
         ];
         $provider = new OAuthTestProviderStub($config);
         $url = $provider->withState(123456)->redirect();
@@ -75,7 +73,7 @@ class OAuthTest extends TestCase
     {
         $config = [
             'client_id' => 'fake_client_id',
-            'client_secret' => 'fake_client_secret'
+            'client_secret' => 'fake_client_secret',
         ];
         $provider = new OAuthTestProviderStub($config);
         $response = m::mock('stdClass');
@@ -84,7 +82,7 @@ class OAuthTest extends TestCase
         $response->shouldReceive('getContents')->andReturn([
             'access_token' => 'fake_access_token',
             'refresh_token' => 'fake_refresh_token',
-            'expires_in' => 123456
+            'expires_in' => 123456,
         ]);
 
         $provider->getHttpClient()->shouldReceive('post')->with('http://token.url', [
@@ -92,14 +90,14 @@ class OAuthTest extends TestCase
                 'client_id' => 'fake_client_id',
                 'client_secret' => 'fake_client_secret',
                 'code' => 'fake_code',
-                'redirect_uri' => null
+                'redirect_uri' => null,
             ],
         ])->andReturn($response);
 
         $this->assertSame([
             'access_token' => 'fake_access_token',
             'refresh_token' => 'fake_refresh_token',
-            'expires_in' => 123456
+            'expires_in' => 123456,
         ], $provider->tokenFromCode('fake_code'));
     }
 
@@ -107,7 +105,7 @@ class OAuthTest extends TestCase
     {
         $config = [
             'client_id' => 'fake_client_id',
-            'client_secret' => 'fake_client_secret'
+            'client_secret' => 'fake_client_secret',
         ];
         $provider = new OAuthTestProviderStub($config);
 
@@ -122,7 +120,7 @@ class OAuthTest extends TestCase
     {
         $config = [
             'client_id' => 'fake_client_id',
-            'client_secret' => 'fake_client_secret'
+            'client_secret' => 'fake_client_secret',
         ];
         $provider = new OAuthTestProviderStub($config);
 
@@ -131,7 +129,7 @@ class OAuthTest extends TestCase
         $response->shouldReceive('getContents')->andReturn([
             'access_token' => 'fake_access_token',
             'refresh_token' => 'fake_refresh_token',
-            'expires_in' => 123456
+            'expires_in' => 123456,
         ]);
 
         $provider->getHttpClient()->shouldReceive('post')->with('http://token.url', [
@@ -139,21 +137,21 @@ class OAuthTest extends TestCase
                 'client_id' => 'fake_client_id',
                 'client_secret' => 'fake_client_secret',
                 'code' => 'fake_code',
-                'redirect_uri' => null
+                'redirect_uri' => null,
             ],
         ])->andReturn($response);
 
         $this->assertSame([
             'access_token' => 'fake_access_token',
             'refresh_token' => 'fake_refresh_token',
-            'expires_in' => 123456
+            'expires_in' => 123456,
         ], $provider->tokenFromCode('fake_code'));
 
         $user = $provider->userFromCode('fake_code');
         $tokenResponse = [
             'access_token' => 'fake_access_token',
             'refresh_token' => 'fake_refresh_token',
-            'expires_in' => 123456
+            'expires_in' => 123456,
         ];
 
         $this->assertSame('foo', $user->getId());

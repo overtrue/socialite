@@ -78,7 +78,7 @@ class QQProvider extends AbstractProvider
     }
 
     /**
-     * @param string     $token
+     * @param string $token
      *
      * @return array
      */

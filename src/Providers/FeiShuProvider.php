@@ -21,7 +21,7 @@ class FeiShuProvider extends AbstractProvider
 
     protected function getAuthUrl(): string
     {
-        return $this->buildAuthUrlFromBase($this->baseUrl . 'authen/v1/index');
+        return $this->buildAuthUrlFromBase($this->baseUrl.'authen/v1/index');
     }
 
     /**
@@ -37,7 +37,7 @@ class FeiShuProvider extends AbstractProvider
 
     protected function getTokenUrl(): string
     {
-        return $this->baseUrl . 'authen/v1/access_token';
+        return $this->baseUrl.'authen/v1/access_token';
     }
 
     /**
@@ -54,6 +54,8 @@ class FeiShuProvider extends AbstractProvider
 
     /**
      * @param string $code
+     *
+     * @throws AuthorizeFailedException
      *
      * @return array
      * @throws AuthorizeFailedException
@@ -75,7 +77,6 @@ class FeiShuProvider extends AbstractProvider
         if (empty($response['data'])) {
             throw new AuthorizeFailedException('Invalid token response', $response);
         }
-        $this->setExpiresInKey('refresh_expires_in');
 
         return $this->normalizeAccessTokenResponse($response['data']);
     }
@@ -88,7 +89,7 @@ class FeiShuProvider extends AbstractProvider
     protected function getUserByToken(string $token): array
     {
         $response = $this->getHttpClient()->get($this->baseUrl.'/authen/v1/user_info', [
-            'headers' => ['Content-Type' => 'application/json', 'AuthoriBearer ' . $token],
+            'headers' => ['Content-Type' => 'application/json', 'AuthoriBearer '.$token],
             'query' => array_filter([
                 'user_access_token' => $token,
             ]),

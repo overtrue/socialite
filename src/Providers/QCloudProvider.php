@@ -10,8 +10,10 @@
 
 namespace Overtrue\Socialite\Providers;
 
-use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
+
+use GuzzleHttp\Exception\BadResponseException;
 use Overtrue\Socialite\Contracts\ProviderInterface;
+use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
 use Overtrue\Socialite\User;
 
 class QCloudProvider extends AbstractProvider implements ProviderInterface
@@ -72,6 +74,7 @@ class QCloudProvider extends AbstractProvider implements ProviderInterface
      * @param string $code
      *
      * @throws AuthorizeFailedException
+     *
      * @return array
      */
     public function TokenFromCode($code): array
@@ -111,6 +114,8 @@ class QCloudProvider extends AbstractProvider implements ProviderInterface
      *
      * @param string $token
      *
+     * @throws BadResponseException
+     *
      * @return array|mixed
      */
     protected function getUserByToken(string $token): array
@@ -143,6 +148,7 @@ class QCloudProvider extends AbstractProvider implements ProviderInterface
      * Map the raw user array to a Socialite User instance.
      *
      * @param array $user
+     *
      * @return \Overtrue\Socialite\User
      */
     protected function mapUserToObject(array $user): User
@@ -160,7 +166,7 @@ class QCloudProvider extends AbstractProvider implements ProviderInterface
      *
      * @param string $method
      * @param string $url
-     * @param array $params
+     * @param array  $params
      * @param string $sha
      * @param string $key
      *
@@ -192,8 +198,9 @@ class QCloudProvider extends AbstractProvider implements ProviderInterface
      *
      * @param string $body
      *
-     * @return array
      * @throws AuthorizeFailedException
+     *
+     * @return array
      */
     protected function parseAccessToken(string $body)
     {
@@ -207,6 +214,7 @@ class QCloudProvider extends AbstractProvider implements ProviderInterface
 
         if (empty($body['data'])) {
             throw new \InvalidArgumentException('You have error! ' . json_encode($body, JSON_UNESCAPED_UNICODE));
+
         }
 
         $this->openId = $body['data']['userOpenId'] ?? null;
