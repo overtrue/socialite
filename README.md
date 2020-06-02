@@ -97,14 +97,32 @@ Example:
 ...
 ```
 
-<<<<<<< HEAD
-##### Douyin (https://open.douyin.com/platform/doc/OpenAPI-oauth2)
-Note using the Douyin driver that if you get user information directly using access token, set up the openid first. the openid can be obtained by code when access is obtained, so call userFromCode() automatically configured for you openid, if call userFromToken () first call setopenId()
-=======
+##### [Alipay](https://opendocs.alipay.com/open/200/105310#s2)
+If you want to use `alipay` driver, you need set config like below.
+```php
+...
+  'alipay' => [
+    // the key, pointed by the key value of this array, can also be named as 'app_id' like the official documentation.
+    'client_id' => 'your-app-id', 
+ 
+    // Please refer to the official documentation, in the official management background configuration RSA2.
+    // Note: This is your own private key.
+    // Note: Do not allow the private key content to have extra characters.
+    // Recommendation: For security, you can read directly from the file. But here as long as the value, please remember to remove the head and tail of the decoration.
+    'rsa_private_key' => 'your-rsa-private-key',
+
+    // Be sure to set this value and make sure that it is the same address value as set in the official admin system.
+    // the key, pointed by the key value of this array, can also be named as 'redirect_url' like the official documentation.
+    'redirect' => 'http://localhost/socialite/callback.php',
+  ],
+...
+```
+Only RSA2 personal private keys are supported, so stay tuned if you want to log in with a certificate.
+
+
 ##### [Douyin](https://open.douyin.com/platform/doc/OpenAPI-oauth2)
 
 Note using the Douyin driver that if you get user information directly using access token, set up the openid first. the openid can be obtained by code when access is obtained, so call `userFromCode()` automatically configured for you openid, if call `userFromToken()` first call `withOpenId()`
->>>>>>> 075d2dc930b932fa7370266d4ba4be4e0506cbff
 
 ```php
 $user = $socialite->driver('douyin')->userFromCode('here is auth code');
@@ -112,31 +130,14 @@ $user = $socialite->driver('douyin')->userFromCode('here is auth code');
 $user = $socialite->driver('douyin')->withOpenId('openId')->userFromToken('here is a access token');
 ```
 
-<<<<<<< HEAD
-##### Baidu (https://developer.baidu.com/wiki/index.php?title=docs/oauth)
-=======
+
 ##### [Baidu](https://developer.baidu.com/wiki/index.php?title=docs/oauth)
 
->>>>>>> 075d2dc930b932fa7370266d4ba4be4e0506cbff
 You can choose the form you want display by using `withDisplay()`.
 
 ```php
 $authUrl = $socialite->driver('baidu')->withDisplay('mobile')->redirect();
-<<<<<<< HEAD
 
-```
-`popup` mode is the default setting with display. `basic` is the default with scopes.
-
-##### Taobao (https://open.taobao.com/doc.htm?docId=102635&docType=1&source=search)
-You can choose the form you want display by using `withView()`.
-```php
-$authUrl = $socialite->driver('taobao')->withView('wap')->redirect();
-
-```
-`web` mode is the default setting with display. `user_info` is the default with scopes.
-
-
-=======
 ```
 `popup` mode is the default setting with display. `basic` is the default with scopes.
 
@@ -149,7 +150,6 @@ $authUrl = $socialite->driver('taobao')->withView('wap')->redirect();
 ```
 `web` mode is the default setting with display. `user_info` is the default with scopes.
 
->>>>>>> 075d2dc930b932fa7370266d4ba4be4e0506cbff
 ### Scope
 
 Before redirecting the user, you may also set "scopes" on the request using the scope method. This method will overwrite all existing scopes:
@@ -169,10 +169,6 @@ $url = 'your callback url.';
 $socialite->redirect($url);
 // or
 $socialite->withRedirectUrl($url)->redirect();
-<<<<<<< HEAD
-
-=======
->>>>>>> 075d2dc930b932fa7370266d4ba4be4e0506cbff
 ```
 
 ### State
@@ -286,10 +282,8 @@ mixed   $user->getId();
 ?string $user->getAccessToken(); 
 ?string $user->getRefreshToken();
 ?int    $user->getExpiresIn();
-<<<<<<< HEAD
-=======
 ?array  $user->getTokenResponse();
->>>>>>> 075d2dc930b932fa7370266d4ba4be4e0506cbff
+
 
 ```
 
@@ -298,15 +292,10 @@ mixed   $user->getId();
 The `$user->getRaw()` method will return an **array** of the API raw response.
 
 #### Get the token response when you use userFromCode()
-<<<<<<< HEAD
-The `$user->getTokenResponse()` method will return an **array** of the get token(access token) API response.
-Note: This method only return a **valid array** when you use `userFromCode()`, else will return **null** because use `userFromToken()` have no token response. 
-=======
 
 The `$user->getTokenResponse()` method will return an **array** of the get token(access token) API response.
 
 > Note: This method only return a **valid array** when you use `userFromCode()`, else will return **null** because use `userFromToken()` have no token response. 
->>>>>>> 075d2dc930b932fa7370266d4ba4be4e0506cbff
 
 ### Get user with access token
 
@@ -319,6 +308,7 @@ Enjoy it! :heart:
 
 # Reference
 
+- [Alipay - 用户信息授权](https://opendocs.alipay.com/open/289/105656)
 - [Google - OpenID Connect](https://developers.google.com/identity/protocols/OpenIDConnect)
 - [Github - Authorizing OAuth Apps](https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/)
 - [Facebook - Graph API](https://developers.facebook.com/docs/graph-api)

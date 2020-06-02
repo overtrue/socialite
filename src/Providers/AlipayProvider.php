@@ -1,25 +1,15 @@
 <?php
 
-
 namespace Overtrue\Socialite\Providers;
 
-
-use GuzzleHttp\Exception\BadResponseException;
 use Overtrue\Socialite\Exceptions\InvalidArgumentException;
 use Overtrue\Socialite\User;
 
 /**
- * Class AlipayProvider
- * @package Overtrue\Socialite\Providers
- *
  * @see https://opendocs.alipay.com/open/289/105656
- *
- * 一定要看这个做配置哦
- * @see https://opendocs.alipay.com/open/200/105310#s2
  */
 class AlipayProvider extends AbstractProvider
 {
-
     protected $baseUrl = 'https://openapi.alipay.com/gateway.do';
 
     protected $scopes = ['auth_user'];
@@ -31,22 +21,6 @@ class AlipayProvider extends AbstractProvider
     protected $postCharset = 'UTF-8';
 
     protected $format = 'json';
-
-    protected $withPrivateKey = true;
-
-    public function witPublicKey(): self
-    {
-        $this->withPrivateKey = false;
-
-        return $this;
-    }
-
-    public function withPrivateKey(): self
-    {
-        $this->withPrivateKey = true;
-
-        return $this;
-    }
 
     protected function getAuthUrl(): string
     {
@@ -60,8 +34,8 @@ class AlipayProvider extends AbstractProvider
 
     protected function getUserByToken(string $token): array
     {
-        $params = $this->getPublicFields();
-        $params += ['method' => 'alipay.user.info.share', 'auth_token' => $token];
+        $params = $this->getPublicFields('alipay.user.info.share');
+        $params += ['auth_token' => $token];
         $params['sign'] = $this->generateSign($params);
 
         $response = $this->getHttpClient()->post($this->baseUrl, [
@@ -109,7 +83,7 @@ class AlipayProvider extends AbstractProvider
     protected function getCodeFields(): array
     {
         if (empty($this->redirectUrl)) {
-            throw new InvalidArgumentException('Please set seem redirect URL like your Alipay Admin');
+            throw new InvalidArgumentException('Please set same redirect URL like your Alipay Official Admin');
         }
 
         $fields = array_merge([
@@ -123,7 +97,7 @@ class AlipayProvider extends AbstractProvider
 
     protected function getTokenFields(string $code): array
     {
-        $params = $this->getPublicFields() + ['method' => 'alipay.system.oauth.token'];
+        $params = $this->getPublicFields('alipay.system.oauth.token');
         $params += [
             'code' => $code,
             'grant_type' => 'authorization_code'
@@ -133,13 +107,14 @@ class AlipayProvider extends AbstractProvider
         return $params;
     }
 
-    public function getPublicFields(): array
+    public function getPublicFields(string $method): array
     {
         return [
             'app_id' => $this->getConfig()->get('client_id') ?? $this->getConfig()->get('app_id'),
             'format' => $this->format,
             'charset' => $this->postCharset,
             'sign_type' => $this->signType,
+            'method' => $method,
             'timestamp' => date('Y-m-d H:m:s'),
             'version' => $this->apiVersion,
         ];
@@ -157,8 +132,7 @@ class AlipayProvider extends AbstractProvider
         ksort($params);
 
         $signContent = $this->buildParams($params);
-        // TODO: 写进　README
-        $key = $this->withPrivateKey ? $this->getConfig()->get('private_RSA_key') : $this->getConfig()->get('public_RSA_key');
+        $key = $this->getConfig()->get('rsa_private_key');
         $signValue = $this->signWithSHA256RSA($signContent, $key);
 
         return $signValue;
@@ -167,18 +141,12 @@ class AlipayProvider extends AbstractProvider
     protected function signWithSHA256RSA(string $signContent, string $key)
     {
         if (empty($key)) {
-            throw new InvalidArgumentException('no private RSA key set.');
+            throw new InvalidArgumentException('no RSA private key set.');
         }
 
-        if ($this->withPrivateKey) {
-            $key = "-----BEGIN RSA PRIVATE KEY-----\n" .
-                chunk_split($key, 64, "\n") .
-                "-----END RSA PRIVATE KEY-----";
-        } else {
-            $key = "-----BEGIN PUBLIC KEY-----\n" .
-                chunk_split($key, 64, "\n") .
-                "-----END PUBLIC KEY-----";
-        }
+        $key = "-----BEGIN RSA PRIVATE KEY-----\n" .
+            chunk_split($key, 64, "\n") .
+            "-----END RSA PRIVATE KEY-----";
 
         openssl_sign($signContent, $signValue, $key, OPENSSL_ALGO_SHA256);
 
