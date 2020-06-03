@@ -39,6 +39,7 @@ class SocialiteManager implements FactoryInterface
         'outlook' => Providers\OutlookProvider::class,
         'linkedin' => Providers\LinkedinProvider::class,
         'facebook' => Providers\FacebookProvider::class,
+        'dingtalk' => Providers\DingTalkProvider::class,
     ];
 
     /**
