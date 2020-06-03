@@ -66,7 +66,7 @@ class DingTalkProvider extends AbstractProvider
             ?? $this->getConfig()->get('client_secret');
     }
 
-    protected function generateTmpSign(int $time)
+    protected function createSignature(int $time)
     {
         return base64_encode(hash_hmac('sha256', $time, $this->getClientSecret(), true));
     }
@@ -83,7 +83,7 @@ class DingTalkProvider extends AbstractProvider
         $queryParams = [
             'accessKey' => $this->getClientId(),
             'timestamp' => $time,
-            'signature' => $this->generateTmpSign($time)
+            'signature' => $this->createSignature($time)
         ];
 
         $response = $this->getHttpClient()->post($this->getUserByCode . '?' . http_build_query($queryParams), [
