@@ -68,10 +68,7 @@ class DingTalkProvider extends AbstractProvider
 
     protected function generateTmpSign(int $time)
     {
-        $s = hash_hmac('sha256', $time, $this->getClientSecret(), true);
-        $signature = base64_encode($s);
-
-        return urlencode($signature);
+        return base64_encode(hash_hmac('sha256', $time, $this->getClientSecret(), true));
     }
 
     /**
@@ -82,20 +79,20 @@ class DingTalkProvider extends AbstractProvider
      */
     public function userFromCode(string $code): User
     {
-        $time = time();
+        $time = (int)microtime(true) * 1000;
         $queryParams = [
-            'timestamp' => $time,
             'accessKey' => $this->getClientId(),
+            'timestamp' => $time,
             'signature' => $this->generateTmpSign($time)
         ];
 
         $response = $this->getHttpClient()->post($this->getUserByCode . '?' . http_build_query($queryParams), [
-            'body' => ['tmp_auth_code' => $code],
+            'json' => ['tmp_auth_code' => $code],
         ]);
-        $response = json_decode($response, true);
+        $response = json_decode($response->getBody()->getContents(), true);
 
         if (0 != $response['errcode']) {
-            throw new \InvalidArgumentException('You get error: ', json_encode($response, JSON_UNESCAPED_UNICODE));
+            throw new \InvalidArgumentException('You get error: ' . json_encode($response, JSON_UNESCAPED_UNICODE));
         }
 
         return new User([

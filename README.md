@@ -82,7 +82,7 @@ $user->getEmail();     // "anzhengchao@gmail.com"
 
 Now we support the following sites:
 
-`facebook`, `github`, `google`, `linkedin`, `outlook`, `weibo`, `taobao`, `qq`, `wechat`, `douyin`, `baidu`, `feishu`, and `douban`.
+`Alipay`, `Dingtalk`, `facebook`, `github`, `google`, `linkedin`, `outlook`, `weibo`, `taobao`, `qq`, `wechat`, `douyin`, `baidu`, `feishu`, and `douban`.
 
 Each driver uses the same configuration keys: `client_id`, `client_secret`, `redirect`.
 
@@ -119,6 +119,26 @@ If you want to use `alipay` driver, you need set config like below.
 ```
 Only RSA2 personal private keys are supported, so stay tuned if you want to log in with a certificate.
 
+##### [DingTalk](https://ding-doc.dingtalk.com/doc#/serverapi3/mrugr3)
+
+Follow the documentation and configure it in the development panel.
+
+Note: We only support QR code access to third-part websites. i.e exchange for user information(opendid, unionid and nickname)
+
+```php
+...
+'dingtalk' => [
+    // or 'app_id'
+    'client_id' => 'your app id',
+
+    // or 'app_secret' 
+    'client_secret' => 'your app secret',
+
+    // or 'redirect_url'
+    'redirect' => 'redirect URL'
+],
+...
+```
 
 ##### [Douyin](https://open.douyin.com/platform/doc/OpenAPI-oauth2)
 
@@ -309,6 +329,7 @@ Enjoy it! :heart:
 # Reference
 
 - [Alipay - 用户信息授权](https://opendocs.alipay.com/open/289/105656)
+- [DingTalk - 扫码登录第三方网站](https://ding-doc.dingtalk.com/doc#/serverapi3/mrugr3)
 - [Google - OpenID Connect](https://developers.google.com/identity/protocols/OpenIDConnect)
 - [Github - Authorizing OAuth Apps](https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/)
 - [Facebook - Graph API](https://developers.facebook.com/docs/graph-api)
