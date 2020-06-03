@@ -2,7 +2,6 @@
 
 namespace Overtrue\Socialite\Providers;
 
-use GuzzleHttp\Exception\BadResponseException;
 use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
 use Overtrue\Socialite\User;
 
@@ -59,6 +58,7 @@ class FeiShuProvider extends AbstractProvider
      * @throws AuthorizeFailedException
      *
      * @return array
+     * @throws AuthorizeFailedException
      */
     protected function getTokenFromCode(string $code): array
     {
@@ -77,7 +77,6 @@ class FeiShuProvider extends AbstractProvider
         if (empty($response['data'])) {
             throw new AuthorizeFailedException('Invalid token response', $response);
         }
-        $this->setExpiresInKey('refresh_expires_in');
 
         return $this->normalizeAccessTokenResponse($response['data']);
     }
@@ -99,7 +98,7 @@ class FeiShuProvider extends AbstractProvider
         $response = \json_decode($response->getBody(), true) ?? [];
 
         if (empty($response['data'])) {
-            throw new BadResponseException('This query response is not except.', $response);
+            throw new \InvalidArgumentException('You have error! ' . json_encode($response, JSON_UNESCAPED_UNICODE));
         }
 
         return $response['data'];

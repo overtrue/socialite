@@ -10,6 +10,7 @@
 
 namespace Overtrue\Socialite\Providers;
 
+
 use GuzzleHttp\Exception\BadResponseException;
 use Overtrue\Socialite\Contracts\ProviderInterface;
 use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
@@ -137,7 +138,7 @@ class QCloudProvider extends AbstractProvider implements ProviderInterface
         $response = json_decode($response->getBody()->getContents(), true) ?? [];
 
         if (empty($response['data'])) {
-            throw new BadResponseException('未能获取到用户信息', $response);
+            throw new \InvalidArgumentException('You have error! ' . json_encode($response, JSON_UNESCAPED_UNICODE));
         }
 
         return $response['data'];
@@ -208,11 +209,12 @@ class QCloudProvider extends AbstractProvider implements ProviderInterface
         }
 
         if (0 != $body['code']) {
-            throw new AuthorizeFailedException('Authorize Failed: '.json_encode($body, JSON_UNESCAPED_UNICODE), $body);
+            throw new AuthorizeFailedException('Authorize Failed: ' . json_encode($body, JSON_UNESCAPED_UNICODE), $body);
         }
 
         if (empty($body['data'])) {
-            throw new BadResponseException('Bad Response', $body);
+            throw new \InvalidArgumentException('You have error! ' . json_encode($body, JSON_UNESCAPED_UNICODE));
+
         }
 
         $this->openId = $body['data']['userOpenId'] ?? null;
