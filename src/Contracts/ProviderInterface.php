@@ -15,7 +15,7 @@ use Overtrue\Socialite\User;
 
 interface ProviderInterface
 {
-    public function redirect(string $redirectUrl): string;
+    public function redirect(string $redirectUrl = ''): string;
 
     public function userFromCode(string $code): User;
 

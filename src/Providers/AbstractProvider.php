@@ -82,7 +82,7 @@ abstract class AbstractProvider implements ProviderInterface
     public function __construct(array $config)
     {
         $this->config = new Config($config);
-	$this->scopes = $config['scopes'] ?? [];
+        $this->scopes = $config['scopes'] ?? [];
         $this->redirectUrl = $this->config->get('redirect_url') ?? $this->config->get('redirect');
     }
 
@@ -184,7 +184,7 @@ abstract class AbstractProvider implements ProviderInterface
      *
      * @return $this|\Overtrue\Socialite\Contracts\ProviderInterface
      */
-    public function withRedirectUrl($redirectUrl): ProviderInterface
+    public function withRedirectUrl(string $redirectUrl): ProviderInterface
     {
         $this->redirectUrl = $redirectUrl;
 
