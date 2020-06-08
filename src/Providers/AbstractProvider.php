@@ -115,9 +115,9 @@ abstract class AbstractProvider implements ProviderInterface
      *
      * @return string
      */
-    public function redirect(string $redirectUrl = ''): string
+    public function redirect(?string $redirectUrl = null): string
     {
-        if (!empty($redirectUrl)) {
+        if (!$redirectUrl) {
             $this->withRedirectUrl($redirectUrl);
         }
 
