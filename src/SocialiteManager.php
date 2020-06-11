@@ -6,50 +6,31 @@ use Closure;
 use InvalidArgumentException;
 use Overtrue\Socialite\Contracts\FactoryInterface;
 use Overtrue\Socialite\Contracts\ProviderInterface;
-use Overtrue\Socialite\Providers\AlipayProvider;
 
 class SocialiteManager implements FactoryInterface
 {
-    /**
-     * @var \Overtrue\Socialite\Config
-     */
-    protected $config;
-
-    /**
-     * @var array
-     */
-    protected $customCreators = [];
-
-    /**
-     * @var array
-     */
-    protected $drivers = [
-        'alipay' =>Providers\AlipayProvider::class,
-        'qq' => Providers\QQProvider::class,
-        'qcloud' => Providers\QCloudProvider::class,
-        'github' => Providers\GitHubProvider::class,
-        'google' => Providers\GoogleProvider::class,
-        'weibo' => Providers\WeiboProvider::class,
-        'wechat' => Providers\WeChatProvider::class,
-        'douban' => Providers\DoubanProvider::class,
-        'wework' => Providers\WeWorkProvider::class,
-        'douyin' => Providers\DouYinProvider::class,
-        'taobao' => Providers\TaobaoProvider::class,
-        'feishu' => Providers\FeiShuProvider::class,
-        'outlook' => Providers\OutlookProvider::class,
-        'linkedin' => Providers\LinkedinProvider::class,
-        'facebook' => Providers\FacebookProvider::class,
-        'dingtalk' => Providers\DingTalkProvider::class,
+    protected Config $config;
+    protected array $customCreators = [];
+    protected array $drivers = [
+        Providers\QQProvider::NAME => Providers\QQProvider::class,
+        Providers\AlipayProvider::NAME => Providers\AlipayProvider::class,
+        Providers\QCloudProvider::NAME => Providers\QCloudProvider::class,
+        Providers\GitHubProvider::NAME => Providers\GitHubProvider::class,
+        Providers\GoogleProvider::NAME => Providers\GoogleProvider::class,
+        Providers\WeiboProvider::NAME => Providers\WeiboProvider::class,
+        Providers\WeChatProvider::NAME => Providers\WeChatProvider::class,
+        Providers\DoubanProvider::NAME => Providers\DoubanProvider::class,
+        Providers\WeWorkProvider::NAME => Providers\WeWorkProvider::class,
+        Providers\DouYinProvider::NAME => Providers\DouYinProvider::class,
+        Providers\TaobaoProvider::NAME => Providers\TaobaoProvider::class,
+        Providers\FeiShuProvider::NAME => Providers\FeiShuProvider::class,
+        Providers\OutlookProvider::NAME => Providers\OutlookProvider::class,
+        Providers\LinkedinProvider::NAME => Providers\LinkedinProvider::class,
+        Providers\FacebookProvider::NAME => Providers\FacebookProvider::class,
+        Providers\DingTalkProvider::NAME => Providers\DingTalkProvider::class,
     ];
+    protected array $resolved = [];
 
-    /**
-     * @var array
-     */
-    protected $resolved = [];
-
-    /**
-     * @param array $config
-     */
     public function __construct(array $config)
     {
         $this->config = new Config($config);
@@ -86,9 +67,9 @@ class SocialiteManager implements FactoryInterface
     /**
      * @param string $driver
      *
+     * @return ProviderInterface
      * @throws \InvalidArgumentException
      *
-     * @return ProviderInterface
      */
     protected function createDriver(string $driver)
     {
@@ -106,8 +87,6 @@ class SocialiteManager implements FactoryInterface
     }
 
     /**
-     * Call a custom driver creator.
-     *
      * @param string $driver
      *
      * @return ProviderInterface
@@ -118,8 +97,6 @@ class SocialiteManager implements FactoryInterface
     }
 
     /**
-     * Register a custom driver creator Closure.
-     *
      * @param string   $driver
      * @param \Closure $callback
      *
@@ -135,8 +112,6 @@ class SocialiteManager implements FactoryInterface
     }
 
     /**
-     * Get all of the created "drivers".
-     *
      * @return \Overtrue\Socialite\Contracts\ProviderInterface[]
      */
     public function getResolvedDrivers(): array
@@ -145,8 +120,6 @@ class SocialiteManager implements FactoryInterface
     }
 
     /**
-     * Build an OAuth 2 provider instance.
-     *
      * @param string $provider
      * @param array  $config
      *

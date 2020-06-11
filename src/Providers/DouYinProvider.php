@@ -7,29 +7,19 @@ use Overtrue\Socialite\Exceptions\InvalidArgumentException;
 use Overtrue\Socialite\User;
 
 /**
- * @author haoliang@qiyuankeji.vip
- * @editBy uptutu <alexkung@outlook.com>
- *
  * @see http://open.douyin.com/platform
  * @see https://open.douyin.com/platform/doc/OpenAPI-overview
  */
 class DouYinProvider extends AbstractProvider
 {
-    /**
-     * @var string
-     */
-    protected $baseUrl = 'https://open.douyin.com';
-
-    /**
-     * @var array
-     */
-    protected $scopes = ['user_info'];
-
-    protected $openId;
+    public const NAME = 'douyin';
+    protected string $baseUrl = 'https://open.douyin.com';
+    protected array $scopes = ['user_info'];
+    protected ?string $openId;
 
     protected function getAuthUrl(): string
     {
-        return $this->buildAuthUrlFromBase($this->baseUrl.'/platform/oauth/connect/');
+        return $this->buildAuthUrlFromBase($this->baseUrl . '/platform/oauth/connect/');
     }
 
     /**
@@ -47,21 +37,24 @@ class DouYinProvider extends AbstractProvider
 
     protected function getTokenUrl(): string
     {
-        return $this->baseUrl.'/oauth/access_token/';
+        return $this->baseUrl . '/oauth/access_token/';
     }
 
     /**
      * @param string $code
      *
+     * @return array
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      *
-     * @return array
      */
     public function tokenFromCode($code): array
     {
-        $response = $this->getHttpClient()->get($this->getTokenUrl(), [
-            'query' => $this->getTokenFields($code),
-        ]);
+        $response = $this->getHttpClient()->get(
+            $this->getTokenUrl(),
+            [
+                'query' => $this->getTokenFields($code),
+            ]
+        );
 
         $response = \json_decode($response->getBody()->getContents(), true) ?? [];
 
@@ -92,13 +85,13 @@ class DouYinProvider extends AbstractProvider
     /**
      * @param string $token
      *
+     * @return array
      * @throws \Overtrue\Socialite\Exceptions\InvalidArgumentException
      *
-     * @return array
      */
     protected function getUserByToken(string $token): array
     {
-        $userUrl = $this->baseUrl.'/oauth/userinfo/';
+        $userUrl = $this->baseUrl . '/oauth/userinfo/';
 
         if (empty($this->openId)) {
             throw new InvalidArgumentException('please set open_id before your query.');
@@ -124,13 +117,15 @@ class DouYinProvider extends AbstractProvider
      */
     protected function mapUserToObject(array $user): User
     {
-        return new User([
-            'id' => $user['open_id'] ?? null,
-            'name' => $user['nickname'] ?? null,
-            'nickname' => $user['nickname'] ?? null,
-            'avatar' => $user['avatar'] ?? null,
-            'email' => $user['email'] ?? null,
-        ]);
+        return new User(
+            [
+                'id' => $user['open_id'] ?? null,
+                'name' => $user['nickname'] ?? null,
+                'nickname' => $user['nickname'] ?? null,
+                'avatar' => $user['avatar'] ?? null,
+                'email' => $user['email'] ?? null,
+            ]
+        );
     }
 
     public function withOpenId(string $openId): self

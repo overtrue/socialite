@@ -1,99 +1,56 @@
 <?php
 
-/*
- * This file is part of the octopus/qcloud.
- *
- * (c) Alex <alexytgong@tencent.com>
- *
- * This source file is subject to the MIT license that is bundled.
- */
-
 namespace Overtrue\Socialite\Providers;
 
-
-use GuzzleHttp\Exception\BadResponseException;
 use Overtrue\Socialite\Contracts\ProviderInterface;
 use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
 use Overtrue\Socialite\User;
 
 class QCloudProvider extends AbstractProvider implements ProviderInterface
 {
-    /**
-     * The base url of qcloud API.
-     *
-     * @var string
-     */
-    protected $baseUrl = 'https://open.api.qcloud.com/v2/index.php';
+    public const NAME = 'qcloud';
+    protected string $baseUrl = 'https://open.api.qcloud.com/v2/index.php';
+    protected array $scopes = ['login'];
+    protected string $accessTokenKey = 'userAccessToken';
+    protected string $refreshTokenKey = 'userRefreshToken';
+    protected string $expiresInKey = 'expiresAt';
+    protected ?string $openId;
+    protected ?string $unionId;
 
-    /**
-     * The scopes being requested.
-     *
-     * @var array
-     */
-    protected $scopes = ['login'];
-
-    protected $accessTokenKey = 'userAccessToken';
-
-    protected $refreshTokenKey = 'userRefreshToken';
-
-    protected $expiresInKey = 'expiresAt';
-
-    /**
-     * @var string
-     */
-    protected $openId;
-
-    /**
-     * @var string
-     */
-    protected $unionId;
-
-    /**
-     * Get the authentication URL for the provider.
-     *
-     * @return string
-     */
     protected function getAuthUrl(): string
     {
         return $this->buildAuthUrlFromBase('https://cloud.tencent.com/open/authorize');
     }
 
-    /**
-     * Get the token URL for the provider.
-     *
-     * @return string
-     */
     protected function getTokenUrl(): string
     {
         return $this->baseUrl;
     }
 
     /**
-     * Get the access token for the given code.
-     *
      * @param string $code
      *
-     * @throws AuthorizeFailedException
-     *
      * @return array
+     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      */
     public function TokenFromCode($code): array
     {
-        $response = $this->getHttpClient()->get($this->getTokenUrl(), [
-            'query' => $this->getTokenFields($code),
-        ]);
+        $response = $this->getHttpClient()->get(
+            $this->getTokenUrl(),
+            [
+                'query' => $this->getTokenFields($code),
+            ]
+        );
 
         return $this->parseAccessToken($response->getBody()->getContents());
     }
 
     /**
-     * Get the array the request need by code.
-     *
      * @param string $code
      *
      * @return array
      */
-    public function getTokenFields($code): array
+    public function getTokenFields(string $code): array
     {
         $nonce = rand();
         $timestamp = time();
@@ -110,13 +67,10 @@ class QCloudProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * Get the raw user for the given access token.
-     *
      * @param string $token
      *
-     * @throws BadResponseException
-     *
      * @return array|mixed
+     * @throws \GuzzleHttp\Exception\BadResponseException
      */
     protected function getUserByToken(string $token): array
     {
@@ -132,9 +86,12 @@ class QCloudProvider extends AbstractProvider implements ProviderInterface
         ];
         $queries['Signature'] = $this->generateSign('get', $this->baseUrl, $queries, $secret['key']);
 
-        $response = $this->getHttpClient()->get($this->baseUrl, [
-            'query' => $queries,
-        ]);
+        $response = $this->getHttpClient()->get(
+            $this->baseUrl,
+            [
+                'query' => $queries,
+            ]
+        );
         $response = json_decode($response->getBody()->getContents(), true) ?? [];
 
         if (empty($response['data'])) {
@@ -145,25 +102,23 @@ class QCloudProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * Map the raw user array to a Socialite User instance.
-     *
      * @param array $user
      *
      * @return \Overtrue\Socialite\User
      */
     protected function mapUserToObject(array $user): User
     {
-        return new User([
-            'id' => $this->openId ?? null,
-            'name' => $user['nickname'] ?? null,
-            'nickname' => $user['nickname'] ?? null,
-            'email' => $user['email'] ?? null,
-        ]);
+        return new User(
+            [
+                'id' => $this->openId ?? null,
+                'name' => $user['nickname'] ?? null,
+                'nickname' => $user['nickname'] ?? null,
+                'email' => $user['email'] ?? null,
+            ]
+        );
     }
 
     /**
-     * Generate the signature for QCloud request.
-     *
      * @param string $method
      * @param string $url
      * @param array  $params
@@ -194,13 +149,11 @@ class QCloudProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * Get the access token from the token response body.
-     *
      * @param string $body
      *
+     * @return array
      * @throws AuthorizeFailedException
      *
-     * @return array
      */
     protected function parseAccessToken(string $body)
     {
@@ -214,7 +167,6 @@ class QCloudProvider extends AbstractProvider implements ProviderInterface
 
         if (empty($body['data'])) {
             throw new \InvalidArgumentException('You have error! ' . json_encode($body, JSON_UNESCAPED_UNICODE));
-
         }
 
         $this->openId = $body['data']['userOpenId'] ?? null;
@@ -224,8 +176,6 @@ class QCloudProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * Get temporary secretId and secretKey for get user info.
-     *
      * @param string $accessToken
      *
      * @return array

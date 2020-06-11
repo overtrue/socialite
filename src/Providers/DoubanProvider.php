@@ -9,6 +9,8 @@ use Overtrue\Socialite\User;
  */
 class DoubanProvider extends AbstractProvider
 {
+    public const NAME = 'douban';
+
     protected function getAuthUrl(): string
     {
         return $this->buildAuthUrlFromBase('https://www.douban.com/service/auth2/auth');
@@ -19,6 +21,12 @@ class DoubanProvider extends AbstractProvider
         return 'https://www.douban.com/service/auth2/token';
     }
 
+    /**
+     * @param string     $token
+     * @param array|null $query
+     *
+     * @return array
+     */
     protected function getUserByToken(string $token, ?array $query = []): array
     {
         $response = $this->getHttpClient()->get('https://api.douban.com/v2/user/~me', [
@@ -30,6 +38,11 @@ class DoubanProvider extends AbstractProvider
         return json_decode($response->getBody()->getContents(), true) ?? [];
     }
 
+    /**
+     * @param array $user
+     *
+     * @return \Overtrue\Socialite\User
+     */
     protected function mapUserToObject(array $user): User
     {
         return new User([
@@ -41,11 +54,22 @@ class DoubanProvider extends AbstractProvider
         ]);
     }
 
-    protected function getTokenFields($code): array
+    /**
+     * @param string $code
+     *
+     * @return array|string[]
+     */
+    protected function getTokenFields(string $code): array
     {
         return parent::getTokenFields($code) + ['grant_type' => 'authorization_code'];
     }
 
+    /**
+     * @param string $code
+     *
+     * @return array
+     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     */
     public function tokenFromCode(string $code): array
     {
         $response = $this->getHttpClient()->post($this->getTokenUrl(), [

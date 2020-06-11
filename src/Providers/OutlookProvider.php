@@ -6,15 +6,9 @@ use Overtrue\Socialite\User;
 
 class OutlookProvider extends AbstractProvider
 {
-    /**
-     * @var string[]
-     */
-    protected $scopes = ['User.Read'];
-
-    /**
-     * @var string
-     */
-    protected $scopeSeparator = ' ';
+    public const NAME = 'outlook';
+    protected array $scopes = ['User.Read'];
+    protected string $scopeSeparator = ' ';
 
     protected function getAuthUrl(): string
     {
@@ -26,6 +20,12 @@ class OutlookProvider extends AbstractProvider
         return 'https://login.microsoftonline.com/common/oauth2/v2.0/token';
     }
 
+    /**
+     * @param string     $token
+     * @param array|null $query
+     *
+     * @return array
+     */
     protected function getUserByToken(string $token, ?array $query = []): array
     {
         $response = $this->getHttpClient()->get(
@@ -40,6 +40,11 @@ class OutlookProvider extends AbstractProvider
         return \json_decode($response->getBody()->getContents(), true) ?? [];
     }
 
+    /**
+     * @param array $user
+     *
+     * @return \Overtrue\Socialite\User
+     */
     protected function mapUserToObject(array $user): User
     {
         return new User([
@@ -51,7 +56,12 @@ class OutlookProvider extends AbstractProvider
         ]);
     }
 
-    protected function getTokenFields($code): array
+    /**
+     * @param string $code
+     *
+     * @return array|string[]
+     */
+    protected function getTokenFields(string $code): array
     {
         return parent::getTokenFields($code) + [
             'grant_type' => 'authorization_code',

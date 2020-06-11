@@ -12,32 +12,19 @@ use Psr\Http\Message\ResponseInterface;
  */
 class WeChatProvider extends AbstractProvider
 {
-    /**
-     * @var string
-     */
-    protected $baseUrl = 'https://api.weixin.qq.com/sns';
+    public const NAME = 'wechat';
+    protected string $baseUrl = 'https://api.weixin.qq.com/sns';
+    protected array $scopes = ['snsapi_login'];
+    protected bool $withCountryCode = false;
+    protected WeChatComponentInterface $component;
+    protected ?string $openid;
 
     /**
-     * @var string[]
+     * @param string $openid
+     *
+     * @return $this
      */
-    protected $scopes = ['snsapi_login'];
-
-    /**
-     * @var bool
-     */
-    protected $withCountryCode = false;
-
-    /**
-     * @var \Overtrue\Socialite\Contracts\WeChatComponentInterface
-     */
-    protected $component;
-
-    /**
-     * @var string
-     */
-    protected $openid;
-
-    public function withOpenid(string $openid)
+    public function withOpenid(string $openid): self
     {
         $this->openid = $openid;
 
@@ -52,8 +39,6 @@ class WeChatProvider extends AbstractProvider
     }
 
     /**
-     * WeChat OpenPlatform 3rd component.
-     *
      * @param \Overtrue\Socialite\Contracts\WeChatComponentInterface $component
      *
      * @return $this
@@ -92,7 +77,12 @@ class WeChatProvider extends AbstractProvider
         return $this->buildAuthUrlFromBase("https://open.weixin.qq.com/connect/{$path}");
     }
 
-    protected function buildAuthUrlFromBase($url): string
+    /**
+     * @param string $url
+     *
+     * @return string
+     */
+    protected function buildAuthUrlFromBase(string $url): string
     {
         $query = http_build_query($this->getCodeFields(), '', '&', $this->encodingType);
 
@@ -124,6 +114,12 @@ class WeChatProvider extends AbstractProvider
         return $this->baseUrl.'/oauth2/access_token';
     }
 
+    /**
+     * @param string $code
+     *
+     * @return \Overtrue\Socialite\User
+     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     */
     public function userFromCode(string $code): User
     {
         if (in_array('snsapi_base', $this->scopes)) {
@@ -140,6 +136,11 @@ class WeChatProvider extends AbstractProvider
             ->setExpiresIn($token['expires_in']);
     }
 
+    /**
+     * @param string $token
+     *
+     * @return array
+     */
     protected function getUserByToken(string $token): array
     {
         $language = $this->withCountryCode ? null : (isset($this->parameters['lang']) ? $this->parameters['lang'] : 'zh_CN');
@@ -155,6 +156,11 @@ class WeChatProvider extends AbstractProvider
         return \json_decode($response->getBody(), true) ?? [];
     }
 
+    /**
+     * @param array $user
+     *
+     * @return \Overtrue\Socialite\User
+     */
     protected function mapUserToObject(array $user): User
     {
         return new User([
@@ -166,7 +172,12 @@ class WeChatProvider extends AbstractProvider
         ]);
     }
 
-    protected function getTokenFields($code): array
+    /**
+     * @param string $code
+     *
+     * @return array
+     */
+    protected function getTokenFields(string $code): array
     {
         return array_filter([
             'appid' => $this->getClientId(),

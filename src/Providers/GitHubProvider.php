@@ -6,29 +6,23 @@ use Overtrue\Socialite\User;
 
 class GitHubProvider extends AbstractProvider
 {
-    /**
-     * @var array
-     */
-    protected $scopes = ['read:user'];
+    public const NAME = 'github';
+    protected array $scopes = ['read:user'];
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getAuthUrl(): string
     {
         return $this->buildAuthUrlFromBase('https://github.com/login/oauth/authorize');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getTokenUrl(): string
     {
         return 'https://github.com/login/oauth/access_token';
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $token
+     *
+     * @return array
      */
     protected function getUserByToken(string $token): array
     {

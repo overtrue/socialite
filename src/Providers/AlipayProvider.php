@@ -10,17 +10,13 @@ use Overtrue\Socialite\User;
  */
 class AlipayProvider extends AbstractProvider
 {
-    protected $baseUrl = 'https://openapi.alipay.com/gateway.do';
-
-    protected $scopes = ['auth_user'];
-
-    protected $apiVersion = '1.0';
-
-    protected $signType = 'RSA2';
-
-    protected $postCharset = 'UTF-8';
-
-    protected $format = 'json';
+    public const NAME = 'alipay';
+    protected string $baseUrl = 'https://openapi.alipay.com/gateway.do';
+    protected array $scopes = ['auth_user'];
+    protected string $apiVersion = '1.0';
+    protected string $signType = 'RSA2';
+    protected string $postCharset = 'UTF-8';
+    protected string $format = 'json';
 
     protected function getAuthUrl(): string
     {
@@ -32,53 +28,79 @@ class AlipayProvider extends AbstractProvider
         return $this->baseUrl;
     }
 
+    /**
+     * @param string $token
+     *
+     * @return array
+     * @throws \Overtrue\Socialite\Exceptions\InvalidArgumentException
+     */
     protected function getUserByToken(string $token): array
     {
         $params = $this->getPublicFields('alipay.user.info.share');
         $params += ['auth_token' => $token];
         $params['sign'] = $this->generateSign($params);
 
-        $response = $this->getHttpClient()->post($this->baseUrl, [
-            'form_params' => $params,
-            'headers' => [
-                "content-type" => "application/x-www-form-urlencoded;charset=utf-8"
+        $response = $this->getHttpClient()->post(
+            $this->baseUrl,
+            [
+                'form_params' => $params,
+                'headers' => [
+                    "content-type" => "application/x-www-form-urlencoded;charset=utf-8",
+                ],
             ]
-        ]);
+        );
 
         $response = json_decode($response->getBody()->getContents(), true);
 
-        if (!empty($response['error_response'])) {
-            throw new \InvalidArgumentException('You have error! ' . json_encode($response, JSON_UNESCAPED_UNICODE));
+        if (!empty($response['error_response']) || empty($response['alipay_user_info_share_response'])) {
+            throw new \InvalidArgumentException('You have error! ' . \json_encode($response, JSON_UNESCAPED_UNICODE));
         }
 
         return $response['alipay_user_info_share_response'];
     }
 
+    /**
+     * @param array $user
+     *
+     * @return \Overtrue\Socialite\User
+     */
     protected function mapUserToObject(array $user): User
     {
-        return new User([
-            'id' => $user['user_id'] ?? null,
-            'name' => $user['nick_name'] ?? null,
-            'avatar' => $user['avatar'] ?? null,
-            'email' => $user['email'] ?? null,
-        ]);
+        return new User(
+            [
+                'id' => $user['user_id'] ?? null,
+                'name' => $user['nick_name'] ?? null,
+                'avatar' => $user['avatar'] ?? null,
+                'email' => $user['email'] ?? null,
+            ]
+        );
     }
 
+    /**
+     * @param string $code
+     *
+     * @return array
+     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     */
     public function tokenFromCode(string $code): array
     {
-        $response = $this->getHttpClient()->post($this->getTokenUrl(), [
-            'form_params' => $this->getTokenFields($code),
-            'headers' => [
-                "content-type" => "application/x-www-form-urlencoded;charset=utf-8"
+        $response = $this->getHttpClient()->post(
+            $this->getTokenUrl(),
+            [
+                'form_params' => $this->getTokenFields($code),
+                'headers' => [
+                    "content-type" => "application/x-www-form-urlencoded;charset=utf-8",
+                ],
             ]
-        ]);
+        );
         $response = json_decode($response->getBody()->getContents(), true);
 
         if (!empty($response['error_response'])) {
             throw new \InvalidArgumentException('You have error! ' . json_encode($response, JSON_UNESCAPED_UNICODE));
         }
 
-        return $this->normalizeAccessTokenResponse($response['alipay_system_oauth_token_response']);    }
+        return $this->normalizeAccessTokenResponse($response['alipay_system_oauth_token_response']);
+    }
 
     protected function getCodeFields(): array
     {
@@ -86,27 +108,41 @@ class AlipayProvider extends AbstractProvider
             throw new InvalidArgumentException('Please set same redirect URL like your Alipay Official Admin');
         }
 
-        $fields = array_merge([
-            'app_id' => $this->getConfig()->get('client_id') ?? $this->getConfig()->get('app_id'),
-            'scope' => implode(',', $this->scopes),
-            'redirect_uri' => $this->redirectUrl
-        ], $this->parameters);
+        $fields = array_merge(
+            [
+                'app_id' => $this->getConfig()->get('client_id') ?? $this->getConfig()->get('app_id'),
+                'scope' => implode(',', $this->scopes),
+                'redirect_uri' => $this->redirectUrl,
+            ],
+            $this->parameters
+        );
 
         return $fields;
     }
 
+    /**
+     * @param string $code
+     *
+     * @return array|string[]
+     * @throws \Overtrue\Socialite\Exceptions\InvalidArgumentException
+     */
     protected function getTokenFields(string $code): array
     {
         $params = $this->getPublicFields('alipay.system.oauth.token');
         $params += [
             'code' => $code,
-            'grant_type' => 'authorization_code'
+            'grant_type' => 'authorization_code',
         ];
         $params['sign'] = $this->generateSign($params);
 
         return $params;
     }
 
+    /**
+     * @param string $method
+     *
+     * @return array
+     */
     public function getPublicFields(string $method): array
     {
         return [
@@ -122,6 +158,7 @@ class AlipayProvider extends AbstractProvider
 
     /**
      * @param $params
+     *
      * @return string
      * @throws InvalidArgumentException
      *
@@ -138,6 +175,13 @@ class AlipayProvider extends AbstractProvider
         return $signValue;
     }
 
+    /**
+     * @param string $signContent
+     * @param string $key
+     *
+     * @return string
+     * @throws \Overtrue\Socialite\Exceptions\InvalidArgumentException
+     */
     protected function signWithSHA256RSA(string $signContent, string $key)
     {
         if (empty($key)) {
@@ -153,6 +197,13 @@ class AlipayProvider extends AbstractProvider
         return base64_encode($signValue);
     }
 
+    /**
+     * @param array          $params
+     * @param bool           $urlencode
+     * @param array|string[] $except
+     *
+     * @return string
+     */
     public static function buildParams(array $params, bool $urlencode = false, array $except = ['sign'])
     {
         $param_str = '';
@@ -164,6 +215,7 @@ class AlipayProvider extends AbstractProvider
             $param_str .= $urlencode ? rawurlencode($v) : $v;
             $param_str .= '&';
         }
+
         return rtrim($param_str, '&');
     }
 }

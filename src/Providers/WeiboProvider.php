@@ -10,29 +10,16 @@ use Overtrue\Socialite\User;
  */
 class WeiboProvider extends AbstractProvider
 {
-    /**
-     * @var string
-     */
-    protected $baseUrl = 'https://api.weibo.com';
+    public const NAME = 'weibo';
+    protected string $baseUrl = 'https://api.weibo.com';
 
-    /**
-     * The scopes being requested.
-     *
-     * @var array
-     */
-    protected $scopes = ['email'];
+    protected array $scopes = ['email'];
 
-    /**
-     * @return string
-     */
     protected function getAuthUrl(): string
     {
         return $this->buildAuthUrlFromBase($this->baseUrl.'/oauth2/authorize');
     }
 
-    /**
-     * @return string
-     */
     protected function getTokenUrl(): string
     {
         return $this->baseUrl.'/2/oauth2/access_token';
@@ -43,7 +30,7 @@ class WeiboProvider extends AbstractProvider
      *
      * @return array
      */
-    protected function getTokenFields($code): array
+    protected function getTokenFields(string $code): array
     {
         return parent::getTokenFields($code) + ['grant_type' => 'authorization_code'];
     }

@@ -9,31 +9,16 @@ use Overtrue\Socialite\User;
  */
 class QQProvider extends AbstractProvider
 {
-    /**
-     * @var string
-     */
-    protected $baseUrl = 'https://graph.qq.com';
+    public const NAME = 'qq';
+    protected string $baseUrl = 'https://graph.qq.com';
+    protected array $scopes = ['get_user_info'];
+    protected bool $withUnionId = false;
 
-    /**
-     * @var array
-     */
-    protected $scopes = ['get_user_info'];
-    /**
-     * @var bool
-     */
-    protected $withUnionId = false;
-
-    /**
-     * @return string
-     */
     protected function getAuthUrl(): string
     {
         return $this->buildAuthUrlFromBase($this->baseUrl.'/oauth2.0/authorize');
     }
 
-    /**
-     * @return string
-     */
     protected function getTokenUrl(): string
     {
         return $this->baseUrl.'/oauth2.0/token';
@@ -66,11 +51,8 @@ class QQProvider extends AbstractProvider
 
         return $this->normalizeAccessTokenResponse($token);
     }
-    /**
-     *
-     * @return self
-     */
-    public function withUnionId()
+
+    public function withUnionId(): self
     {
         $this->withUnionId = true;
 

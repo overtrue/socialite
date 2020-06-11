@@ -13,6 +13,7 @@ return PhpCsFixer\Config::create()
         'no_blank_lines_after_class_opening' => true,
         'no_leading_import_slash' => true,
         'no_whitespace_in_blank_line' => true,
+        'no_unused_imports' => true,
         'ordered_class_elements' => [
             'order' => [
                 'use_trait',
@@ -42,7 +43,6 @@ return PhpCsFixer\Config::create()
     ])
     ->setFinder(
         PhpCsFixer\Finder::create()
-            ->exclude('vendor')
-            ->in([__DIR__.'/'])
+            ->in([__DIR__.'/src', __DIR__.'/tests'])
     )
 ;

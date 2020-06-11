@@ -9,6 +9,11 @@
  * with this source code in the file LICENSE.
  */
 
+<<<<<<< Updated upstream
+=======
+use Overtrue\Socialite\AccessToken;
+use Overtrue\Socialite\Contracts\ProviderInterface;
+>>>>>>> Stashed changes
 use Overtrue\Socialite\User;
 use PHPUnit\Framework\TestCase;
 

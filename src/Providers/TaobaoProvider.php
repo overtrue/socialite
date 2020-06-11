@@ -9,31 +9,12 @@ use Overtrue\Socialite\User;
  */
 class TaobaoProvider extends AbstractProvider
 {
-    /**
-     * @var string
-     */
-    protected $baseUrl = 'https://oauth.taobao.com';
+    public const NAME = 'taobao';
+    protected string $baseUrl = 'https://oauth.taobao.com';
+    protected string $gatewayUrl = 'https://eco.taobao.com/router/rest';
+    protected string $view = 'web';
+    protected array $scopes = ['user_info'];
 
-    /**
-     * @var string
-     */
-    protected $gatewayUrl = 'https://eco.taobao.com/router/rest';
-
-    /**
-     * @var string
-     */
-    protected $view = 'web';
-
-    /**
-     * @var array
-     */
-    protected $scopes = ['user_info'];
-
-    /**
-     * @param string $view
-     *
-     * @return self
-     */
     public function withView(string $view): self
     {
         $this->view = $view;
@@ -41,17 +22,11 @@ class TaobaoProvider extends AbstractProvider
         return $this;
     }
 
-    /**
-     * @return string
-     */
     protected function getAuthUrl(): string
     {
         return $this->buildAuthUrlFromBase($this->baseUrl.'/authorize');
     }
 
-    /**
-     * @return array
-     */
     public function getCodeFields(): array
     {
         return [
@@ -62,19 +37,12 @@ class TaobaoProvider extends AbstractProvider
         ];
     }
 
-    /**
-     * Get the token URL for the provider.
-     *
-     * @return string
-     */
     protected function getTokenUrl(): string
     {
         return $this->baseUrl.'/token';
     }
 
     /**
-     * Get the Post fields for the token request.
-     *
      * @param string $code
      *
      * @return array

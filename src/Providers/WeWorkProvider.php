@@ -6,55 +6,29 @@ use Overtrue\Socialite\User;
 
 class WeWorkProvider extends AbstractProvider
 {
-    /**
-     * @var string
-     */
-    protected $agentId;
+    public const NAME = 'wework';
+    protected ?int $agentId;
+    protected bool $detailed = false;
 
     /**
-     * @var bool
-     */
-    protected $detailed = false;
-
-    /**
-     * Set agent id.
-     *
-     * @param string $agentId
+     * @param int $agentId
      *
      * @return $this
      */
-    public function setAgentId($agentId)
+    public function setAgentId(int $agentId)
     {
         $this->agentId = $agentId;
 
         return $this;
     }
 
-    /**
-     * @param string $agentId
-     *
-     * @return $this
-     */
-    public function agent($agentId)
-    {
-        return $this->setAgentId($agentId);
-    }
-
-    /**
-     * Return user details.
-     *
-     * @return $this
-     */
-    public function detailed()
+    public function detailed(): self
     {
         $this->detailed = true;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
     protected function getAuthUrl(): string
     {
         // 网页授权登录
@@ -66,9 +40,6 @@ class WeWorkProvider extends AbstractProvider
         return $this->getQrConnectUrl();
     }
 
-    /**
-     * @return string
-     */
     protected function getOAuthUrl(): string
     {
         $queries = [
@@ -83,9 +54,6 @@ class WeWorkProvider extends AbstractProvider
         return sprintf('https://open.weixin.qq.com/connect/oauth2/authorize?%s#wechat_redirect', http_build_query($queries));
     }
 
-    /**
-     * @return string
-     */
     protected function getQrConnectUrl()
     {
         $queries = [
@@ -107,7 +75,7 @@ class WeWorkProvider extends AbstractProvider
      * @param string     $token
      * @param array|null $query
      *
-     * @return mixed
+     * @return array
      */
     protected function getUserByToken(string $token, ?array $query = []): array
     {
@@ -123,8 +91,6 @@ class WeWorkProvider extends AbstractProvider
     }
 
     /**
-     * Get user base info.
-     *
      * @param string $token
      * @param string $code
      *

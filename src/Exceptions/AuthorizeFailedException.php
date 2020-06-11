@@ -4,10 +4,7 @@ namespace Overtrue\Socialite\Exceptions;
 
 class AuthorizeFailedException extends Exception
 {
-    /**
-     * @var array
-     */
-    public $body;
+    public array $body;
 
     /**
      * @param string $message

@@ -9,30 +9,18 @@ use Overtrue\Socialite\User;
  */
 class GoogleProvider extends AbstractProvider
 {
-    /**
-     * @var string
-     */
-    protected $scopeSeparator = ' ';
-
-    /**
-     * @var array
-     */
-    protected $scopes = [
+    public const NAME = 'google';
+    protected string $scopeSeparator = ' ';
+    protected array $scopes = [
         'https://www.googleapis.com/auth/userinfo.email',
         'https://www.googleapis.com/auth/userinfo.profile',
     ];
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getAuthUrl(): string
     {
         return $this->buildAuthUrlFromBase('https://accounts.google.com/o/oauth2/v2/auth');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getTokenUrl(): string
     {
         return 'https://www.googleapis.com/oauth2/v4/token';
@@ -64,6 +52,12 @@ class GoogleProvider extends AbstractProvider
         return parent::getTokenFields($code) + ['grant_type' => 'authorization_code'];
     }
 
+    /**
+     * @param string     $token
+     * @param array|null $query
+     *
+     * @return array
+     */
     protected function getUserByToken(string $token, ?array $query = []): array
     {
         $response = $this->getHttpClient()->get('https://www.googleapis.com/userinfo/v2/me', [
@@ -76,6 +70,11 @@ class GoogleProvider extends AbstractProvider
         return \json_decode($response->getBody(), true) ?? [];
     }
 
+    /**
+     * @param array $user
+     *
+     * @return \Overtrue\Socialite\User
+     */
     protected function mapUserToObject(array $user): User
     {
         return new User([

@@ -9,30 +9,16 @@ use Overtrue\Socialite\User;
  */
 class BaiduProvider extends AbstractProvider
 {
-    /**
-     * @var string
-     */
-    protected $baseUrl = 'https://openapi.baidu.com';
-
-    /**
-     * @var string
-     */
-    protected $version = '2.0';
-
-    /**
-     * @var array
-     */
-    protected $scopes = ['basic'];
-
-    /**
-     * @var string
-     */
-    protected $display = 'popup';
+    public const NAME = 'baidu';
+    protected string $baseUrl = 'https://openapi.baidu.com';
+    protected string $version = '2.0';
+    protected array $scopes = ['basic'];
+    protected string $display = 'popup';
 
     /**
      * @param string $display
      *
-     * @return self
+     * @return $this
      */
     public function withDisplay(string $display): self
     {
@@ -58,18 +44,18 @@ class BaiduProvider extends AbstractProvider
      */
     protected function getAuthUrl(): string
     {
-        return $this->buildAuthUrlFromBase($this->baseUrl.'/oauth/'.$this->version.'/authorize');
+        return $this->buildAuthUrlFromBase($this->baseUrl . '/oauth/' . $this->version . '/authorize');
     }
 
     protected function getCodeFields(): array
     {
         return [
-            'response_type' => 'code',
-            'client_id' => $this->getClientId(),
-            'redirect_uri' => $this->redirectUrl,
-            'scope' => $this->formatScopes($this->scopes, $this->scopeSeparator),
-            'display' => $this->display,
-        ] + $this->parameters;
+                'response_type' => 'code',
+                'client_id' => $this->getClientId(),
+                'redirect_uri' => $this->redirectUrl,
+                'scope' => $this->formatScopes($this->scopes, $this->scopeSeparator),
+                'display' => $this->display,
+            ] + $this->parameters;
     }
 
     /**
@@ -77,7 +63,7 @@ class BaiduProvider extends AbstractProvider
      */
     protected function getTokenUrl(): string
     {
-        return $this->baseUrl.'/oauth/'.$this->version.'/token';
+        return $this->baseUrl . '/oauth/' . $this->version . '/token';
     }
 
     /**
@@ -97,14 +83,17 @@ class BaiduProvider extends AbstractProvider
      */
     protected function getUserByToken(string $token): array
     {
-        $response = $this->getHttpClient()->get($this->baseUrl.'/rest/'.$this->version.'/passport/users/getInfo', [
-            'query' => [
-                'access_token' => $token,
-            ],
-            'headers' => [
-                'Accept' => 'application/json',
-            ],
-        ]);
+        $response = $this->getHttpClient()->get(
+            $this->baseUrl . '/rest/' . $this->version . '/passport/users/getInfo',
+            [
+                'query' => [
+                    'access_token' => $token,
+                ],
+                'headers' => [
+                    'Accept' => 'application/json',
+                ],
+            ]
+        );
 
         return json_decode($response->getBody(), true) ?? [];
     }
@@ -116,12 +105,14 @@ class BaiduProvider extends AbstractProvider
      */
     protected function mapUserToObject(array $user): User
     {
-        return new User([
-            'id' => $user['userid'] ?? null,
-            'nickname' => $user['realname'] ?? null,
-            'name' => $user['username'] ?? null,
-            'email' => '',
-            'avatar' => $user['portrait'] ? 'http://tb.himg.baidu.com/sys/portraitn/item/'.$user['portrait'] : null,
-        ]);
+        return new User(
+            [
+                'id' => $user['userid'] ?? null,
+                'nickname' => $user['realname'] ?? null,
+                'name' => $user['username'] ?? null,
+                'email' => '',
+                'avatar' => $user['portrait'] ? 'http://tb.himg.baidu.com/sys/portraitn/item/' . $user['portrait'] : null,
+            ]
+        );
     }
 }

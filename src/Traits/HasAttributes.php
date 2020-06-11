@@ -4,10 +4,7 @@ namespace Overtrue\Socialite\Traits;
 
 trait HasAttributes
 {
-    /**
-     * @var array
-     */
-    protected $attributes = [];
+    protected array $attributes = [];
 
     /**
      * @return array

@@ -9,10 +9,8 @@ use Overtrue\Socialite\User;
  */
 class LinkedinProvider extends AbstractProvider
 {
-    /**
-     * @var array
-     */
-    protected $scopes = ['r_liteprofile', 'r_emailaddress'];
+    public const NAME = 'linkedin';
+    protected array $scopes = ['r_liteprofile', 'r_emailaddress'];
 
     protected function getAuthUrl(): string
     {
@@ -34,6 +32,12 @@ class LinkedinProvider extends AbstractProvider
         return parent::getTokenFields($code) + ['grant_type' => 'authorization_code'];
     }
 
+    /**
+     * @param string     $token
+     * @param array|null $query
+     *
+     * @return array
+     */
     protected function getUserByToken(string $token, ?array $query = []): array
     {
         $basicProfile = $this->getBasicProfile($token);
@@ -80,6 +84,11 @@ class LinkedinProvider extends AbstractProvider
         return \json_decode($response->getBody(), true)['elements.0.handle~'] ?? [];
     }
 
+    /**
+     * @param array $user
+     *
+     * @return \Overtrue\Socialite\User
+     */
     protected function mapUserToObject(array $user): User
     {
         $preferredLocale = $user['firstName.preferredLocale.language'] ?? null.'_'.$user['firstName.preferredLocale.country'] ?? null;

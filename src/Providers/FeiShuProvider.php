@@ -10,23 +10,15 @@ use Overtrue\Socialite\User;
  */
 class FeiShuProvider extends AbstractProvider
 {
-    /**
-     * 飞书接口域名.
-     *
-     * @var string
-     */
-    protected $baseUrl = 'https://open.feishu.cn/open-apis/';
-
-    protected $expiresInKey = 'refresh_expires_in';
+    public const NAME = 'feishu';
+    protected string $baseUrl = 'https://open.feishu.cn/open-apis/';
+    protected string $expiresInKey = 'refresh_expires_in';
 
     protected function getAuthUrl(): string
     {
-        return $this->buildAuthUrlFromBase($this->baseUrl.'authen/v1/index');
+        return $this->buildAuthUrlFromBase($this->baseUrl . 'authen/v1/index');
     }
 
-    /**
-     * @return array
-     */
     protected function getCodeFields(): array
     {
         return [
@@ -37,15 +29,15 @@ class FeiShuProvider extends AbstractProvider
 
     protected function getTokenUrl(): string
     {
-        return $this->baseUrl.'authen/v1/access_token';
+        return $this->baseUrl . 'authen/v1/access_token';
     }
 
     /**
      * @param string $code
      *
+     * @return array
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      *
-     * @return array
      */
     public function tokenFromCode($code): array
     {
@@ -55,9 +47,9 @@ class FeiShuProvider extends AbstractProvider
     /**
      * @param string $code
      *
+     * @return array
      * @throws AuthorizeFailedException
      *
-     * @return array
      * @throws AuthorizeFailedException
      */
     protected function getTokenFromCode(string $code): array
@@ -88,12 +80,17 @@ class FeiShuProvider extends AbstractProvider
      */
     protected function getUserByToken(string $token): array
     {
-        $response = $this->getHttpClient()->get($this->baseUrl.'/authen/v1/user_info', [
-            'headers' => ['Content-Type' => 'application/json', 'AuthoriBearer '.$token],
-            'query' => array_filter([
-                'user_access_token' => $token,
-            ]),
-        ]);
+        $response = $this->getHttpClient()->get(
+            $this->baseUrl . '/authen/v1/user_info',
+            [
+                'headers' => ['Content-Type' => 'application/json', 'AuthoriBearer ' . $token],
+                'query' => array_filter(
+                    [
+                        'user_access_token' => $token,
+                    ]
+                ),
+            ]
+        );
 
         $response = \json_decode($response->getBody(), true) ?? [];
 
@@ -111,12 +108,14 @@ class FeiShuProvider extends AbstractProvider
      */
     protected function mapUserToObject(array $user): User
     {
-        return new User([
-            'id' => $user['user_id'] ?? null,
-            'name' => $user['name'] ?? null,
-            'nickname' => $user['name'] ?? null,
-            'avatar' => $user['avatar_url'] ?? null,
-            'email' => $user['email'] ?? null,
-        ]);
+        return new User(
+            [
+                'id' => $user['user_id'] ?? null,
+                'name' => $user['name'] ?? null,
+                'nickname' => $user['name'] ?? null,
+                'avatar' => $user['avatar_url'] ?? null,
+                'email' => $user['email'] ?? null,
+            ]
+        );
     }
 }

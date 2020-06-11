@@ -4,6 +4,7 @@ namespace Overtrue\Socialite;
 
 use ArrayAccess;
 use JsonSerializable;
+use Overtrue\Socialite\Contracts\ProviderInterface;
 use Overtrue\Socialite\Contracts\UserInterface;
 use Overtrue\Socialite\Traits\HasAttributes;
 
@@ -11,9 +12,15 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
 {
     use HasAttributes;
 
-    public function __construct(array $attributes)
+    /**
+     * @var \Overtrue\Socialite\Contracts\ProviderInterface
+     */
+    protected ?ProviderInterface $provider;
+
+    public function __construct(array $attributes, ProviderInterface $provider = null)
     {
         $this->attributes = $attributes;
+        $this->provider = $provider;
     }
 
     public function getId()
@@ -114,5 +121,25 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
     public function unserialize($serialized)
     {
         $this->attributes = unserialize($serialized) ?: [];
+    }
+
+    /**
+     * @return \Overtrue\Socialite\Contracts\ProviderInterface
+     */
+    public function getProvider(): \Overtrue\Socialite\Contracts\ProviderInterface
+    {
+        return $this->provider;
+    }
+
+    /**
+     * @param \Overtrue\Socialite\Contracts\ProviderInterface $provider
+     *
+     * @return $this
+     */
+    public function setProvider(\Overtrue\Socialite\Contracts\ProviderInterface $provider)
+    {
+        $this->provider = $provider;
+
+        return $this;
     }
 }

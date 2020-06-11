@@ -4,10 +4,7 @@ namespace Overtrue\Socialite\Exceptions;
 
 class InvalidTokenException extends Exception
 {
-    /**
-     * @var string
-     */
-    public $token;
+    public string $token;
 
     /**
      * @param string $message
