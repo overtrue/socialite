@@ -12,7 +12,6 @@ use Overtrue\Socialite\User;
 abstract class AbstractProvider implements ProviderInterface
 {
     public const NAME = null;
-
     protected string $state;
     protected Config $config;
     protected ?string $redirectUrl;
@@ -34,8 +33,11 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     abstract protected function getAuthUrl(): string;
+
     abstract protected function getTokenUrl(): string;
+
     abstract protected function getUserByToken(string $token): array;
+
     abstract protected function mapUserToObject(array $user): User;
 
     /**
@@ -77,7 +79,7 @@ abstract class AbstractProvider implements ProviderInterface
     {
         $user = $this->getUserByToken($token);
 
-        return $this->mapUserToObject($user)->setRaw($user)->setAccessToken($token);
+        return $this->mapUserToObject($user)->setProvider($this)->setRaw($user)->setAccessToken($token);
     }
 
     /**
@@ -240,7 +242,7 @@ abstract class AbstractProvider implements ProviderInterface
     {
         $query = $this->getCodeFields() + ($this->state ? ['state' => $this->state] : []);
 
-        return $url.'?'.\http_build_query($query, '', '&', $this->encodingType);
+        return $url . '?' . \http_build_query($query, '', '&', $this->encodingType);
     }
 
     protected function getCodeFields(): array
@@ -266,9 +268,9 @@ abstract class AbstractProvider implements ProviderInterface
      * @param array|string $response
      *
      * @return mixed
+     * @return array
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      *
-     * @return array
      */
     protected function normalizeAccessTokenResponse($response): array
     {
