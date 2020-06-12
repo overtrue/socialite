@@ -4,7 +4,7 @@ namespace Overtrue\Socialite\Providers;
 
 use Overtrue\Socialite\User;
 
-class GitHubProvider extends AbstractProvider
+class GitHub extends Base
 {
     public const NAME = 'github';
     protected array $scopes = ['read:user'];

@@ -12,7 +12,7 @@ use Overtrue\Socialite\User;
  * 暂不支持“第三方企业应用”获取用户信息
  * @see https://ding-doc.dingtalk.com/doc#/serverapi3/hv357q
  */
-class DingTalkProvider extends AbstractProvider
+class DingTalk extends Base
 {
     public const NAME = 'dingtalk';
     protected string $getUserByCode = 'https://oapi.dingtalk.com/sns/getuserinfo_bycode';

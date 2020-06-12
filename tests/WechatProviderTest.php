@@ -1,14 +1,14 @@
 <?php
 
 use Overtrue\Socialite\Contracts\WeChatComponentInterface;
-use Overtrue\Socialite\Providers\WeChatProvider as RealWeChatProvider;
+use Overtrue\Socialite\Providers\WeChat as RealWeChatProvider;
 use PHPUnit\Framework\TestCase;
 
 class WechatProviderTest extends TestCase
 {
     public function testWeChatProviderHasCorrectlyRedirectResponse()
     {
-        $response = (new WeChatProvider([
+        $response = (new WeChat([
             'client_id' => 'client_id',
             'client_secret' => 'client_secret',
             'redirect_url' => 'http://localhost/socialite/callback.php',
@@ -20,7 +20,7 @@ class WechatProviderTest extends TestCase
 
     public function testWeChatProviderTokenUrlAndRequestFields()
     {
-        $provider = new WeChatProvider([
+        $provider = new WeChat([
             'client_id' => 'client_id',
             'client_secret' => 'client_secret',
             'redirect_url' => 'http://localhost/socialite/callback.php',
@@ -46,7 +46,7 @@ class WechatProviderTest extends TestCase
 
     public function testOpenPlatformComponent()
     {
-        $provider = new WeChatProvider([
+        $provider = new WeChat([
             'client_id' => 'client_id',
             'client_secret' => null,
             'redirect' => 'redirect-url',
@@ -75,7 +75,7 @@ class WechatProviderTest extends TestCase
 
     public function testOpenPlatformComponentWithCustomParameters()
     {
-        $provider = new WeChatProvider([
+        $provider = new WeChat([
             'client_id' => 'client_id',
             'client_secret' => null,
             'redirect' => 'redirect-url',
@@ -108,7 +108,7 @@ trait ProviderTrait
     }
 }
 
-class WeChatProvider extends RealWeChatProvider
+class WeChat extends RealWeChatProvider
 {
     use ProviderTrait;
 }

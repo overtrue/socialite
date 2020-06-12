@@ -10,7 +10,7 @@ use Overtrue\Socialite\User;
  * @see http://open.douyin.com/platform
  * @see https://open.douyin.com/platform/doc/OpenAPI-overview
  */
-class DouYinProvider extends AbstractProvider
+class DouYin extends Base
 {
     public const NAME = 'douyin';
     protected string $baseUrl = 'https://open.douyin.com';

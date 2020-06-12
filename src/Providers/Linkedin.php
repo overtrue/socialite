@@ -7,7 +7,7 @@ use Overtrue\Socialite\User;
 /**
  * @see https://developer.linkedin.com/docs/oauth2 [Authenticating with OAuth 2.0]
  */
-class LinkedinProvider extends AbstractProvider
+class Linkedin extends Base
 {
     public const NAME = 'linkedin';
     protected array $scopes = ['r_liteprofile', 'r_emailaddress'];

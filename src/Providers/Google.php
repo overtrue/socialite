@@ -7,7 +7,7 @@ use Overtrue\Socialite\User;
 /**
  * @see https://developers.google.com/identity/protocols/OpenIDConnect [OpenID Connect]
  */
-class GoogleProvider extends AbstractProvider
+class Google extends Base
 {
     public const NAME = 'google';
     protected string $scopeSeparator = ' ';

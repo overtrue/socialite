@@ -4,7 +4,7 @@ namespace Overtrue\Socialite\Providers;
 
 use Overtrue\Socialite\User;
 
-class OutlookProvider extends AbstractProvider
+class Outlook extends Base
 {
     public const NAME = 'outlook';
     protected array $scopes = ['User.Read'];

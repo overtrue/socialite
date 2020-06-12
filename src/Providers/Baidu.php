@@ -7,7 +7,7 @@ use Overtrue\Socialite\User;
 /**
  * @see https://developer.baidu.com/wiki/index.php?title=docs/oauth [OAuth 2.0 授权机制说明]
  */
-class BaiduProvider extends AbstractProvider
+class Baidu extends Base
 {
     public const NAME = 'baidu';
     protected string $baseUrl = 'https://openapi.baidu.com';

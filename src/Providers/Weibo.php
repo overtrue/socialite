@@ -8,7 +8,7 @@ use Overtrue\Socialite\User;
 /**
  * @see http://open.weibo.com/wiki/%E6%8E%88%E6%9D%83%E6%9C%BA%E5%88%B6%E8%AF%B4%E6%98%8E [OAuth 2.0 授权机制说明]
  */
-class WeiboProvider extends AbstractProvider
+class Weibo extends Base
 {
     public const NAME = 'weibo';
     protected string $baseUrl = 'https://api.weibo.com';

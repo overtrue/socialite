@@ -6,23 +6,22 @@ use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
 use Overtrue\Socialite\Exceptions\MethodDoesNotSupportException;
 use Overtrue\Socialite\User;
 
-class WeWorkProvider extends Base
+class WeWork extends Base
 {
-    public const NAME = 'wework-provider';
-    protected ?int $agentId;
+    public const NAME = 'wework';
     protected bool $detailed = false;
     protected ?string $apiAccessToken;
 
-    /**
-     * @param int $agentId
-     *
-     * @return $this
-     */
-    public function setAgentId(int $agentId)
+    public function userFromCode(string $code): User
     {
-        $this->agentId = $agentId;
+        $token = $this->getApiAccessToken();
+        $user = $this->getUserId($token, $code);
 
-        return $this;
+        if ($this->detailed) {
+            $user = $this->getUserById($user['UserId']);
+        }
+
+        return $this->mapUserToObject($user)->setProvider($this)->setRaw($user);
     }
 
     public function detailed(): self
@@ -32,60 +31,29 @@ class WeWorkProvider extends Base
         return $this;
     }
 
-    public function userFromCode(string $code): User
+    /**
+     * @param string $apiAccessToken
+     *
+     * @return $this
+     */
+    public function withApiAccessToken(string $apiAccessToken)
     {
-        $token = $this->getApiAccessToken();
-        $user = $this->getUserId($token, $code);
+        $this->apiAccessToken = $apiAccessToken;
 
-        if ($this->detailed && isset($user['user_ticket'])) {
-            return $this->getDetailedUser($token, $user['user_ticket']);
-        }
-
-        $this->detailed = false;
-
-        return $this->mapUserToObject($user)->setProvider($this)->setRaw($user);
+        return $this;
     }
 
     protected function getAuthUrl(): string
-    {
-        // 网页授权登录
-        if (!empty($this->scopes)) {
-            return $this->getOAuthUrl();
-        }
-
-        // 第三方网页应用登录（扫码登录）
-        return $this->getQrConnectUrl();
-    }
-
-    protected function getOAuthUrl(): string
     {
         $queries = [
             'appid' => $this->getClientId(),
             'redirect_uri' => $this->redirectUrl,
             'response_type' => 'code',
             'scope' => $this->formatScopes($this->scopes, $this->scopeSeparator),
-            'agentid' => $this->agentId,
             'state' => $this->state,
         ];
 
         return sprintf('https://open.weixin.qq.com/connect/oauth2/authorize?%s#wechat_redirect', http_build_query($queries));
-    }
-
-    protected function getQrConnectUrl()
-    {
-        $queries = [
-            'appid' => $this->getClientId(),
-            'agentid' => $this->agentId,
-            'redirect_uri' => $this->redirectUrl,
-            'state' => $this->state,
-        ];
-
-        return 'https://open.work.weixin.qq.com/wwopen/sso/qrConnect?'.http_build_query($queries);
-    }
-
-    protected function getTokenUrl(): string
-    {
-        return '';
     }
 
     /**
@@ -102,18 +70,6 @@ class WeWorkProvider extends Base
     protected function getApiAccessToken()
     {
         return $this->apiAccessToken ?? $this->apiAccessToken = $this->createApiAccessToken();
-    }
-
-    /**
-     * @param string $apiAccessToken
-     *
-     * @return $this
-     */
-    public function withApiAccessToken(string $apiAccessToken)
-    {
-        $this->apiAccessToken = $apiAccessToken;
-
-        return $this;
     }
 
     /**
@@ -135,28 +91,32 @@ class WeWorkProvider extends Base
         $response = \json_decode($response->getBody(), true) ?? [];
 
         if (($response['errcode'] ?? 1) > 0 || empty($response['UserId'])) {
-            throw new AuthorizeFailedException('Failed to get user openid:'. $response['errmsg'] ?? 'Unknown.', $response);
+            throw new AuthorizeFailedException('Failed to get user openid:' . $response['errmsg'] ?? 'Unknown.', $response);
         }
 
         return $response;
     }
 
     /**
-     * @param string $token
-     * @param string $ticket
+     * @param string $userId
      *
-     * @return mixed
+     * @return array
+     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      */
-    protected function getDetailedUser(string $token, string $ticket): array
+    protected function getUserById(string $userId): array
     {
-        $response = $this->getHttpClient()->post('https://qyapi.weixin.qq.com/cgi-bin/user/getuserdetail', [
+        $response = $this->getHttpClient()->post('https://qyapi.weixin.qq.com/cgi-bin/user/get', [
             'query' => [
-                'access_token' => $token,
-            ],
-            'json' => [
-                'user_ticket' => $ticket,
+                'access_token' => $this->getApiAccessToken(),
+                'userid' => $userId,
             ],
         ]);
+
+        $response = \json_decode($response->getBody(), true) ?? [];
+
+        if (($response['errcode'] ?? 1) > 0 || empty($response['userid'])) {
+            throw new AuthorizeFailedException('Failed to get user:' . $response['errmsg'] ?? 'Unknown.', $response);
+        }
 
         return \json_decode($response->getBody(), true) ?? [];
     }
@@ -177,19 +137,16 @@ class WeWorkProvider extends Base
             ]);
         }
 
-        return new User(array_filter([
+        return new User([
             'id' => $user['UserId'] ?? null ?: $user['OpenId'] ?? null,
-            'userId' => $user['UserId'] ?? null,
-            'openid' => $user['OpenId'] ?? null,
-            'deviceId' => $user['DeviceId'] ?? null,
-        ]));
+        ]);
     }
 
     /**
-     * @return mixed
+     * @return string
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      */
-    protected function createApiAccessToken(): mixed
+    protected function createApiAccessToken(): string
     {
         $response = $this->getHttpClient()->get('https://qyapi.weixin.qq.com/cgi-bin/gettoken', [
             'query' => array_filter([
@@ -205,5 +162,10 @@ class WeWorkProvider extends Base
         }
 
         return $response['access_token'];
+    }
+
+    protected function getTokenUrl(): string
+    {
+        return '';
     }
 }

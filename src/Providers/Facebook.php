@@ -7,7 +7,7 @@ use Overtrue\Socialite\User;
 /**
  * @see https://developers.facebook.com/docs/graph-api [Facebook - Graph API]
  */
-class FacebookProvider extends AbstractProvider
+class Facebook extends Base
 {
     public const NAME = 'facebook';
     protected string $graphUrl = 'https://graph.facebook.com';

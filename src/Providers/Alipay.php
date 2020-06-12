@@ -8,7 +8,7 @@ use Overtrue\Socialite\User;
 /**
  * @see https://opendocs.alipay.com/open/289/105656
  */
-class AlipayProvider extends AbstractProvider
+class Alipay extends Base
 {
     public const NAME = 'alipay';
     protected string $baseUrl = 'https://openapi.alipay.com/gateway.do';

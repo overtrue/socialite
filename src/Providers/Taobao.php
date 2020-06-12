@@ -7,7 +7,7 @@ use Overtrue\Socialite\User;
 /**
  * @see https://open.taobao.com/doc.htm?docId=102635&docType=1&source=search [Taobao - OAuth 2.0 授权登录]
  */
-class TaobaoProvider extends AbstractProvider
+class Taobao extends Base
 {
     public const NAME = 'taobao';
     protected string $baseUrl = 'https://oauth.taobao.com';

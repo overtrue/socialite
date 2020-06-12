@@ -1,7 +1,7 @@
 <?php
 
 use Mockery as m;
-use Overtrue\Socialite\Providers\AbstractProvider;
+use Overtrue\Socialite\Providers\Base;
 use Overtrue\Socialite\User;
 use PHPUnit\Framework\TestCase;
 
@@ -161,7 +161,7 @@ class OAuthTest extends TestCase
     }
 }
 
-class OAuthTestProviderStub extends AbstractProvider
+class OAuthTestProviderStub extends Base
 {
     public $http;
 

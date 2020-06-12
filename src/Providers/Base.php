@@ -9,7 +9,7 @@ use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
 use Overtrue\Socialite\Exceptions\MethodDoesNotSupportException;
 use Overtrue\Socialite\User;
 
-abstract class AbstractProvider implements ProviderInterface
+abstract class Base implements ProviderInterface
 {
     public const NAME = null;
     protected string $state;

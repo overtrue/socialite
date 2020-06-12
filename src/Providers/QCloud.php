@@ -6,7 +6,7 @@ use Overtrue\Socialite\Contracts\ProviderInterface;
 use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
 use Overtrue\Socialite\User;
 
-class QCloudProvider extends AbstractProvider implements ProviderInterface
+class QCloud extends Base implements ProviderInterface
 {
     public const NAME = 'qcloud';
     protected string $baseUrl = 'https://open.api.qcloud.com/v2/index.php';

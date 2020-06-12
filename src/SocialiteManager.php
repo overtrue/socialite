@@ -12,22 +12,22 @@ class SocialiteManager implements FactoryInterface
     protected Config $config;
     protected array $customCreators = [];
     protected array $drivers = [
-        Providers\QQProvider::NAME => Providers\QQProvider::class,
-        Providers\AlipayProvider::NAME => Providers\AlipayProvider::class,
-        Providers\QCloudProvider::NAME => Providers\QCloudProvider::class,
-        Providers\GitHubProvider::NAME => Providers\GitHubProvider::class,
-        Providers\GoogleProvider::NAME => Providers\GoogleProvider::class,
-        Providers\WeiboProvider::NAME => Providers\WeiboProvider::class,
-        Providers\WeChatProvider::NAME => Providers\WeChatProvider::class,
-        Providers\DoubanProvider::NAME => Providers\DoubanProvider::class,
+        Providers\QQ::NAME => Providers\QQ::class,
+        Providers\Alipay::NAME => Providers\Alipay::class,
+        Providers\QCloud::NAME => Providers\QCloud::class,
+        Providers\GitHub::NAME => Providers\GitHub::class,
+        Providers\Google::NAME => Providers\Google::class,
+        Providers\Weibo::NAME => Providers\Weibo::class,
+        Providers\WeChat::NAME => Providers\WeChat::class,
+        Providers\Douban::NAME => Providers\Douban::class,
         Providers\WeWorkProvider::NAME => Providers\WeWorkProvider::class,
-        Providers\DouYinProvider::NAME => Providers\DouYinProvider::class,
-        Providers\TaobaoProvider::NAME => Providers\TaobaoProvider::class,
-        Providers\FeiShuProvider::NAME => Providers\FeiShuProvider::class,
-        Providers\OutlookProvider::NAME => Providers\OutlookProvider::class,
-        Providers\LinkedinProvider::NAME => Providers\LinkedinProvider::class,
-        Providers\FacebookProvider::NAME => Providers\FacebookProvider::class,
-        Providers\DingTalkProvider::NAME => Providers\DingTalkProvider::class,
+        Providers\DouYin::NAME => Providers\DouYin::class,
+        Providers\Taobao::NAME => Providers\Taobao::class,
+        Providers\FeiShu::NAME => Providers\FeiShu::class,
+        Providers\Outlook::NAME => Providers\Outlook::class,
+        Providers\Linkedin::NAME => Providers\Linkedin::class,
+        Providers\Facebook::NAME => Providers\Facebook::class,
+        Providers\DingTalk::NAME => Providers\DingTalk::class,
     ];
     protected array $resolved = [];
 

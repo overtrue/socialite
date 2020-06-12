@@ -8,7 +8,7 @@ use Overtrue\Socialite\User;
 /**
  * @see https://open.feishu.cn/document/uQjL04CN/ucDOz4yN4MjL3gzM
  */
-class FeiShuProvider extends AbstractProvider
+class FeiShu extends Base
 {
     public const NAME = 'feishu';
     protected string $baseUrl = 'https://open.feishu.cn/open-apis/';
