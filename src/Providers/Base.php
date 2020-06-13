@@ -12,7 +12,7 @@ use Overtrue\Socialite\User;
 abstract class Base implements ProviderInterface
 {
     public const NAME = null;
-    protected string $state;
+    protected ?string $state = null;
     protected Config $config;
     protected ?string $redirectUrl;
     protected array $parameters = [];
@@ -47,7 +47,7 @@ abstract class Base implements ProviderInterface
      */
     public function redirect(?string $redirectUrl = null): string
     {
-        if (!$redirectUrl) {
+        if (!empty($redirectUrl)) {
             $this->withRedirectUrl($redirectUrl);
         }
 

@@ -164,8 +164,7 @@ class OAuthTest extends TestCase
 class OAuthTestProviderStub extends Base
 {
     public $http;
-
-    public $scopes = ['info'];
+    public array $scopes = ['info'];
 
     protected function getAuthUrl(): string
     {

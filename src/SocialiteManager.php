@@ -20,7 +20,7 @@ class SocialiteManager implements FactoryInterface
         Providers\Weibo::NAME => Providers\Weibo::class,
         Providers\WeChat::NAME => Providers\WeChat::class,
         Providers\Douban::NAME => Providers\Douban::class,
-        Providers\WeWorkProvider::NAME => Providers\WeWorkProvider::class,
+        Providers\WeWork::NAME => Providers\WeWork::class,
         Providers\DouYin::NAME => Providers\DouYin::class,
         Providers\Taobao::NAME => Providers\Taobao::class,
         Providers\FeiShu::NAME => Providers\FeiShu::class,
