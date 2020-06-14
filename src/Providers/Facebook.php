@@ -33,7 +33,7 @@ class Facebook extends Base
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      *
      */
-    public function tokenFromCode($code): string
+    public function tokenFromCode($code): array 
     {
         $response = $this->getHttpClient()->get(
             $this->getTokenUrl(),
