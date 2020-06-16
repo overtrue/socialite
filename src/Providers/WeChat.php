@@ -16,7 +16,7 @@ class WeChat extends Base
     protected string $baseUrl = 'https://api.weixin.qq.com/sns';
     protected array $scopes = ['snsapi_login'];
     protected bool $withCountryCode = false;
-    protected WeChatComponentInterface $component;
+    protected ?WeChatComponentInterface $component = null;
     protected ?string $openid;
 
     /**

@@ -164,7 +164,8 @@ class OAuthTest extends TestCase
 class OAuthTestProviderStub extends Base
 {
     public $http;
-    public array $scopes = ['info'];
+    protected array $scopes = ['info'];
+    protected int $encodingType = PHP_QUERY_RFC3986;
 
     protected function getAuthUrl(): string
     {
