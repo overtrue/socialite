@@ -28,7 +28,7 @@ abstract class Base implements ProviderInterface
     public function __construct(array $config)
     {
         $this->config = new Config($config);
-        $this->scopes = $config['scopes'] ?? [];
+        $this->scopes = $config['scopes'] ?? $this->scopes ?? [];
         $this->redirectUrl = $this->config->get('redirect_url') ?? $this->config->get('redirect');
     }
 
