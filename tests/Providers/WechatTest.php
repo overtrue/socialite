@@ -58,6 +58,10 @@ class WechatTest extends TestCase
             'client_id' => 'client_id',
             'client_secret' => null,
             'redirect' => 'redirect-url',
+            'component' => [
+                'id' => 'component-app-id',
+                'token' => 'token',
+            ],
         ]);
         $getTokenUrl = new ReflectionMethod(WeChat::class, 'getTokenUrl');
         $getTokenUrl->setAccessible(true);
@@ -68,7 +72,6 @@ class WechatTest extends TestCase
         $getCodeFields = new ReflectionMethod(WeChat::class, 'getCodeFields');
         $getCodeFields->setAccessible(true);
 
-        $tc = new testComponent();
 
         $this->assertSame([
             'appid' => 'client_id',
@@ -78,7 +81,7 @@ class WechatTest extends TestCase
             'state' => 'state',
             'connect_redirect' => 1,
             'component_appid' => 'component-app-id',
-        ], $getCodeFields->invoke($provider->component($tc)->withState('state')));
+        ], $getCodeFields->invoke($provider->withState('state')));
 
         $this->assertSame([
             'appid' => 'client_id',
@@ -97,31 +100,19 @@ class WechatTest extends TestCase
             'client_id' => 'client_id',
             'client_secret' => null,
             'redirect' => 'redirect-url',
+            'component' => [
+                'id' => 'component-app-id',
+                'token' => 'token',
+            ],
         ]);
-
-        $tc = new testComponent();
 
         $getCodeFields = new ReflectionMethod(WeChat::class, 'getCodeFields');
         $getCodeFields->setAccessible(true);
 
         $provider->with(['foo' => 'bar']);
 
-        $fields = $getCodeFields->invoke($provider->component($tc)->withState('wechat-state'));
+        $fields = $getCodeFields->invoke($provider->withState('wechat-state'));
         $this->assertArrayHasKey('foo', $fields);
         $this->assertSame('bar', $fields['foo']);
-    }
-}
-
-class testComponent implements \Overtrue\Socialite\Contracts\WeChatComponentInterface
-{
-
-    public function getAppId(): string
-    {
-        return 'component-app-id';
-    }
-
-    public function getToken(): string
-    {
-        return 'token';
     }
 }
