@@ -1,6 +1,5 @@
 <?php
 
-use Overtrue\Socialite\Contracts\WeChatComponentInterface;
 use Overtrue\Socialite\Providers\WeChat as RealWeChatProvider;
 use PHPUnit\Framework\TestCase;
 

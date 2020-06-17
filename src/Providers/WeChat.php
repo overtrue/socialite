@@ -214,21 +214,14 @@ class WeChat extends Base
         foreach ($component as $key => $value) {
             switch ($key) {
                 case 'id':
-                case 'appid':
-                case 'app-id':
                 case 'app_id':
-                case 'component_id':
-                case 'component-id':
-                case 'component-app-id':
                 case 'component_app_id':
                     $config['id'] = $value;
                     break;
                 case 'token':
-                case 'accesstoken':
+                case 'app_token':
                 case 'access_token':
-                case 'access-token':
                 case 'component_access_token':
-                case 'component-access-token':
                     $config['token'] = $value;
                     break;
             }
