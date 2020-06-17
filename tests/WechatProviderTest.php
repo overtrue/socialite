@@ -1,6 +1,5 @@
 <?php
 
-use Overtrue\Socialite\Contracts\WeChatComponentInterface;
 use Overtrue\Socialite\Providers\WeChat as RealWeChatProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -50,8 +49,11 @@ class WechatProviderTest extends TestCase
             'client_id' => 'client_id',
             'client_secret' => null,
             'redirect' => 'redirect-url',
+            'component' => [
+                'component_app_id' => 'component-app-id',
+                'access_token' => 'token',
+            ]
         ]);
-        $provider->component(new WeChatComponent());
         $this->assertSame([
             'appid' => 'client_id',
             'redirect_uri' => 'redirect-url',
@@ -79,8 +81,12 @@ class WechatProviderTest extends TestCase
             'client_id' => 'client_id',
             'client_secret' => null,
             'redirect' => 'redirect-url',
+            'component' => [
+                'component_app_id' => 'component-app-id',
+                'access_token' => 'token',
+            ]
         ]);
-        $provider->component(new WeChatComponent());
+
         $provider->with(['foo' => 'bar']);
 
         $fields = $provider->withState('wechat-state')->codeFields();
@@ -111,17 +117,4 @@ trait ProviderTrait
 class WeChat extends RealWeChatProvider
 {
     use ProviderTrait;
-}
-
-class WeChatComponent implements WeChatComponentInterface
-{
-    public function getAppId(): string
-    {
-        return 'component-app-id';
-    }
-
-    public function getToken(): string
-    {
-        return 'token';
-    }
 }

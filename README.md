@@ -170,6 +170,33 @@ $authUrl = $socialite->driver('taobao')->withView('wap')->redirect();
 ```
 `web` mode is the default setting with display. `user_info` is the default with scopes.
 
+##### [WeChat](https://developers.weixin.qq.com/doc/oplatform/Third-party_Platforms/Official_Accounts/official_account_website_authorization.html)
+
+We support Open Platform Third-party Platform webpage authorizations on behalf of Official Account.
+
+You just need input your config like below config. Official Accounts authorizations only doesn't need.
+```php
+...
+[
+    'wechat' =>
+        [
+            'client_id' => 'client_id',
+            'client_secret' => 'client_secret',
+            'redirect' => 'redirect-url',
+
+            // Open Platform - Third-party Platform Need
+            'component' => [
+                // or 'app_id', 'component_app_id' as key
+                'id' => 'component-app-id',
+                // or 'app_token', 'access_token', 'component_access_token' as key
+                'token' => 'component-access-token',
+            ]
+        ]
+],
+...
+```
+
+
 ### Scope
 
 Before redirecting the user, you may also set "scopes" on the request using the scope method. This method will overwrite all existing scopes:

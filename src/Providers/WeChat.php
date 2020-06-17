@@ -2,13 +2,14 @@
 
 namespace Overtrue\Socialite\Providers;
 
-use Overtrue\Socialite\Contracts\WeChatComponentInterface;
+use Overtrue\Socialite\Exceptions\InvalidArgumentException;
 use Overtrue\Socialite\User;
 use Psr\Http\Message\ResponseInterface;
 
 /**
  * @see http://mp.weixin.qq.com/wiki/9/01f711493b5a02f24b04365ac5d8fd95.html [WeChat - 公众平台OAuth文档]
- * @see https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419316505&token=&lang=zh_CN [网站应用微信登录开发指南]
+ * @see https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419316505&token=&lang=zh_CN
+ *      [网站应用微信登录开发指南]
  */
 class WeChat extends Base
 {
@@ -16,8 +17,14 @@ class WeChat extends Base
     protected string $baseUrl = 'https://api.weixin.qq.com/sns';
     protected array $scopes = ['snsapi_login'];
     protected bool $withCountryCode = false;
-    protected ?WeChatComponentInterface $component = null;
+    protected ?array $component = null;
     protected ?string $openid;
+
+    public function __construct(array $config)
+    {
+        parent::__construct($config);
+        $this->prepareForComponent();
+    }
 
     /**
      * @param string $openid
@@ -39,25 +46,11 @@ class WeChat extends Base
     }
 
     /**
-     * @param \Overtrue\Socialite\Contracts\WeChatComponentInterface $component
-     *
-     * @return $this
-     */
-    public function component(WeChatComponentInterface $component)
-    {
-        $this->scopes = ['snsapi_base'];
-
-        $this->component = $component;
-
-        return $this;
-    }
-
-    /**
      * @param string $code
      *
+     * @return array
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      *
-     * @return array
      */
     public function tokenFromCode($code): array
     {
@@ -86,13 +79,13 @@ class WeChat extends Base
     {
         $query = http_build_query($this->getCodeFields(), '', '&', $this->encodingType);
 
-        return $url.'?'.$query.'#wechat_redirect';
+        return $url . '?' . $query . '#wechat_redirect';
     }
 
     protected function getCodeFields(): array
     {
-        if ($this->component) {
-            $this->with(array_merge($this->parameters, ['component_appid' => $this->component->getAppId()]));
+        if (!empty($this->component)) {
+            $this->with(array_merge($this->parameters, ['component_appid' => $this->component['id']]));
         }
 
         return array_merge([
@@ -107,11 +100,11 @@ class WeChat extends Base
 
     protected function getTokenUrl(): string
     {
-        if ($this->component) {
-            return $this->baseUrl.'/oauth2/component/access_token';
+        if (!empty($this->component)) {
+            return $this->baseUrl . '/oauth2/component/access_token';
         }
 
-        return $this->baseUrl.'/oauth2/access_token';
+        return $this->baseUrl . '/oauth2/access_token';
     }
 
     /**
@@ -145,7 +138,7 @@ class WeChat extends Base
     {
         $language = $this->withCountryCode ? null : (isset($this->parameters['lang']) ? $this->parameters['lang'] : 'zh_CN');
 
-        $response = $this->getHttpClient()->get($this->baseUrl.'/userinfo', [
+        $response = $this->getHttpClient()->get($this->baseUrl . '/userinfo', [
             'query' => array_filter([
                 'access_token' => $token,
                 'openid' => $this->openid,
@@ -179,14 +172,21 @@ class WeChat extends Base
      */
     protected function getTokenFields(string $code): array
     {
-        return array_filter([
+        if (!empty($this->component))
+            return [
+                'appid' => $this->getClientId(),
+                'component_appid' => $this->component['id'],
+                'component_access_token' => $this->component['token'],
+                'code' => $code,
+                'grant_type' => 'authorization_code',
+            ];
+
+        return [
             'appid' => $this->getClientId(),
             'secret' => $this->getClientSecret(),
-            'component_appid' => $this->component ? $this->component->getAppId() : null,
-            'component_access_token' => $this->component ? $this->component->getToken() : null,
             'code' => $code,
             'grant_type' => 'authorization_code',
-        ]);
+        ];
     }
 
     /**
@@ -200,5 +200,38 @@ class WeChat extends Base
             'headers' => ['Accept' => 'application/json'],
             'query' => $this->getTokenFields($code),
         ]);
+    }
+
+    protected function prepareForComponent()
+    {
+        if (!$this->getConfig()->has('component')) {
+            return;
+        }
+
+        $config = [];
+        $component = $this->getConfig()->get('component');
+
+        foreach ($component as $key => $value) {
+            switch ($key) {
+                case 'id':
+                case 'app_id':
+                case 'component_app_id':
+                    $config['id'] = $value;
+                    break;
+                case 'token':
+                case 'app_token':
+                case 'access_token':
+                case 'component_access_token':
+                    $config['token'] = $value;
+                    break;
+            }
+        }
+
+        if (2 !== count($config)) {
+            throw new InvalidArgumentException('Please check your config arguments is available.');
+        }
+
+        $this->scopes = ['snsapi_base'];
+        $this->component = $config;
     }
 }
