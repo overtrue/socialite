@@ -123,7 +123,7 @@ Only RSA2 personal private keys are supported, so stay tuned if you want to log 
 
 Follow the documentation and configure it in the development panel.
 
-Note: We only support QR code access to third-part websites. i.e exchange for user information(opendid, unionid and nickname)
+> Note: We only support QR code access to third-part websites. i.e exchange for user information(opendid, unionid and nickname)
 
 ```php
 ...
@@ -142,7 +142,7 @@ Note: We only support QR code access to third-part websites. i.e exchange for us
 
 ##### [Douyin](https://open.douyin.com/platform/doc/OpenAPI-oauth2)
 
-Note using the Douyin driver that if you get user information directly using access token, set up the openid first. the openid can be obtained by code when access is obtained, so call `userFromCode()` automatically configured for you openid, if call `userFromToken()` first call `withOpenId()`
+> Note： using the Douyin driver that if you get user information directly using access token, set up the openid first. the openid can be obtained by code when access is obtained, so call `userFromCode()` automatically configured for you openid, if call `userFromToken()` first call `withOpenId()`
 
 ```php
 $user = $socialite->driver('douyin')->userFromCode('here is auth code');
