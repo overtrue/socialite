@@ -31,7 +31,9 @@ class QQ extends Base
      */
     protected function getTokenFields($code): array
     {
-        return parent::getTokenFields($code) + ['grant_type' => 'authorization_code'];
+        return parent::getTokenFields($code) + [
+            'grant_type' => 'authorization_code',
+        ];
     }
 
     /**
@@ -81,7 +83,7 @@ class QQ extends Base
 
         $response = $this->getHttpClient()->get($this->baseUrl.'/user/get_user_info?'.http_build_query($queries));
 
-        return \json_decode($this->removeCallback($response->getBody()->getContents()), true) ?? [] + [
+        return (\json_decode($this->removeCallback($response->getBody()->getContents()), true) ?? []) + [
             'unionid' => $me['unionid'] ?? null,
             'openid' => $me['openid'] ?? null,
         ];
@@ -97,6 +99,7 @@ class QQ extends Base
         return new User([
             'id' => $user['openid'] ?? null,
             'name' => $user['nickname'] ?? null,
+            'nickname' => $user['nickname'] ?? null,
             'email' => $user['email'] ?? null,
             'avatar' => $user['figureurl_qq_2'] ?? null,
         ]);

@@ -25,12 +25,12 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
 
     public function getId()
     {
-        return $this->getAttribute('id');
+        return $this->getAttribute('id') ?? $this->getEmail();
     }
 
     public function getNickname(): ?string
     {
-        return $this->getAttribute('nickname');
+        return $this->getAttribute('nickname') ?? $this->getName();
     }
 
     public function getName(): ?string

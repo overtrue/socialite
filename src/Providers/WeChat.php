@@ -172,7 +172,7 @@ class WeChat extends Base
      */
     protected function getTokenFields(string $code): array
     {
-        if (!empty($this->component))
+        if (!empty($this->component)) {
             return [
                 'appid' => $this->getClientId(),
                 'component_appid' => $this->component['id'],
@@ -180,6 +180,7 @@ class WeChat extends Base
                 'code' => $code,
                 'grant_type' => 'authorization_code',
             ];
+        }
 
         return [
             'appid' => $this->getClientId(),
