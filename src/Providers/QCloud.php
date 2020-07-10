@@ -27,9 +27,14 @@ class QCloud extends Base implements ProviderInterface
         return $this->baseUrl;
     }
 
-    protected function getAppId()
+    protected function getAppId(): string
     {
         return $this->config->get('app_id');
+    }
+
+    protected function getSecretId(): string
+    {
+        return $this->config->get('secret_id');
     }
 
     /**
