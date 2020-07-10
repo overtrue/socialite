@@ -70,7 +70,7 @@ class QCloud extends Base implements ProviderInterface
         $nonce = rand();
         $timestamp = time();
         $fields = [
-            'action' => 'GetUserAccessToken',
+            'Action' => 'GetUserAccessToken',
             'SecretId' => $this->config->get('secret_id'),
             'userAuthCode' => $code,
             'Nonce' => $nonce,
