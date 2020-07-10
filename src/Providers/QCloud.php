@@ -27,6 +27,21 @@ class QCloud extends Base implements ProviderInterface
         return $this->baseUrl;
     }
 
+    protected function getAppId(): string
+    {
+        return $this->config->get('app_id') ?? $this->getClientId();
+    }
+
+    protected function getSecretId(): string
+    {
+        return $this->config->get('secret_id');
+    }
+
+    protected function getSecretKey(): string
+    {
+        return $this->config->get('secret_key');
+    }
+
     /**
      * @param string $code
      *
@@ -79,7 +94,7 @@ class QCloud extends Base implements ProviderInterface
         $timestamp = time();
         $queries = [
             'Action' => 'GetUserBaseInfo',
-            'SecretId' => $this->config->get('secret_id'),
+            'SecretId' => $this->getSecretId(),
             'Nonce' => $nonce,
             'Timestamp' => $timestamp,
             'Token' => $secret['token'],
@@ -186,7 +201,7 @@ class QCloud extends Base implements ProviderInterface
         $timestamp = time();
         $params = [
             'Action' => 'ThGetFederationToken',
-            'SecretId' => $this->config->get('secret_id'),
+            'SecretId' => $this->getSecretId(),
             'Nonce' => $nonce,
             'Timestamp' => $timestamp,
             'openAccessToken' => $accessToken,
@@ -202,5 +217,24 @@ class QCloud extends Base implements ProviderInterface
         $secret['token'] = $credentials['token'];
 
         return $secret;
+    }
+
+    protected function getCodeFields(): array
+    {
+        $fields = array_merge(
+            [
+                'app_id' => $this->getAppId(),
+                'redirect_url' => $this->redirectUrl,
+                'scope' => $this->formatScopes($this->scopes, $this->scopeSeparator),
+                'response_type' => 'code',
+            ],
+            $this->parameters
+        );
+
+        if ($this->state) {
+            $fields['state'] = $this->state;
+        }
+
+        return $fields;
     }
 }
