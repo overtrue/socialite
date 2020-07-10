@@ -29,12 +29,17 @@ class QCloud extends Base implements ProviderInterface
 
     protected function getAppId(): string
     {
-        return $this->config->get('app_id');
+        return $this->config->get('app_id') ?? $this->getClientId();
     }
 
     protected function getSecretId(): string
     {
         return $this->config->get('secret_id');
+    }
+
+    protected function getSecretKey(): string
+    {
+        return $this->config->get('secret_key');
     }
 
     /**
@@ -89,7 +94,7 @@ class QCloud extends Base implements ProviderInterface
         $timestamp = time();
         $queries = [
             'Action' => 'GetUserBaseInfo',
-            'SecretId' => $this->getClientId(),
+            'SecretId' => $this->getSecretId(),
             'Nonce' => $nonce,
             'Timestamp' => $timestamp,
             'Token' => $secret['token'],
@@ -196,7 +201,7 @@ class QCloud extends Base implements ProviderInterface
         $timestamp = time();
         $params = [
             'Action' => 'ThGetFederationToken',
-            'SecretId' => $this->config->get('secret_id'),
+            'SecretId' => $this->getSecretId(),
             'Nonce' => $nonce,
             'Timestamp' => $timestamp,
             'openAccessToken' => $accessToken,
