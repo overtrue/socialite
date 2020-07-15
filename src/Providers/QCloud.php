@@ -9,11 +9,10 @@ use Overtrue\Socialite\User;
 class QCloud extends Base implements ProviderInterface
 {
     public const NAME = 'qcloud';
-    protected string $baseUrl = 'https://open.api.qcloud.com/v2/index.php';
     protected array $scopes = ['login'];
-    protected string $accessTokenKey = 'userAccessToken';
-    protected string $refreshTokenKey = 'userRefreshToken';
-    protected string $expiresInKey = 'expiresAt';
+    protected string $accessTokenKey = 'UserAccessToken';
+    protected string $refreshTokenKey = 'UserRefreshToken';
+    protected string $expiresInKey = 'ExpiresAt';
     protected ?string $openId;
     protected ?string $unionId;
 
@@ -24,7 +23,7 @@ class QCloud extends Base implements ProviderInterface
 
     protected function getTokenUrl(): string
     {
-        return $this->baseUrl;
+        return '';
     }
 
     protected function getAppId(): string
@@ -50,70 +49,44 @@ class QCloud extends Base implements ProviderInterface
      */
     public function TokenFromCode($code): array
     {
-        $response = $this->getHttpClient()->get(
-            $this->getTokenUrl(),
+        $response = $this->performRequest(
+            'GET',
+            'open.tencentcloudapi.com',
+            'GetUserAccessToken',
+            '2018-12-25',
             [
-                'query' => $this->getTokenFields($code),
+                'query' => [
+                    'UserAuthCode' => $code,
+                ],
             ]
         );
 
-        return $this->parseAccessToken($response->getBody()->getContents());
-    }
-
-    /**
-     * @param string $code
-     *
-     * @return array
-     */
-    public function getTokenFields(string $code): array
-    {
-        $nonce = rand();
-        $timestamp = time();
-        $fields = [
-            'Action' => 'GetUserAccessToken',
-            'SecretId' => $this->config->get('secret_id'),
-            'userAuthCode' => $code,
-            'Nonce' => $nonce,
-            'Timestamp' => $timestamp,
-        ];
-        $fields['Signature'] = $this->generateSign('get', $this->getTokenUrl(), $fields);
-
-        return $fields;
+        return $this->parseAccessToken($response);
     }
 
     /**
      * @param string $token
      *
-     * @return array|mixed
-     * @throws \GuzzleHttp\Exception\BadResponseException
+     * @return array
+     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      */
     protected function getUserByToken(string $token): array
     {
         $secret = $this->getFederationToken($token);
-        $nonce = rand();
-        $timestamp = time();
-        $queries = [
-            'Action' => 'GetUserBaseInfo',
-            'SecretId' => $this->getSecretId(),
-            'Nonce' => $nonce,
-            'Timestamp' => $timestamp,
-            'Token' => $secret['token'],
-        ];
-        $queries['Signature'] = $this->generateSign('get', $this->baseUrl, $queries, $secret['key']);
 
-        $response = $this->getHttpClient()->get(
-            $this->baseUrl,
+        return $this->performRequest(
+            'GET',
+            'open.tencentcloudapi.com',
+            'GetUserBaseInfo',
+            '2018-12-25',
             [
-                'query' => $queries,
-            ]
+                'headers' => [
+                    'X-TC-Token' => $secret['Token'],
+                ],
+            ],
+            $secret['TmpSecretId'],
+            $secret['TmpSecretKey'],
         );
-        $response = json_decode($response->getBody()->getContents(), true) ?? [];
-
-        if (empty($response['data'])) {
-            throw new \InvalidArgumentException('You have error! ' . json_encode($response, JSON_UNESCAPED_UNICODE));
-        }
-
-        return $response['data'];
     }
 
     /**
@@ -126,97 +99,134 @@ class QCloud extends Base implements ProviderInterface
         return new User(
             [
                 'id' => $this->openId ?? null,
-                'name' => $user['nickname'] ?? null,
-                'nickname' => $user['nickname'] ?? null,
-                'email' => $user['email'] ?? null,
+                'name' => $user['Nickname'] ?? null,
+                'nickname' => $user['Nickname'] ?? null,
             ]
         );
     }
 
-    /**
-     * @param string $method
-     * @param string $url
-     * @param array  $params
-     * @param string $sha
-     * @param string $key
-     *
-     * @return string
-     */
-    protected function generateSign($method, $url, $params, $sha = 'HmacSHA256', $key = null)
+    public function performRequest(string $method, string $host, string $action, string $version, array $options = [], ?string $secretId = null, ?string $secretKey = null)
     {
-        $params['SignatureMethod'] = $sha;
+        $method = \strtoupper($method);
+        $timestamp = \time();
+        $credential = \sprintf('%s/%s/tc3_request', \gmdate('Y-m-d', $timestamp), $this->getServiceFromHost($host));
+        $options['headers'] = \array_merge(
+            $options['headers'] ?? [],
+            [
+                'X-TC-Action' => $action,
+                'X-TC-Timestamp' => $timestamp,
+                'X-TC-Version' => $version,
+                'Content-Type' => 'application/x-www-form-urlencoded; charset=utf-8',
+            ]
+        );
 
-        if (empty($key)) {
-            $key = $this->config->get('secret_key');
+        $signature = $this->sign($method, $host, $options['query'] ?? [], '', $options['headers'], $credential, $secretKey);
+        $options['headers']['Authorization'] =
+            \sprintf(
+                'TC3-HMAC-SHA256 Credential=%s/%s, SignedHeaders=content-type;host, Signature=%s',
+                $secretId ?? $this->getSecretId(),
+                $credential,
+                $signature
+            );
+        $options['debug'] = \fopen(storage_path('logs/laravel-2020-07-15.log'), 'w+');
+        $response = $this->getHttpClient()->get("https://{$host}/", $options);
+
+        $response = json_decode($response->getBody()->getContents(), true) ?? [];
+
+        if (!empty($response['Response']['Error'])) {
+            throw new AuthorizeFailedException(
+                \sprintf('%s: %s', $response['Response']['Error']['Code'], $response['Response']['Error']['Message']),
+                $response
+            );
         }
 
-        ksort($params);
+        return $response['Response'] ?? [];
+    }
 
-        foreach ($params as $k => $v) {
-            if (strpos($k, '_')) {
-                str_replace('_', '.', $k);
-            }
-        }
+    protected function sign(string $requestMethod, string $host, array $query, string $payload, $headers, $credential, ?string $secretKey = null)
+    {
+        $canonicalRequestString = \join(
+            "\n",
+            [
+                $requestMethod,
+                '/',
+                \http_build_query($query),
+                "content-type:{$headers['Content-Type']}\nhost:{$host}\n",
+                "content-type;host",
+                hash('SHA256', $payload),
+            ]
+        );
 
-        $srcStr = sprintf('%s%s?%s', strtoupper($method), $url, http_build_query($params));
+        $signString = \join(
+            "\n",
+            [
+                'TC3-HMAC-SHA256',
+                $headers['X-TC-Timestamp'],
+                $credential,
+                hash('SHA256', $canonicalRequestString),
+            ]
+        );
 
-        return base64_encode(hash_hmac($sha, $srcStr, $key, true));
+        $secretKey = $secretKey ?? $this->getSecretKey();
+        $secretDate = hash_hmac('SHA256', \gmdate('Y-m-d', $headers['X-TC-Timestamp']), "TC3{$secretKey}", true);
+        $secretService = hash_hmac('SHA256', $this->getServiceFromHost($host), $secretDate, true);
+        $secretSigning = hash_hmac('SHA256', "tc3_request", $secretService, true);
+
+        return hash_hmac('SHA256', $signString, $secretSigning);
     }
 
     /**
-     * @param string $body
+     * @param string|array $body
      *
      * @return array
      * @throws AuthorizeFailedException
-     *
      */
-    protected function parseAccessToken(string $body)
+    protected function parseAccessToken($body)
     {
         if (!is_array($body)) {
             $body = json_decode($body, true);
         }
 
-        if (0 != $body['code']) {
+        if (empty($body['UserOpenId'])) {
             throw new AuthorizeFailedException('Authorize Failed: ' . json_encode($body, JSON_UNESCAPED_UNICODE), $body);
         }
 
-        if (empty($body['data'])) {
-            throw new \InvalidArgumentException('You have error! ' . json_encode($body, JSON_UNESCAPED_UNICODE));
-        }
+        $this->openId = $body['UserOpenId'] ?? null;
+        $this->unionId = $body['UserUnionId'] ?? null;
 
-        $this->openId = $body['data']['userOpenId'] ?? null;
-        $this->unionId = $body['data']['userUnionId'] ?? null;
-
-        return $body['data'];
+        return $body;
     }
 
     /**
      * @param string $accessToken
      *
-     * @return array
+     * @return mixed
+     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      */
     protected function getFederationToken(string $accessToken)
     {
-        $nonce = rand();
-        $timestamp = time();
-        $params = [
-            'Action' => 'ThGetFederationToken',
-            'SecretId' => $this->getSecretId(),
-            'Nonce' => $nonce,
-            'Timestamp' => $timestamp,
-            'openAccessToken' => $accessToken,
-            'duration' => 7200,
-        ];
-        $params['Signature'] = $this->generateSign('get', $this->baseUrl, $params);
+        $response = $this->performRequest(
+            'GET',
+            'sts.tencentcloudapi.com',
+            'GetThirdPartyFederationToken',
+            '2018-08-13',
+            [
+                'query' => [
+                    'UserAccessToken' => $accessToken,
+                    'Duration' => 7200,
+                    'ApiAppId' => 0,
+                ],
+                'headers' => [
+                    'X-TC-Region' => 'ap-guangzhou', // 官方人员说写死
+                ]
+            ]
+        );
 
-        $response = $this->getHttpClient()->get($this->baseUrl, ['query' => $params]);
-        $credentials = json_decode($response->getBody()->getContents(), true)['credentials'];
+        if (empty($response['Credentials'])) {
+            throw new AuthorizeFailedException('Get Federation Token failed.', $response);
+        }
 
-        $secret['id'] = $credentials['tmpSecretId'];
-        $secret['key'] = $credentials['tmpSecretKey'];
-        $secret['token'] = $credentials['token'];
-
-        return $secret;
+        return $response['Credentials'];
     }
 
     protected function getCodeFields(): array
@@ -236,5 +246,15 @@ class QCloud extends Base implements ProviderInterface
         }
 
         return $fields;
+    }
+
+    /**
+     * @param string $host
+     *
+     * @return mixed|string
+     */
+    protected function getServiceFromHost(string $host)
+    {
+        return explode('.', $host)[0];
     }
 }
