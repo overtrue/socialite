@@ -44,7 +44,7 @@ $config = [
 
 $socialite = new SocialiteManager($config);
 
-$url = $socialite->driver('github')->redirect();
+$url = $socialite->create('github')->redirect();
 
 return redirect($url); 
 ```
@@ -68,7 +68,7 @@ $socialite = new SocialiteManager($config);
 
 $code = request()->query('code');
 
-$user = $socialite->driver('github')->userFromCode($code);
+$user = $socialite->create('github')->userFromCode($code);
 
 $user->getId();        // 1472352
 $user->getNickname();  // "overtrue"
@@ -84,7 +84,7 @@ Now we support the following sites:
 
 `Alipay`, `Dingtalk`, `facebook`, `github`, `google`, `linkedin`, `outlook`, `weibo`, `taobao`, `qq`, `wechat`, `douyin`, `baidu`, `feishu`, and `douban`.
 
-Each driver uses the same configuration keys: `client_id`, `client_secret`, `redirect`.
+Each create uses the same configuration keys: `client_id`, `client_secret`, `redirect`.
 
 Example:
 ```
@@ -97,8 +97,84 @@ Example:
 ...
 ```
 
+#### Custom app name
+
+You can use any name you like as the name of the application, such as `foo`, and set provider using `provider` key：
+
+```php
+$config = [
+    'foo' => [
+        'provider' => 'github',  // <-- 
+        'client_id' => 'your-app-id',
+        'client_secret' => 'your-app-secret',
+        'redirect' => 'http://localhost/socialite/callback.php',
+    ],
+       
+    // another github app
+    'bar' => [
+        'provider' => 'github',  // <-- 
+        'client_id' => 'your-app-id',
+        'client_secret' => 'your-app-secret',
+        'redirect' => 'http://localhost/socialite/callback.php',
+    ],
+    //...
+];
+```
+
+#### Extends custom provider
+
+You can create application from you custom provider easily，you have to ways to do this: 
+
+1. Using custom creator:
+
+```php
+$config = [
+    'foo' => [
+        'provider' => 'myprovider',  // <-- 
+        'client_id' => 'your-app-id',
+        'client_secret' => 'your-app-secret',
+        'redirect' => 'http://localhost/socialite/callback.php',
+    ],
+];
+
+$socialite = new SocialiteManager($config);
+   
+$socialite->extend('myprovider', function(array $config) {
+    return new MyCustomProvider($config);
+});
+
+$app = $socialite->create('foo');
+```
+
+2. Using provider:
+
+>👋🏻 Your custom provider class must be implements of `Overtrue\Socialite\Contracts\ProviderInterface`.
+
+```php
+class MyCustomProvider implements \Overtrue\Socialite\Contracts\ProviderInterface 
+{
+    //...
+}
+```
+
+then set `provider` with the class name:
+
+```php
+$config = [
+    'foo' => [
+        'provider' => MyCustomProvider::class,  // <-- class name
+        'client_id' => 'your-app-id',
+        'client_secret' => 'your-app-secret',
+        'redirect' => 'http://localhost/socialite/callback.php',
+    ],
+];
+
+$socialite = new SocialiteManager($config);
+$app = $socialite->create('foo');
+```
+
 ##### [Alipay](https://opendocs.alipay.com/open/200/105310#s2)
-If you want to use `alipay` driver, you need set config like below.
+If you want to use `alipay` create, you need set config like below.
 ```php
 ...
   'alipay' => [
@@ -142,12 +218,12 @@ Follow the documentation and configure it in the development panel.
 
 ##### [Douyin](https://open.douyin.com/platform/doc/OpenAPI-oauth2)
 
-> Note： using the Douyin driver that if you get user information directly using access token, set up the openid first. the openid can be obtained by code when access is obtained, so call `userFromCode()` automatically configured for you openid, if call `userFromToken()` first call `withOpenId()`
+> Note： using the Douyin create that if you get user information directly using access token, set up the openid first. the openid can be obtained by code when access is obtained, so call `userFromCode()` automatically configured for you openid, if call `userFromToken()` first call `withOpenId()`
 
 ```php
-$user = $socialite->driver('douyin')->userFromCode('here is auth code');
+$user = $socialite->create('douyin')->userFromCode('here is auth code');
 
-$user = $socialite->driver('douyin')->withOpenId('openId')->userFromToken('here is a access token');
+$user = $socialite->create('douyin')->withOpenId('openId')->userFromToken('here is a access token');
 ```
 
 
@@ -156,7 +232,7 @@ $user = $socialite->driver('douyin')->withOpenId('openId')->userFromToken('here 
 You can choose the form you want display by using `withDisplay()`.
 
 ```php
-$authUrl = $socialite->driver('baidu')->withDisplay('mobile')->redirect();
+create$authUrl = $socialite->driver('baidu')->withDisplay('mobile')->redirect();
 
 ```
 `popup` mode is the default setting with display. `basic` is the default with scopes.
@@ -166,7 +242,7 @@ $authUrl = $socialite->driver('baidu')->withDisplay('mobile')->redirect();
 You can choose the form you want display by using `withView()`.
 
 ```php
-$authUrl = $socialite->driver('taobao')->withView('wap')->redirect();
+$authUrl = $socialite->create('taobao')->withView('wap')->redirect();
 ```
 `web` mode is the default setting with display. `user_info` is the default with scopes.
 
@@ -202,7 +278,7 @@ You just need input your config like below config. Official Accounts authorizati
 Before redirecting the user, you may also set "scopes" on the request using the scope method. This method will overwrite all existing scopes:
 
 ```php
-$response = $socialite->driver('github')
+$response = $socialite->create('github')
                 ->scopes(['scope1', 'scope2'])->redirect();
 ```
 
@@ -238,7 +314,7 @@ $state = hash('sha256', session_id());
 
 $socialite = new SocialiteManager($config);
 
-$url = $socialite->driver('github')->withState($state)->redirect();
+$url = $socialite->create('github')->withState($state)->redirect();
 
 return redirect($url); 
 ```
@@ -258,7 +334,7 @@ $code = request()->query('code');
 if ($state != hash('sha256', session_id())) {
     exit('State does not match!');
 }
-$user = $socialite->driver('github')->userFromCode($code);
+$user = $socialite->create('github')->userFromCode($code);
 
 // authorized
 ```
@@ -270,7 +346,7 @@ $user = $socialite->driver('github')->userFromCode($code);
 To include any optional parameters in the request, call the with method with an associative array:
 
 ```php
-$response = $socialite->driver('google')
+$response = $socialite->create('google')
                     ->with(['hd' => 'example.com'])->redirect();
 ```
 
@@ -280,7 +356,7 @@ $response = $socialite->driver('google')
 #### Standard user api:
 
 ```php
-$user = $socialite->driver('github')->userFromCode($code);
+$user = $socialite->create('github')->userFromCode($code);
 ```
 
 ```json

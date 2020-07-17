@@ -10,8 +10,9 @@ use Overtrue\Socialite\Contracts\ProviderInterface;
 class SocialiteManager implements FactoryInterface
 {
     protected Config $config;
+    protected array $resolved = [];
     protected array $customCreators = [];
-    protected array $drivers = [
+    protected array $providers = [
         Providers\QQ::NAME => Providers\QQ::class,
         Providers\Alipay::NAME => Providers\Alipay::class,
         Providers\QCloud::NAME => Providers\QCloud::class,
@@ -29,7 +30,6 @@ class SocialiteManager implements FactoryInterface
         Providers\Facebook::NAME => Providers\Facebook::class,
         Providers\DingTalk::NAME => Providers\DingTalk::class,
     ];
-    protected array $resolved = [];
 
     public function __construct(array $config)
     {
@@ -49,64 +49,30 @@ class SocialiteManager implements FactoryInterface
     }
 
     /**
-     * @param string $driver
+     * @param string $name
      *
      * @return \Overtrue\Socialite\Contracts\ProviderInterface
      */
-    public function driver(string $driver): ProviderInterface
+    public function create(string $name): ProviderInterface
     {
-        $driver = strtolower($driver);
+        $name = strtolower($name);
 
-        if (!isset($this->resolved[$driver])) {
-            $this->resolved[$driver] = $this->createDriver($driver);
+        if (!isset($this->resolved[$name])) {
+            $this->resolved[$name] = $this->createProvider($name);
         }
 
-        return $this->resolved[$driver];
+        return $this->resolved[$name];
     }
 
     /**
-     * @param string $driver
-     *
-     * @return ProviderInterface
-     * @throws \InvalidArgumentException
-     *
-     */
-    protected function createDriver(string $driver)
-    {
-        if (isset($this->customCreators[$driver])) {
-            return $this->callCustomCreator($driver);
-        }
-
-        if (isset($this->drivers[$driver])) {
-            $provider = $this->drivers[$driver];
-
-            return $this->buildProvider($provider, $this->config->get($driver, []));
-        }
-
-        throw new InvalidArgumentException("Driver [$driver] not supported.");
-    }
-
-    /**
-     * @param string $driver
-     *
-     * @return ProviderInterface
-     */
-    protected function callCustomCreator(string $driver): ProviderInterface
-    {
-        return $this->customCreators[$driver]($this->config);
-    }
-
-    /**
-     * @param string   $driver
+     * @param string   $name
      * @param \Closure $callback
      *
      * @return $this
      */
-    public function extend(string $driver, Closure $callback): self
+    public function extend(string $name, Closure $callback): self
     {
-        $driver = strtolower($driver);
-
-        $this->customCreators[$driver] = $callback;
+        $this->customCreators[strtolower($name)] = $callback;
 
         return $this;
     }
@@ -114,7 +80,7 @@ class SocialiteManager implements FactoryInterface
     /**
      * @return \Overtrue\Socialite\Contracts\ProviderInterface[]
      */
-    public function getResolvedDrivers(): array
+    public function getResolvedProviders(): array
     {
         return $this->resolved;
     }
@@ -128,5 +94,49 @@ class SocialiteManager implements FactoryInterface
     public function buildProvider(string $provider, array $config): ProviderInterface
     {
         return new $provider($config);
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return ProviderInterface
+     * @throws \InvalidArgumentException
+     *
+     */
+    protected function createProvider(string $name)
+    {
+        $config = $this->config->get($name, []);
+        $provider = $config['provider'] ?? $name;
+
+        if (isset($this->customCreators[$provider])) {
+            return $this->callCustomCreator($provider, $config);
+        }
+
+        if (!$this->isValidProvider($provider)) {
+            throw new InvalidArgumentException("Provider [$provider] not supported.");
+        }
+
+        return $this->buildProvider($this->providers[$provider] ?? $provider, $config);
+    }
+
+    /**
+     * @param string $driver
+     * @param array  $config
+     *
+     * @return ProviderInterface
+     */
+    protected function callCustomCreator(string $driver, array $config): ProviderInterface
+    {
+        return $this->customCreators[$driver]($config);
+    }
+
+    /**
+     * @param string $provider
+     *
+     * @return bool
+     */
+    protected function isValidProvider(string $provider): bool
+    {
+        return isset($this->providers[$provider]) || is_subclass_of($provider, ProviderInterface::class);
     }
 }
