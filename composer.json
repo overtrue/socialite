@@ -18,7 +18,7 @@
   },
   "require": {
     "php": ">=7.4",
-    "guzzlehttp/guzzle": "~6.0",
+    "guzzlehttp/guzzle": "~6.0|~7.0",
     "symfony/http-foundation": "^4.0|^5.0",
     "ext-json": "*",
     "symfony/psr-http-message-bridge": "^2.0",

@@ -76,7 +76,7 @@ class OAuthTest extends TestCase
             'client_secret' => 'fake_client_secret',
         ];
         $provider = new OAuthTestProviderStub($config);
-        $response = m::mock('stdClass');
+        $response = m::mock(\Psr\Http\Message\ResponseInterface::class);
 
         $response->shouldReceive('getBody')->andReturn($response);
         $response->shouldReceive('getContents')->andReturn([
@@ -124,7 +124,7 @@ class OAuthTest extends TestCase
         ];
         $provider = new OAuthTestProviderStub($config);
 
-        $response = m::mock('stdClass');
+        $response = m::mock(\Psr\Http\Message\ResponseInterface::class);
         $response->shouldReceive('getBody')->andReturn($response);
         $response->shouldReceive('getContents')->andReturn([
             'access_token' => 'fake_access_token',
