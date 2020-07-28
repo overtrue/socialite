@@ -1,13 +1,15 @@
 {
   "name": "overtrue/socialite",
-  "description": "A collection of OAuth 2 packages that extracts from laravel/socialite.",
+  "description": "A collection of OAuth 2 packages.",
   "keywords": [
-    "OAuth",
+    "oauth",
     "social",
     "login",
-    "Weibo",
-    "WeChat",
-    "QQ"
+    "weibo",
+    "wechat",
+    "qq",
+    "feishu",
+    "qcloud"
   ],
   "autoload": {
     "psr-4": {
@@ -15,14 +17,17 @@
     }
   },
   "require": {
-    "php": ">=5.6",
-    "guzzlehttp/guzzle": "~5.0|~6.0",
-    "symfony/http-foundation": "^2.7|^3.0|^4.0|^5.0",
-    "ext-json": "*"
+    "php": ">=7.4",
+    "symfony/http-foundation": "^5.0",
+    "guzzlehttp/guzzle": "~6.0|~7.0",
+    "ext-json": "*",
+    "symfony/psr-http-message-bridge": "^2.0",
+    "nyholm/psr7": "^1.3",
+    "ext-openssl": "*"
   },
   "require-dev": {
     "mockery/mockery": "~1.2",
-    "phpunit/phpunit": "~6"
+    "phpunit/phpunit": "~9.0"
   },
   "conflict": {
     "socialiteproviders/weixin": "*"
@@ -33,5 +38,10 @@
       "name": "overtrue",
       "email": "anzhengchao@gmail.com"
     }
-  ]
+  ],
+  "scripts": {
+    "check-style": "php-cs-fixer fix --using-cache=no --diff --config=.php_cs --dry-run --ansi",
+    "fix-style": "php-cs-fixer fix --using-cache=no --config=.php_cs --ansi",
+    "test": "vendor/bin/phpunit --colors=always"
+  }
 }

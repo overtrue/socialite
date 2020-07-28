@@ -1,9 +1,9 @@
 <?php
 
-use Overtrue\Socialite\Providers\WeChat as RealWeChatProvider;
 use PHPUnit\Framework\TestCase;
+use Overtrue\Socialite\Providers\WeChat;
 
-class WechatProviderTest extends TestCase
+class WechatTest extends TestCase
 {
     public function testWeChatProviderHasCorrectlyRedirectResponse()
     {
@@ -25,13 +25,22 @@ class WechatProviderTest extends TestCase
             'redirect_url' => 'http://localhost/socialite/callback.php',
         ]);
 
-        $this->assertSame('https://api.weixin.qq.com/sns/oauth2/access_token', $provider->tokenUrl());
+        $getTokenUrl = new ReflectionMethod(WeChat::class, 'getTokenUrl');
+        $getTokenUrl->setAccessible(true);
+
+        $getTokenFields = new ReflectionMethod(WeChat::class, 'getTokenFields');
+        $getTokenFields->setAccessible(true);
+
+        $getCodeFields = new ReflectionMethod(WeChat::class, 'getCodeFields');
+        $getCodeFields->setAccessible(true);
+
+        $this->assertSame('https://api.weixin.qq.com/sns/oauth2/access_token', $getTokenUrl->invoke($provider));
         $this->assertSame([
             'appid' => 'client_id',
             'secret' => 'client_secret',
             'code' => 'iloveyou',
             'grant_type' => 'authorization_code',
-        ], $provider->tokenFields('iloveyou'));
+        ], $getTokenFields->invoke($provider, 'iloveyou'));
 
         $this->assertSame([
             'appid' => 'client_id',
@@ -40,7 +49,7 @@ class WechatProviderTest extends TestCase
             'scope' => 'snsapi_login',
             'state' => 'wechat-state',
             'connect_redirect' => 1,
-        ], $provider->withState('wechat-state')->codeFields());
+        ], $getCodeFields->invoke($provider->withState('wechat-state')));
     }
 
     public function testOpenPlatformComponent()
@@ -50,10 +59,20 @@ class WechatProviderTest extends TestCase
             'client_secret' => null,
             'redirect' => 'redirect-url',
             'component' => [
-                'component_app_id' => 'component-app-id',
-                'access_token' => 'token',
-            ]
+                'id' => 'component-app-id',
+                'token' => 'token',
+            ],
         ]);
+        $getTokenUrl = new ReflectionMethod(WeChat::class, 'getTokenUrl');
+        $getTokenUrl->setAccessible(true);
+
+        $getTokenFields = new ReflectionMethod(WeChat::class, 'getTokenFields');
+        $getTokenFields->setAccessible(true);
+
+        $getCodeFields = new ReflectionMethod(WeChat::class, 'getCodeFields');
+        $getCodeFields->setAccessible(true);
+
+
         $this->assertSame([
             'appid' => 'client_id',
             'redirect_uri' => 'redirect-url',
@@ -62,7 +81,7 @@ class WechatProviderTest extends TestCase
             'state' => 'state',
             'connect_redirect' => 1,
             'component_appid' => 'component-app-id',
-        ], $provider->withState('state')->codeFields());
+        ], $getCodeFields->invoke($provider->withState('state')));
 
         $this->assertSame([
             'appid' => 'client_id',
@@ -70,9 +89,9 @@ class WechatProviderTest extends TestCase
             'component_access_token' => 'token',
             'code' => 'simcode',
             'grant_type' => 'authorization_code',
-        ], $provider->tokenFields('simcode'));
+        ], $getTokenFields->invoke($provider, 'simcode'));
 
-        $this->assertSame('https://api.weixin.qq.com/sns/oauth2/component/access_token', $provider->tokenUrl());
+        $this->assertSame('https://api.weixin.qq.com/sns/oauth2/component/access_token', $getTokenUrl->invoke($provider));
     }
 
     public function testOpenPlatformComponentWithCustomParameters()
@@ -82,39 +101,18 @@ class WechatProviderTest extends TestCase
             'client_secret' => null,
             'redirect' => 'redirect-url',
             'component' => [
-                'component_app_id' => 'component-app-id',
-                'access_token' => 'token',
-            ]
+                'id' => 'component-app-id',
+                'token' => 'token',
+            ],
         ]);
+
+        $getCodeFields = new ReflectionMethod(WeChat::class, 'getCodeFields');
+        $getCodeFields->setAccessible(true);
 
         $provider->with(['foo' => 'bar']);
 
-        $fields = $provider->withState('wechat-state')->codeFields();
-
+        $fields = $getCodeFields->invoke($provider->withState('wechat-state'));
         $this->assertArrayHasKey('foo', $fields);
         $this->assertSame('bar', $fields['foo']);
     }
-}
-
-trait ProviderTrait
-{
-    public function tokenUrl()
-    {
-        return $this->getTokenUrl();
-    }
-
-    public function tokenFields($code)
-    {
-        return $this->getTokenFields($code);
-    }
-
-    public function codeFields()
-    {
-        return $this->getCodeFields();
-    }
-}
-
-class WeChat extends RealWeChatProvider
-{
-    use ProviderTrait;
 }

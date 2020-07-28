@@ -1,53 +1,30 @@
 <?php
 
-/*
- * This file is part of the overtrue/socialite.
- *
- * (c) overtrue <i@overtrue.me>
- *
- * This source file is subject to the MIT license that is bundled
- * with this source code in the file LICENSE.
- */
-
 namespace Overtrue\Socialite\Providers;
 
-use Exception;
-use Overtrue\Socialite\AccessTokenInterface;
-use Overtrue\Socialite\ProviderInterface;
 use Overtrue\Socialite\User;
 
-/**
- * Class GitHubProvider.
- */
-class GitHubProvider extends AbstractProvider implements ProviderInterface
+class GitHub extends Base
 {
-    /**
-     * The scopes being requested.
-     *
-     * @var array
-     */
-    protected $scopes = ['user:email'];
+    public const NAME = 'github';
+    protected array $scopes = ['read:user'];
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function getAuthUrl($state)
+    protected function getAuthUrl(): string
     {
-        return $this->buildAuthUrlFromBase('https://github.com/login/oauth/authorize', $state);
+        return $this->buildAuthUrlFromBase('https://github.com/login/oauth/authorize');
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function getTokenUrl()
+    protected function getTokenUrl(): string
     {
         return 'https://github.com/login/oauth/access_token';
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $token
+     *
+     * @return array
      */
-    protected function getUserByToken(AccessTokenInterface $token)
+    protected function getUserByToken(string $token): array
     {
         $userUrl = 'https://api.github.com/user';
 
@@ -66,11 +43,9 @@ class GitHubProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * Get the email for the given access token.
-     *
      * @param string $token
      *
-     * @return string|null
+     * @return string
      */
     protected function getEmailByToken($token)
     {
@@ -81,8 +56,8 @@ class GitHubProvider extends AbstractProvider implements ProviderInterface
                 $emailsUrl,
                 $this->createAuthorizationHeaders($token)
             );
-        } catch (Exception $e) {
-            return;
+        } catch (\Throwable $e) {
+            return '';
         }
 
         foreach (json_decode($response->getBody(), true) as $email) {
@@ -92,24 +67,18 @@ class GitHubProvider extends AbstractProvider implements ProviderInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function mapUserToObject(array $user)
+    protected function mapUserToObject(array $user): User
     {
         return new User([
-            'id' => $this->arrayItem($user, 'id'),
-            'username' => $this->arrayItem($user, 'login'),
-            'nickname' => $this->arrayItem($user, 'login'),
-            'name' => $this->arrayItem($user, 'name'),
-            'email' => $this->arrayItem($user, 'email'),
-            'avatar' => $this->arrayItem($user, 'avatar_url'),
+            'id' => $user['id'] ?? null,
+            'nickname' => $user['login'] ?? null,
+            'name' => $user['name'] ?? null,
+            'email' => $user['email'] ?? null,
+            'avatar' => $user['avatar_url'] ?? null,
         ]);
     }
 
     /**
-     * Get the default options for an HTTP request.
-     *
      * @param string $token
      *
      * @return array
