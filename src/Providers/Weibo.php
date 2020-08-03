@@ -12,7 +12,6 @@ class Weibo extends Base
 {
     public const NAME = 'weibo';
     protected string $baseUrl = 'https://api.weibo.com';
-
     protected array $scopes = ['email'];
 
     protected function getAuthUrl(): string

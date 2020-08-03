@@ -93,7 +93,7 @@ abstract class Base implements ProviderInterface
         $response = $this->getHttpClient()->post(
             $this->getTokenUrl(),
             [
-                'json' => $this->getTokenFields($code),
+                'form_params' => $this->getTokenFields($code),
             ]
         );
 
