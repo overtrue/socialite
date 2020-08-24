@@ -83,7 +83,7 @@ class FeiShu extends Base
         $response = $this->getHttpClient()->get(
             $this->baseUrl . '/authen/v1/user_info',
             [
-                'headers' => ['Content-Type' => 'application/json', 'AuthoriBearer ' . $token],
+                'headers' => ['Content-Type' => 'application/json', 'Authorization'=>'Bearer ' . $token],
                 'query' => array_filter(
                     [
                         'user_access_token' => $token,
