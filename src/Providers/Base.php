@@ -94,6 +94,9 @@ abstract class Base implements ProviderInterface
             $this->getTokenUrl(),
             [
                 'form_params' => $this->getTokenFields($code),
+                'headers' => [
+                    'Accept' => 'application/json',
+                ],
             ]
         );
 
