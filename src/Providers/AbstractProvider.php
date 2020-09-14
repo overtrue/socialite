@@ -266,7 +266,9 @@ abstract class AbstractProvider implements ProviderInterface
             return $this->accessToken;
         }
 
-        $postKey = (1 === version_compare(ClientInterface::VERSION, '6')) ? 'form_params' : 'body';
+        $guzzleVersion = \defined(ClientInterface::class.'::VERSION') ? \constant(ClientInterface::class.'::VERSION') : 7;
+
+        $postKey = (1 === version_compare($guzzleVersion, '6')) ? 'form_params' : 'body';
 
         $response = $this->getHttpClient()->post($this->getTokenUrl(), [
             'headers' => ['Accept' => 'application/json'],
