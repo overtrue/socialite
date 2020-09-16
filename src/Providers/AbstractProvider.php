@@ -124,8 +124,18 @@ abstract class AbstractProvider implements ProviderInterface
      */
     public function __construct(Request $request, $config)
     {
+        // 兼容处理
+        if (!\is_array($config)) {
+            $config = [
+                'client_id' => \func_get_arg(1),
+                'client_secret' => \func_get_arg(2),
+                'redirect' => \func_get_arg(3) ?: null,
+            ];
+        }
         $this->config = new Config($config);
         $this->request = $request;
+        $this->clientId = $config['client_id'];
+        $this->clientSecret = $config['client_secret'];
         $this->redirectUrl = isset($config['redirect']) ? $config['redirect'] : null;
     }
 
