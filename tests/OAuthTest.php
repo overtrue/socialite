@@ -86,7 +86,7 @@ class OAuthTest extends TestCase
         ]);
 
         $provider->getHttpClient()->shouldReceive('post')->with('http://token.url', [
-            'json' => [
+            'form_params' => [
                 'client_id' => 'fake_client_id',
                 'client_secret' => 'fake_client_secret',
                 'code' => 'fake_code',
@@ -133,7 +133,7 @@ class OAuthTest extends TestCase
         ]);
 
         $provider->getHttpClient()->shouldReceive('post')->with('http://token.url', [
-            'json' => [
+            'form_params' => [
                 'client_id' => 'fake_client_id',
                 'client_secret' => 'fake_client_secret',
                 'code' => 'fake_code',

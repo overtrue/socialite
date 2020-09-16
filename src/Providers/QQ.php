@@ -39,9 +39,8 @@ class QQ extends Base
     /**
      * @param string $code
      *
-     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
-     *
      * @return array
+     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException|\GuzzleHttp\Exception\GuzzleException
      */
     public function tokenFromCode($code): array
     {
@@ -65,25 +64,27 @@ class QQ extends Base
      * @param string $token
      *
      * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     protected function getUserByToken(string $token): array
     {
-        $url = $this->baseUrl.'/oauth2.0/me?access_token='.$token;
+        $url = $this->baseUrl.'/oauth2.0/me?fmt=json&access_token='.$token;
         $this->withUnionId && $url .= '&unionid=1';
 
         $response = $this->getHttpClient()->get($url);
 
-        $me = json_decode($this->removeCallback($response->getBody()->getContents()), true);
+        $me = \json_decode($response->getBody()->getContents(), true);
 
         $queries = [
             'access_token' => $token,
+            'fmt' => 'json',
             'openid' => $me['openid'],
             'oauth_consumer_key' => $this->getClientId(),
         ];
 
         $response = $this->getHttpClient()->get($this->baseUrl.'/user/get_user_info?'.http_build_query($queries));
 
-        return (\json_decode($this->removeCallback($response->getBody()->getContents()), true) ?? []) + [
+        return (\json_decode($response->getBody()->getContents(), true) ?? []) + [
             'unionid' => $me['unionid'] ?? null,
             'openid' => $me['openid'] ?? null,
         ];
@@ -103,21 +104,5 @@ class QQ extends Base
             'email' => $user['email'] ?? null,
             'avatar' => $user['figureurl_qq_2'] ?? null,
         ]);
-    }
-
-    /**
-     * @param string $response
-     *
-     * @return string
-     */
-    protected function removeCallback($response)
-    {
-        if (false !== strpos($response, 'callback')) {
-            $lpos = strpos($response, '(');
-            $rpos = strrpos($response, ')');
-            $response = substr($response, $lpos + 1, $rpos - $lpos - 1);
-        }
-
-        return $response;
     }
 }
