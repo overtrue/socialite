@@ -18,7 +18,7 @@ class WeChat extends Base
     protected array $scopes = ['snsapi_login'];
     protected bool $withCountryCode = false;
     protected ?array $component = null;
-    protected ?string $openid;
+    protected ?string $openid = null;
 
     public function __construct(array $config)
     {
