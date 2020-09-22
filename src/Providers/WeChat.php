@@ -116,7 +116,7 @@ class WeChat extends Base
     public function userFromCode(string $code): User
     {
         if (in_array('snsapi_base', $this->scopes)) {
-            return $this->mapUserToObject(\json_decode($this->getTokenFromCode($code), true) ?? []);
+            return $this->mapUserToObject(\json_decode($this->getTokenFromCode($code)->getBody()->getContents(), true) ?? []);
         }
 
         $token = $this->tokenFromCode($code);
@@ -146,7 +146,7 @@ class WeChat extends Base
             ]),
         ]);
 
-        return \json_decode($response->getBody(), true) ?? [];
+        return \json_decode($response->getBody()->getContents(), true) ?? [];
     }
 
     /**
