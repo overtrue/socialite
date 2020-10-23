@@ -100,7 +100,12 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
      */
     public function setToken(AccessTokenInterface $token)
     {
-        $this->setAttribute('token', $token);
+        $this->setAttribute('token', $token->getToken());
+        $this->setAttribute('access_token', $token->getToken());
+
+        if (!empty($token['refresh_token'])) {
+            $this->setAttribute('refresh_token', $token['refresh_token']);
+        }
 
         return $this;
     }
@@ -132,7 +137,10 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
      */
     public function getToken()
     {
-        return $this->getAttribute('token');
+        return new AccessToken([
+            'access_token' => $this->getAccessToken(),
+            'refresh_token' => $this->getAttribute('refresh_token')
+        ]);
     }
 
     /**
@@ -142,7 +150,7 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
      */
     public function getAccessToken()
     {
-        return $this->getToken()->getToken();
+        return $this->getAttribute('token') ?: $this->getAttribute('access_token');
     }
 
     /**
@@ -152,7 +160,7 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
      */
     public function getRefreshToken()
     {
-        return $this->getToken()->getRefreshToken();
+        return $this->getAttribute('refresh_token');
     }
 
     /**
