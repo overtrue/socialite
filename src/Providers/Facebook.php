@@ -27,13 +27,13 @@ class Facebook extends Base
     }
 
     /**
-     * @param string $code
+     * @param  string  $code
      *
-     * @return string
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
-     *
      */
-    public function tokenFromCode($code): array
+    public function tokenFromCode(string $code): array
     {
         $response = $this->getHttpClient()->get(
             $this->getTokenUrl(),
@@ -46,19 +46,20 @@ class Facebook extends Base
     }
 
     /**
-     * @param string     $token
-     * @param array|null $query
+     * @param  string  $token
+     * @param  array|null  $query
      *
      * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     protected function getUserByToken(string $token, ?array $query = []): array
     {
         $appSecretProof = hash_hmac('sha256', $token, $this->getConfig()->get('client_secret'));
-        $endpont = $this->graphUrl . '/' . $this->version . '/me?access_token=' . $token . '&appsecret_proof=' . $appSecretProof . '&fields=' .
+        $endpoint = $this->graphUrl . '/' . $this->version . '/me?access_token=' . $token . '&appsecret_proof=' . $appSecretProof . '&fields=' .
             implode(',', $this->fields);
 
         $response = $this->getHttpClient()->get(
-            $endpont,
+            $endpoint,
             [
                 'headers' => [
                     'Accept' => 'application/json',

@@ -3,6 +3,7 @@
 namespace Overtrue\Socialite\Providers;
 
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Psr7\Stream;
 use Overtrue\Socialite\Config;
 use Overtrue\Socialite\Contracts\ProviderInterface;
 use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
@@ -86,7 +87,7 @@ abstract class Base implements ProviderInterface
      * @param string $code
      *
      * @return array
-     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException|\GuzzleHttp\Exception\GuzzleException
      */
     public function tokenFromCode(string $code): array
     {
@@ -277,12 +278,17 @@ abstract class Base implements ProviderInterface
      */
     protected function normalizeAccessTokenResponse($response): array
     {
+        if ($response instanceof Stream) {
+            $response->rewind();
+            $response = $response->getContents();
+        }
+
         if (\is_string($response)) {
             $response = json_decode($response, true) ?? [];
         }
 
         if (!\is_array($response)) {
-            throw new AuthorizeFailedException('Invalid token response', $response);
+            throw new AuthorizeFailedException('Invalid token response', [$response]);
         }
 
         if (empty($response[$this->accessTokenKey])) {

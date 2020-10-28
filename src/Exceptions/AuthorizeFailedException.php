@@ -10,10 +10,10 @@ class AuthorizeFailedException extends Exception
      * @param string $message
      * @param array  $body
      */
-    public function __construct($message, $body)
+    public function __construct(string $message, $body)
     {
         parent::__construct($message, -1);
 
-        $this->body = $body;
+        $this->body = (array) $body;
     }
 }
