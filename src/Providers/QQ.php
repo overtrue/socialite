@@ -25,11 +25,11 @@ class QQ extends Base
     }
 
     /**
-     * @param string $code
+     * @param  string  $code
      *
      * @return array
      */
-    protected function getTokenFields($code): array
+    protected function getTokenFields(string $code): array
     {
         return parent::getTokenFields($code) + [
             'grant_type' => 'authorization_code',
@@ -37,12 +37,13 @@ class QQ extends Base
     }
 
     /**
-     * @param string $code
+     * @param  string  $code
      *
      * @return array
-     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException|\GuzzleHttp\Exception\GuzzleException
+     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function tokenFromCode($code): array
+    public function tokenFromCode(string $code): array
     {
         $response = $this->getHttpClient()->get($this->getTokenUrl(), [
             'query' => $this->getTokenFields($code),

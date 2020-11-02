@@ -77,9 +77,10 @@ class Baidu extends Base
     }
 
     /**
-     * @param string $token
+     * @param  string  $token
      *
      * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     protected function getUserByToken(string $token): array
     {

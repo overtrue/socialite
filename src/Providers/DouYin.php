@@ -41,10 +41,11 @@ class DouYin extends Base
     }
 
     /**
-     * @param string $code
+     * @param  string  $code
      *
      * @return array
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      *
      */
     public function tokenFromCode($code): array
@@ -83,10 +84,11 @@ class DouYin extends Base
     }
 
     /**
-     * @param string $token
+     * @param  string  $token
      *
      * @return array
      * @throws \Overtrue\Socialite\Exceptions\InvalidArgumentException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      *
      */
     protected function getUserByToken(string $token): array

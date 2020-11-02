@@ -33,24 +33,25 @@ class FeiShu extends Base
     }
 
     /**
-     * @param string $code
+     * @param  string  $code
      *
      * @return array
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
-     *
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function tokenFromCode($code): array
+    public function tokenFromCode(string $code): array
     {
         return $this->normalizeAccessTokenResponse($this->getTokenFromCode($code));
     }
 
     /**
-     * @param string $code
+     * @param  string  $code
      *
      * @return array
      * @throws AuthorizeFailedException
      *
-     * @throws AuthorizeFailedException
+     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     protected function getTokenFromCode(string $code): array
     {
@@ -74,9 +75,10 @@ class FeiShu extends Base
     }
 
     /**
-     * @param string $token
+     * @param  string  $token
      *
      * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     protected function getUserByToken(string $token): array
     {

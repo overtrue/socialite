@@ -22,10 +22,11 @@ class Douban extends Base
     }
 
     /**
-     * @param string     $token
-     * @param array|null $query
+     * @param  string  $token
+     * @param  array|null  $query
      *
      * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     protected function getUserByToken(string $token, ?array $query = []): array
     {
@@ -65,10 +66,11 @@ class Douban extends Base
     }
 
     /**
-     * @param string $code
+     * @param  string  $code
      *
      * @return array
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function tokenFromCode(string $code): array
     {

@@ -27,16 +27,16 @@ class Google extends Base
     }
 
     /**
-     * @param string $code
-     *
-     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     * @param  string  $code
      *
      * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      */
     public function tokenFromCode($code): array
     {
         $response = $this->getHttpClient()->post($this->getTokenUrl(), [
-            'body' => $this->getTokenFields($code),
+            'form_params' => $this->getTokenFields($code),
         ]);
 
         return $this->normalizeAccessTokenResponse($response->getBody());
@@ -53,10 +53,11 @@ class Google extends Base
     }
 
     /**
-     * @param string     $token
-     * @param array|null $query
+     * @param  string  $token
+     * @param  array|null  $query
      *
      * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     protected function getUserByToken(string $token, ?array $query = []): array
     {

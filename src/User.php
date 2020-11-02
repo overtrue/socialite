@@ -13,7 +13,7 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
     use HasAttributes;
 
     /**
-     * @var \Overtrue\Socialite\Contracts\ProviderInterface
+     * @var \Overtrue\Socialite\Contracts\ProviderInterface|null
      */
     protected ?ProviderInterface $provider;
 

@@ -20,9 +20,10 @@ class GitHub extends Base
     }
 
     /**
-     * @param string $token
+     * @param  string  $token
      *
      * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     protected function getUserByToken(string $token): array
     {
@@ -43,11 +44,11 @@ class GitHub extends Base
     }
 
     /**
-     * @param string $token
+     * @param  string  $token
      *
      * @return string
      */
-    protected function getEmailByToken($token)
+    protected function getEmailByToken(string $token)
     {
         $emailsUrl = 'https://api.github.com/user/emails';
 

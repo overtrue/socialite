@@ -21,10 +21,11 @@ class Outlook extends Base
     }
 
     /**
-     * @param string     $token
-     * @param array|null $query
+     * @param  string  $token
+     * @param  array|null  $query
      *
      * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     protected function getUserByToken(string $token, ?array $query = []): array
     {

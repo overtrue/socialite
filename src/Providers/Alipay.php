@@ -29,10 +29,11 @@ class Alipay extends Base
     }
 
     /**
-     * @param string $token
+     * @param  string  $token
      *
      * @return array
      * @throws \Overtrue\Socialite\Exceptions\InvalidArgumentException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     protected function getUserByToken(string $token): array
     {
@@ -77,10 +78,12 @@ class Alipay extends Base
     }
 
     /**
-     * @param string $code
+     * @param  string  $code
      *
      * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     * @throws \Overtrue\Socialite\Exceptions\InvalidArgumentException
      */
     public function tokenFromCode(string $code): array
     {
@@ -102,6 +105,10 @@ class Alipay extends Base
         return $this->normalizeAccessTokenResponse($response['alipay_system_oauth_token_response']);
     }
 
+    /**
+     * @return array
+     * @throws \Overtrue\Socialite\Exceptions\InvalidArgumentException
+     */
     protected function getCodeFields(): array
     {
         if (empty($this->redirectUrl)) {

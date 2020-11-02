@@ -46,13 +46,12 @@ class WeChat extends Base
     }
 
     /**
-     * @param string $code
+     * @param  string  $code
      *
      * @return array
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
-     *
      */
-    public function tokenFromCode($code): array
+    public function tokenFromCode(string $code): array
     {
         $response = $this->getTokenFromCode($code);
 
@@ -130,9 +129,10 @@ class WeChat extends Base
     }
 
     /**
-     * @param string $token
+     * @param  string  $token
      *
      * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     protected function getUserByToken(string $token): array
     {
@@ -191,9 +191,10 @@ class WeChat extends Base
     }
 
     /**
-     * @param string $code
+     * @param  string  $code
      *
      * @return \Psr\Http\Message\ResponseInterface
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     protected function getTokenFromCode(string $code): ResponseInterface
     {

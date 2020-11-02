@@ -57,6 +57,10 @@ class WeWork extends Base
         return $this;
     }
 
+    /**
+     * @return string
+     * @throws \Overtrue\Socialite\Exceptions\InvalidArgumentException
+     */
     public function getAuthUrl(): string
     {
         // 网页授权登录
@@ -114,11 +118,12 @@ class WeWork extends Base
     }
 
     /**
-     * @param string $token
-     * @param string $code
+     * @param  string  $token
+     * @param  string  $code
      *
      * @return array
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     protected function getUserId(string $token, string $code): array
     {
@@ -144,10 +149,11 @@ class WeWork extends Base
     }
 
     /**
-     * @param string $userId
+     * @param  string  $userId
      *
      * @return array
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     protected function getUserById(string $userId): array
     {
@@ -198,6 +204,7 @@ class WeWork extends Base
     /**
      * @return string
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     protected function createApiAccessToken(): string
     {

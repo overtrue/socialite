@@ -35,11 +35,12 @@ class Weibo extends Base
     }
 
     /**
-     * @param string $token
-     *
-     * @throws \Overtrue\Socialite\Exceptions\InvalidTokenException
+     * @param  string  $token
      *
      * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     *
+     * @throws \Overtrue\Socialite\Exceptions\InvalidTokenException
      */
     protected function getUserByToken(string $token): array
     {
@@ -63,11 +64,11 @@ class Weibo extends Base
     }
 
     /**
-     * @param string $token
-     *
-     * @throws \Overtrue\Socialite\Exceptions\InvalidTokenException
+     * @param  string  $token
      *
      * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Overtrue\Socialite\Exceptions\InvalidTokenException
      */
     protected function getTokenPayload(string $token): array
     {

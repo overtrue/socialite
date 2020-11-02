@@ -53,13 +53,13 @@ class Taobao extends Base
     }
 
     /**
-     * @param string $code
-     *
-     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     * @param  string  $code
      *
      * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      */
-    public function tokenFromCode($code): array
+    public function tokenFromCode(string $code): array
     {
         $response = $this->getHttpClient()->post($this->getTokenUrl(), [
             'query' => $this->getTokenFields($code),
@@ -69,10 +69,11 @@ class Taobao extends Base
     }
 
     /**
-     * @param string     $token
-     * @param array|null $query
+     * @param  string  $token
+     * @param  array|null  $query
      *
      * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     protected function getUserByToken(string $token, ?array $query = []): array
     {

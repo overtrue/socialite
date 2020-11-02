@@ -87,10 +87,11 @@ class DingTalk extends Base
     }
 
     /**
-     * @param string $code
+     * @param  string  $code
      *
      * @return User
      *
+     * @throws \GuzzleHttp\Exception\GuzzleException
      * @see https://ding-doc.dingtalk.com/doc#/personnal/tmudue
      */
     public function userFromCode(string $code): User
@@ -110,7 +111,7 @@ class DingTalk extends Base
         );
         $response = \json_decode($response->getBody()->getContents(), true);
 
-        if (0 != $response['errcode']) {
+        if (0 != $response['errcode'] ?? 1) {
             throw new \InvalidArgumentException('You get error: ' . json_encode($response, JSON_UNESCAPED_UNICODE));
         }
 

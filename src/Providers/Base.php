@@ -56,10 +56,11 @@ abstract class Base implements ProviderInterface
     }
 
     /**
-     * @param string $code
+     * @param  string  $code
      *
      * @return \Overtrue\Socialite\User
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function userFromCode(string $code): User
     {

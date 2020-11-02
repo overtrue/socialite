@@ -33,10 +33,11 @@ class Linkedin extends Base
     }
 
     /**
-     * @param string     $token
-     * @param array|null $query
+     * @param  string  $token
+     * @param  array|null  $query
      *
      * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     protected function getUserByToken(string $token, ?array $query = []): array
     {
@@ -47,11 +48,12 @@ class Linkedin extends Base
     }
 
     /**
-     * @param string $token
+     * @param  string  $token
      *
      * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    protected function getBasicProfile($token)
+    protected function getBasicProfile(string $token)
     {
         $url = 'https://api.linkedin.com/v2/me?projection=(id,firstName,lastName,profilePicture(displayImage~:playableStreams))';
 
@@ -66,11 +68,12 @@ class Linkedin extends Base
     }
 
     /**
-     * @param string $token
+     * @param  string  $token
      *
      * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    protected function getEmailAddress($token)
+    protected function getEmailAddress(string $token)
     {
         $url = 'https://api.linkedin.com/v2/emailAddress?q=members&projection=(elements*(handle~))';
 
@@ -91,18 +94,18 @@ class Linkedin extends Base
      */
     protected function mapUserToObject(array $user): User
     {
-        $preferredLocale = $user['firstName.preferredLocale.language'] ?? null.'_'.$user['firstName.preferredLocale.country'] ?? null;
+        $preferredLocale = ($user['firstName.preferredLocale.language'] ?? null).'_'.($user['firstName.preferredLocale.country']) ?? null;
         $firstName = $user['firstName.localized.'.$preferredLocale] ?? null;
         $lastName = $user['lastName.localized.'.$preferredLocale] ?? null;
         $name = $firstName.' '.$lastName;
 
         $images = $user['profilePicture.displayImage~.elements'] ?? [];
         $avatars = array_filter($images, function ($image) {
-            return $image['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['storageSize']['width'] === 100;
+            return ($image['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['storageSize']['width'] ?? 0) === 100;
         });
         $avatar = array_shift($avatars);
         $originalAvatars = array_filter($images, function ($image) {
-            return $image['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['storageSize']['width'] === 800;
+            return ($image['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['storageSize']['width'] ?? 0) === 800;
         });
         $originalAvatar = array_shift($originalAvatars);
 
@@ -114,17 +117,5 @@ class Linkedin extends Base
             'avatar' => $avatar['identifiers.0.identifier'] ?? null,
             'avatar_original' => $originalAvatar['identifiers.0.identifier'] ?? null,
         ]);
-    }
-
-    /**
-     * @param array $fields
-     *
-     * @return $this
-     */
-    public function fields(array $fields)
-    {
-        $this->fields = $fields;
-
-        return $this;
     }
 }

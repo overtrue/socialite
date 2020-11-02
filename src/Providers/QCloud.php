@@ -42,12 +42,12 @@ class QCloud extends Base implements ProviderInterface
     }
 
     /**
-     * @param string $code
+     * @param  string  $code
      *
      * @return array
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      */
-    public function TokenFromCode($code): array
+    public function TokenFromCode(string $code): array
     {
         $response = $this->performRequest(
             'GET',
