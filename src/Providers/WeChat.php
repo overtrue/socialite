@@ -92,7 +92,7 @@ class WeChat extends Base
             'redirect_uri' => $this->redirectUrl,
             'response_type' => 'code',
             'scope' => $this->formatScopes($this->scopes, $this->scopeSeparator),
-            'state' => $this->state ?: md5(time()),
+            'state' => $this->state ?: md5(uniqid()),
             'connect_redirect' => 1,
         ], $this->parameters);
     }
