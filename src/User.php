@@ -103,8 +103,8 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
         $this->setAttribute('token', $token->getToken());
         $this->setAttribute('access_token', $token->getToken());
 
-        if (!empty($token['refresh_token'])) {
-            $this->setAttribute('refresh_token', $token['refresh_token']);
+        if (\is_callable([$token, 'getRefreshToken'])) {
+            $this->setAttribute('refresh_token', $token->getRefreshToken());
         }
 
         return $this;
