@@ -141,8 +141,10 @@ class WeWork extends Base
 
         $response = \json_decode($response->getBody(), true) ?? [];
 
-        if (($response['errcode'] ?? 1) > 0 || empty($response['UserId'])) {
+        if (($response['errcode'] ?? 1) > 0 || (empty($response['UserId']) && empty($response['OpenId']))) {
             throw new AuthorizeFailedException('Failed to get user openid:' . $response['errmsg'] ?? 'Unknown.', $response);
+        } else if (empty($response['UserId'])) {
+            $this->detailed = false;
         }
 
         return $response;
@@ -173,7 +175,7 @@ class WeWork extends Base
             throw new AuthorizeFailedException('Failed to get user:' . $response['errmsg'] ?? 'Unknown.', $response);
         }
 
-        return \json_decode($response->getBody(), true) ?? [];
+        return $response;
     }
 
     /**
