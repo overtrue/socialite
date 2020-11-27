@@ -173,7 +173,7 @@ class WeWork extends Base
             throw new AuthorizeFailedException('Failed to get user:' . $response['errmsg'] ?? 'Unknown.', $response);
         }
 
-        return \json_decode($response->getBody(), true) ?? [];
+        return $response;
     }
 
     /**
