@@ -24,9 +24,6 @@
     "mockery/mockery": "~1.2",
     "phpunit/phpunit": "~6"
   },
-  "conflict": {
-    "socialiteproviders/weixin": "*"
-  },
   "license": "MIT",
   "authors": [
     {
