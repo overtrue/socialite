@@ -446,6 +446,7 @@ Enjoy it! :heart:
 - [豆瓣 - OAuth 2.0 授权机制说明](http://developers.douban.com/wiki/?title=oauth2)
 - [抖音 - 网站应用开发指南](http://open.douyin.com/platform/doc)
 - [飞书 - 授权说明](https://open.feishu.cn/document/ukTMukTMukTM/uMTNz4yM1MjLzUzM)
+- [Tapd - 用户授权说明](https://www.tapd.cn/help/show#1120003271001000093)
 
 ## PHP 扩展包开发
 
