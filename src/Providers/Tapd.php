@@ -141,11 +141,11 @@ class Tapd extends Base
         }
 
         return new User([
-            'id' => $user['data']['id'],
-            'nickname' => $user['data']['nick'],
-            'name' => $user['data']['name'],
-            'email' => $user['data']['email'],
-            'avatar' => $user['data']['avatar'] ?? '',
+            'id' => $user['data']['id'] ?? null,
+            'nickname' => $user['data']['nick'] ?? null,
+            'name' => $user['data']['name'] ?? null,
+            'email' => $user['data']['email'] ?? null,
+            'avatar' => $user['data']['avatar'] ?? null,
         ]);
     }
 
