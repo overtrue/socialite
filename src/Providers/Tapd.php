@@ -2,6 +2,8 @@
 
 namespace Overtrue\Socialite\Providers;
 
+use GuzzleHttp\Psr7\Stream;
+use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
 use Overtrue\Socialite\Exceptions\BadRequestException;
 use Overtrue\Socialite\User;
 
@@ -139,11 +141,45 @@ class Tapd extends Base
         }
 
         return new User([
-            'id' => $user['data']['id'],
-            'nickname' => $user['data']['nick'],
-            'name' => $user['data']['name'],
-            'email' => '',
-            'avatar' => $user['data']['avatar'],
+            'id' => $user['data']['id'] ?? null,
+            'nickname' => $user['data']['nick'] ?? null,
+            'name' => $user['data']['name'] ?? null,
+            'email' => $user['data']['email'] ?? null,
+            'avatar' => $user['data']['avatar'] ?? null,
         ]);
+    }
+
+    /**
+     * @param array|string $response
+     *
+     * @return mixed
+     * @return array
+     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     *
+     */
+    protected function normalizeAccessTokenResponse($response): array
+    {
+        if ($response instanceof Stream) {
+            $response->rewind();
+            $response = $response->getContents();
+        }
+
+        if (\is_string($response)) {
+            $response = json_decode($response, true) ?? [];
+        }
+
+        if (!\is_array($response)) {
+            throw new AuthorizeFailedException('Invalid token response', [$response]);
+        }
+
+        if (empty($response['data'][$this->accessTokenKey])) {
+            throw new AuthorizeFailedException('Authorize Failed: ' . json_encode($response, JSON_UNESCAPED_UNICODE), $response);
+        }
+
+        return $response + [
+                'access_token' => $response['data'][$this->accessTokenKey],
+                'refresh_token' => $response['data'][$this->refreshTokenKey] ?? null,
+                'expires_in' => \intval($response['data'][$this->expiresInKey] ?? 0),
+            ];
     }
 }

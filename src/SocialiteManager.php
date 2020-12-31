@@ -29,6 +29,7 @@ class SocialiteManager implements FactoryInterface
         Providers\Linkedin::NAME => Providers\Linkedin::class,
         Providers\Facebook::NAME => Providers\Facebook::class,
         Providers\DingTalk::NAME => Providers\DingTalk::class,
+        Providers\Tapd::NAME => Providers\Tapd::class,
     ];
 
     public function __construct(array $config)
