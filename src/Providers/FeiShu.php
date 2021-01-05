@@ -55,11 +55,12 @@ class FeiShu extends Base
      */
     protected function getTokenFromCode(string $code): array
     {
+        $app_access_token = $this->getAppAccessToken();
         $response = $this->getHttpClient()->post(
             $this->getTokenUrl(),
             [
                 'json' => [
-                    'app_access_token' => $this->config->get('app_access_token'),
+                    'app_access_token' => $app_access_token,
                     'code' => $code,
                     'grant_type' => 'authorization_code',
                 ],
@@ -119,5 +120,70 @@ class FeiShu extends Base
                 'email' => $user['email'] ?? null,
             ]
         );
+    }
+
+    /**
+     * 获取 app_access_token
+     * 应用维度授权凭证，开放平台可据此识别调用方的应用身份
+     * 分内建和自建
+     */
+    protected function getAppAccessToken($isInternal = 1) {
+        if ($isInternal) {
+            $url = $this->baseUrl . 'auth/v3/app_access_token/internal';
+            $params = [
+                'json' => [
+                    'app_id' => $this->config->get('client_id'),
+                    'app_secret' => $this->config->get('client_secret'),
+                ],
+            ];
+        } else {
+            $url = $this->baseUrl . 'auth/v3/app_access_token';
+            $params = [
+                'json' => [
+                    'app_id' => $this->config->get('client_id'),
+                    'app_secret' => $this->config->get('client_secret'),
+                    'app_ticket' => '', // 此处有坑 通过推送接口获取
+                ],
+            ];
+        }
+
+        $response = $this->getHttpClient()->post($url, $params);
+        $response = \json_decode($response->getBody(), true) ?? [];
+        if (empty($response['app_access_token'])) {
+            throw new AuthorizeFailedException('Invalid app_access_token response', $response);
+        }
+        return $response['app_access_token'];
+    }
+
+    /**
+     * 获取 tenant_access_token
+     * 应用的企业授权凭证，开放平台据此识别调用方的应用身份和企业身份
+     * 分内建和自建
+     */
+    protected function getTenantAccessToken($isInternal = 1) {
+        if ($isInternal) {
+            $url = $this->baseUrl . 'auth/v3/tenant_access_token/internal';
+            $params = [
+                'json' => [
+                    'app_id' => $this->config->get('client_id'),
+                    'app_secret' => $this->config->get('client_secret'),
+                ],
+            ];
+        } else {
+            $url = $this->baseUrl . 'auth/v3/tenant_access_token';
+            $params = [
+                'json' => [
+                    'app_id' => $this->config->get('client_id'),
+                    'app_secret' => $this->config->get('client_secret'),
+                    'app_ticket' => '', // 此处有坑 通过推送接口获取
+                ],
+            ];
+        }
+        $response = $this->getHttpClient()->post($url, $params);
+        $response = \json_decode($response->getBody(), true) ?? [];
+        if (empty($response['tenant_access_token'])) {
+            throw new AuthorizeFailedException('Invalid tenant_access_token response', $response);
+        }
+        return $response['tenant_access_token'];
     }
 }
