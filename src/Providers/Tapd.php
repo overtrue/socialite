@@ -81,7 +81,7 @@ class Tapd extends Base
     protected function getRefreshTokenFields($refreshToken): array
     {
         return [
-            'grant_type' => 'grant_type',
+            'grant_type' => 'refresh_token',
             'redirect_uri' => $this->redirectUrl,
             'refresh_token' => $refreshToken,
         ];
