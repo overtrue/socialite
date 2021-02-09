@@ -232,10 +232,37 @@ $user = $socialite->create('douyin')->withOpenId('openId')->userFromToken('here 
 You can choose the form you want display by using `withDisplay()`.
 
 ```php
-create$authUrl = $socialite->driver('baidu')->withDisplay('mobile')->redirect();
+$authUrl = $socialite->create('baidu')->withDisplay('mobile')->redirect();
 
 ```
 `popup` mode is the default setting with display. `basic` is the default with scopes.
+
+##### [Feishu](https://open.feishu.cn/document/ukTMukTMukTM/uITNz4iM1MjLyUzM)
+
+Some simple way to use by internal app mode and config app_ticket.
+
+```php
+$config = [
+    'feishu' => [
+        'client_id' => 'your app id',
+
+        // or 'app_secret' 
+        'client_secret' => 'your app secret',
+
+        // or 'redirect_url'
+        'redirect' => 'redirect URL',
+
+        // if you want to use internal way to get app_access_token
+        'kind_of_app' => 'internal'
+    ]
+]
+$socialite = new SocialiteManager($config);
+
+$feishuDriver = $socialite->create('feishu');
+
+$feishuDriver->withInternalAppMode()->userFromCode('here is code');
+$feishuDriver->withDefaultMode()->withAppTicket('app_ticket')->userFromCode('here is code');
+```
 
 ##### [Taobao](https://open.taobao.com/doc.htm?docId=102635&docType=1&source=search)
 
