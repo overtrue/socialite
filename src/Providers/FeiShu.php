@@ -192,7 +192,7 @@ class FeiShu extends Base
         $response = \json_decode($response->getBody(), true) ?? [];
 
         if (empty($response['app_access_token'])) {
-            throw new InvalidTokenException('Invalid \'app_access_token\' response', $response);
+            throw new InvalidTokenException('Invalid \'app_access_token\' response', json_encode($response));
         }
 
         $this->config->set('app_access_token', $response['app_access_token']);
