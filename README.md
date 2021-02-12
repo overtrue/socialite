@@ -244,6 +244,7 @@ Some simple way to use by internal app mode and config app_ticket.
 ```php
 $config = [
     'feishu' => [
+        // or 'app_id'
         'client_id' => 'your app id',
 
         // or 'app_secret' 
@@ -253,9 +254,11 @@ $config = [
         'redirect' => 'redirect URL',
 
         // if you want to use internal way to get app_access_token
-        'kind_of_app' => 'internal'
+        // set this key by 'internal' then you already turn on the internal app mode 
+        'app_mode' => 'internal'
     ]
-]
+];
+
 $socialite = new SocialiteManager($config);
 
 $feishuDriver = $socialite->create('feishu');

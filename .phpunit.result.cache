@@ -1,0 +1,1 @@
+C:37:"PHPUnit\Runner\DefaultTestResultCache":172:{a:2:{s:7:"defects";a:1:{s:50:"Providers\FeiShuTest::testProviderCanCreateCorrect";i:3;}s:5:"times";a:1:{s:50:"Providers\FeiShuTest::testProviderCanCreateCorrect";d:0.003;}}}
