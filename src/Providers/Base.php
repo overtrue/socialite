@@ -13,24 +13,46 @@ use Overtrue\Socialite\User;
 abstract class Base implements ProviderInterface
 {
     public const NAME = null;
-    protected ?string $state = null;
-    protected Config $config;
-    protected ?string $redirectUrl;
-    protected array $parameters = [];
-    protected array $scopes = [];
-    protected string $scopeSeparator = ',';
+
+    protected ?string      $state           = null;
+    protected Config       $config;
+    protected ?string      $redirectUrl;
+    protected array        $parameters      = [];
+    protected array        $scopes          = [];
+    protected string       $scopeSeparator  = ',';
     protected GuzzleClient $httpClient;
-    protected array $guzzleOptions = [];
-    protected int $encodingType = PHP_QUERY_RFC1738;
-    protected string $expiresInKey = 'expires_in';
-    protected string $accessTokenKey = 'access_token';
-    protected string $refreshTokenKey = 'refresh_token';
+    protected array        $guzzleOptions   = [];
+    protected int          $encodingType    = PHP_QUERY_RFC1738;
+    protected string       $expiresInKey    = 'expires_in';
+    protected string       $accessTokenKey  = 'access_token';
+    protected string       $refreshTokenKey = 'refresh_token';
 
     public function __construct(array $config)
     {
         $this->config = new Config($config);
         $this->scopes = $config['scopes'] ?? $this->scopes ?? [];
-        $this->redirectUrl = $this->config->get('redirect_url') ?? $this->config->get('redirect');
+
+        // normalize 'client_id'
+        if (!$this->config->has('client_id')) {
+            $id = $this->config->get('app_id');
+            if (null != $id) {
+                $this->config->set('client_id', $id);
+            }
+        }
+
+        // normalize 'client_secret'
+        if (!$this->config->has('client_secret')) {
+            $secret = $this->config->get('app_secret');
+            if (null != $secret) {
+                $this->config->set('client_secret', $secret);
+            }
+        }
+
+        // normalize 'redirect_url'
+        if (!$this->config->has('redirect_url')) {
+            $this->config->set('redirect_url', $this->config->get('redirect'));
+        }
+        $this->redirectUrl = $this->config->get('redirect_url');
     }
 
     abstract protected function getAuthUrl(): string;
@@ -56,7 +78,7 @@ abstract class Base implements ProviderInterface
     }
 
     /**
-     * @param  string  $code
+     * @param string $code
      *
      * @return \Overtrue\Socialite\User
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
@@ -96,7 +118,7 @@ abstract class Base implements ProviderInterface
             $this->getTokenUrl(),
             [
                 'form_params' => $this->getTokenFields($code),
-                'headers' => [
+                'headers'     => [
                     'Accept' => 'application/json',
                 ],
             ]
@@ -231,10 +253,10 @@ abstract class Base implements ProviderInterface
     protected function getTokenFields(string $code): array
     {
         return [
-            'client_id' => $this->getClientId(),
+            'client_id'     => $this->getClientId(),
             'client_secret' => $this->getClientSecret(),
-            'code' => $code,
-            'redirect_uri' => $this->redirectUrl,
+            'code'          => $code,
+            'redirect_uri'  => $this->redirectUrl,
         ];
     }
 
@@ -254,9 +276,9 @@ abstract class Base implements ProviderInterface
     {
         $fields = array_merge(
             [
-                'client_id' => $this->getClientId(),
-                'redirect_uri' => $this->redirectUrl,
-                'scope' => $this->formatScopes($this->scopes, $this->scopeSeparator),
+                'client_id'     => $this->getClientId(),
+                'redirect_uri'  => $this->redirectUrl,
+                'scope'         => $this->formatScopes($this->scopes, $this->scopeSeparator),
                 'response_type' => 'code',
             ],
             $this->parameters
@@ -297,9 +319,9 @@ abstract class Base implements ProviderInterface
         }
 
         return $response + [
-                'access_token' => $response[$this->accessTokenKey],
+                'access_token'  => $response[$this->accessTokenKey],
                 'refresh_token' => $response[$this->refreshTokenKey] ?? null,
-                'expires_in' => \intval($response[$this->expiresInKey] ?? 0),
+                'expires_in'    => \intval($response[$this->expiresInKey] ?? 0),
             ];
     }
 }
