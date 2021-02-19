@@ -10,7 +10,7 @@
 </p>
 
 
-<p align="center">Socialite is an OAuth2 Authentication tool. It is inspired by <a href="https://github.com/laravel/socialite">laravel/socialite</a>, You can easily use it in any PHP project.       <a href="/README_CN.md">中文文档</aa></p>
+<p align="center">Socialite is an <a href="https://oauth.net/2/">OAuth2</a>  Authentication tool. It is inspired by <a href="https://github.com/laravel/socialite">laravel/socialite</a>, You can easily use it in any PHP project.       <a href="/README_CN.md">中文文档</a></p>
 
 <p align="center">This tool now supports platforms such as Facebook, GitHub, Google, LinkedIn, Outlook, QQ, Tapd, Alipay, Taobao, Baidu, DingTalk, Weibo, WeChat, Douyin, Feishu, Douban, WeWork, Tencent Cloud.</p>
 
