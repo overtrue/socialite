@@ -123,21 +123,22 @@ $user->getEmail();     // "anzhengchao@gmail.com"
 
 ## Configuration
 
-Now we support the following sites:
-
-`Alipay`, `Dingtalk`, `facebook`, `github`, `google`, `linkedin`, `outlook`, `weibo`, `taobao`, `qq`, `wechat`, `douyin`, `baidu`, `feishu`, and `douban`.
-
 Each create uses the same configuration keys: `client_id`, `client_secret`, `redirect`.
 
 Example:
-```
-...
+```php
+$config = [
   'weibo' => [
     'client_id'     => 'your-app-id',
     'client_secret' => 'your-app-secret',
     'redirect'      => 'http://localhost/socialite/callback.php',
   ],
-...
+  'facebook' => [
+    'client_id'     => 'your-app-id',
+    'client_secret' => 'your-app-secret',
+    'redirect'      => 'http://localhost/socialite/callback.php',
+  ],
+];
 ```
 
 ### Custom app name
