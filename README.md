@@ -10,11 +10,41 @@
 </p>
 
 
-<p align="center">Socialite is an OAuth2 Authentication tool. It is inspired by <a href="https://github.com/laravel/socialite">laravel/socialite</a>, You can easily use it in any PHP project.       <a href="https://github.com/overtrue/socialite/blob/master/README_CN.md">中文文档</aa></p>
+<p align="center">Socialite is an <a href="https://oauth.net/2/">OAuth2</a>  Authentication tool. It is inspired by <a href="https://github.com/laravel/socialite">laravel/socialite</a>, You can easily use it in any PHP project.       <a href="/README_CN.md">中文文档</a></p>
+
+<p align="center">This tool now supports platforms such as Facebook, GitHub, Google, LinkedIn, Outlook, QQ, Tapd, Alipay, Taobao, Baidu, DingTalk, Weibo, WeChat, Douyin, Feishu, Douban, WeWork, Tencent Cloud.</p>
 
 
-
-[TOC]
+- [Requirement](#requirement)
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Configuration](#configuration)
+    - [Custom app name](#custom-app-name)
+    - [Extends custom provider](#extends-custom-provider)
+  - [Platform](#platform)
+    - [Alipay](#alipay)
+    - [DingTalk](#dingtalk)
+    - [Douyin](#douyin)
+    - [Baidu](#baidu)
+    - [Feishu](#feishu)
+    - [Taobao](#taobao)
+    - [WeChat](#wechat)
+  - [Some Skill](#some-skill)
+    - [Scopes](#scopes)
+    - [Redirect URL](#redirect-url)
+    - [State](#state)
+    - [Redirect with `state` parameter](#redirect-with-state-parameter)
+    - [Validate the callback `state`](#validate-the-callback-state)
+    - [Additional parameters](#additional-parameters)
+  - [User interface](#user-interface)
+    - [Standard user api:](#standard-user-api)
+    - [Get raw response from OAuth API](#get-raw-response-from-oauth-api)
+    - [Get the token response when you use userFromCode()](#get-the-token-response-when-you-use-userfromcode)
+    - [Get user with access token](#get-user-with-access-token)
+- [Enjoy it! :heart:](#enjoy-it-heart)
+- [Reference](#reference)
+- [PHP 扩展包开发](#php-扩展包开发)
+- [License](#license)
 
 # Requirement
 
@@ -29,7 +59,16 @@ $ composer require "overtrue/socialite" -vvv
 
 # Usage
 
-For Laravel 5: [overtrue/laravel-socialite](https://github.com/overtrue/laravel-socialite)
+Users just need to create the corresponding configuration variables, then create the authentication application for each platform through the tool, and easily obtain the access_token and user  information for that platform. The implementation logic of the tool is referred to OAuth2 documents of major platforms for details.
+
+The tool is used in the following steps:
+
+1. Configurate platform config
+2. Use this tool to create a platform application
+3. Let the user redirect to platform authentication
+4. The server receives a Code callback from the platform, and uses the Code to exchange the user information on the platform (including access_token).
+
+Packages created for Laravel users are easier to integrate:  [overtrue/laravel-socialite](https://github.com/overtrue/laravel-socialite)
 
 `authorize.php`:
 
@@ -84,21 +123,22 @@ $user->getEmail();     // "anzhengchao@gmail.com"
 
 ## Configuration
 
-Now we support the following sites:
-
-`Alipay`, `Dingtalk`, `facebook`, `github`, `google`, `linkedin`, `outlook`, `weibo`, `taobao`, `qq`, `wechat`, `douyin`, `baidu`, `feishu`, and `douban`.
-
 Each create uses the same configuration keys: `client_id`, `client_secret`, `redirect`.
 
 Example:
-```
-...
+```php
+$config = [
   'weibo' => [
     'client_id'     => 'your-app-id',
     'client_secret' => 'your-app-secret',
     'redirect'      => 'http://localhost/socialite/callback.php',
   ],
-...
+  'facebook' => [
+    'client_id'     => 'your-app-id',
+    'client_secret' => 'your-app-secret',
+    'redirect'      => 'http://localhost/socialite/callback.php',
+  ],
+];
 ```
 
 ### Custom app name

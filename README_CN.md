@@ -10,12 +10,40 @@
 </p>
 
 
+<p align="center">Socialite 是一个 <a href="https://oauth.net/2/">OAuth2</a> 认证工具。 它的灵感来源于 <a href="https://github.com/laravel/socialite">laravel/socialite</a>， 你可以很轻易的在任何 PHP 项目中使用它。</p>
 
-<p align="center">Socialite 是一个 OAuth2 认证工具。 它的灵感来源于 <a href="https://github.com/laravel/socialite">laravel/socialite</a>， 你可以很轻易的在任何 PHP 项目中使用它。</p>
+<p align="center">该工具现已支持平台有：Facebook，Github，Google，Linkedin，Outlook，QQ，TAPD，支付宝，淘宝，百度，钉钉，微博，微信，抖音，飞书，豆瓣，企业微信，腾讯云。</p>
 
-
-
-[TOC]
+- [版本要求](#版本要求)
+- [安装](#安装)
+- [使用指南](#使用指南)
+  - [配置](#配置)
+    - [自定义应用名](#自定义应用名)
+    - [扩展自定义服务提供程序](#扩展自定义服务提供程序)
+  - [平台](#平台)
+    - [支付宝](#支付宝)
+    - [钉钉](#钉钉)
+    - [抖音](#抖音)
+    - [百度](#百度)
+    - [飞书](#飞书)
+    - [淘宝](#淘宝)
+    - [微信](#微信)
+  - [其他一些技巧](#其他一些技巧)
+    - [Scopes](#scopes)
+    - [Redirect URL](#redirect-url)
+    - [State](#state)
+    - [带着 `state` 参数的重定向](#带着-state-参数的重定向)
+    - [检验回调的 `state`](#检验回调的-state)
+    - [其他的一些参数](#其他的一些参数)
+  - [User interface](#user-interface)
+    - [标准的 user api：](#标准的-user-api)
+    - [从 OAuth API 响应中取得原始数据](#从-oauth-api-响应中取得原始数据)
+    - [当你使用 userFromCode() 想要获取 token 响应的原始数据](#当你使用-userfromcode-想要获取-token-响应的原始数据)
+    - [通过 access token 获取用户信息](#通过-access-token-获取用户信息)
+- [Enjoy it! :heart:](#enjoy-it-heart)
+- [参照](#参照)
+- [PHP 扩展包开发](#php-扩展包开发)
+- [License](#license)
 
 # 版本要求
 
@@ -31,9 +59,18 @@ $ composer require "overtrue/socialite" -vvv
 
 # 使用指南
 
-Laravel 用户： [overtrue/laravel-socialite](https://github.com/overtrue/laravel-socialite)
+用户只需要创建相应配置变量，然后通过工具为各个平台创建认证应用，并轻松获取该平台的 access_token 和用户相关信息。工具实现逻辑详见参照各大平台 OAuth2 文档。
 
-`authorize.php`:
+工具使用大致分为以下几步：
+
+1. 配置平台设置
+2. 创建对应平台应用
+3. 让用户跳转至平台认证
+4. 服务器收到平台回调 Code，使用 Code 换取平台处用户信息（包括 access_token）
+
+为 Laravel 用户创建的更方便的整合的包： [overtrue/laravel-socialite](https://github.com/overtrue/laravel-socialite)
+
+`authorize.php`: 让用户跳转至平台认证
 
 ```php
 <?php
@@ -85,10 +122,6 @@ $user->getEmail();     // "anzhengchao@gmail.com"
 ```
 
 ## 配置
-
-现在已经支持如下多个平台：
-
-`支付宝`, `钉钉`, `facebook`, `github`, `google`, `linkedin`, `outlook`, `微博`, 淘宝`, `qq`, `微信`, `抖音`, `百度`, `飞书`, 还有 `豆瓣`.
 
 为每个平台设置相同的键值对后就能开箱即用: `client_id`, `client_secret`, `redirect`.
 
