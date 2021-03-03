@@ -386,10 +386,8 @@ You just need input your config like below config. Official Accounts authorizati
 
             // Open Platform - Third-party Platform Need
             'component' => [
-                // or 'app_id', 'component_app_id' as key
                 'id' => 'component-app-id',
-                // or 'app_token', 'access_token', 'component_access_token' as key
-                'token' => 'component-access-token',
+                'token' => 'component-access-token', // or Using a callable as value.
             ]
         ]
 ],

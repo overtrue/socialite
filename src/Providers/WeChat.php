@@ -214,6 +214,10 @@ class WeChat extends Base
         $component = $this->getConfig()->get('component');
 
         foreach ($component as $key => $value) {
+            if (\is_callable($value)) {
+                $value = \call_user_func($value, $this);
+            }
+
             switch ($key) {
                 case 'id':
                 case 'app_id':
