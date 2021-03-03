@@ -23,7 +23,6 @@ class WeChat extends Base
     public function __construct(array $config)
     {
         parent::__construct($config);
-        $this->prepareForComponent();
     }
 
     /**
@@ -58,6 +57,23 @@ class WeChat extends Base
         return $this->normalizeAccessTokenResponse($response->getBody()->getContents());
     }
 
+    /**
+     * @param  array  $componentConfig  ['id' => xxx, 'token' => xxx]
+     *
+     * @return \Overtrue\Socialite\Providers\WeChat
+     */
+    public function withComponent(array $componentConfig)
+    {
+        $this->component = $componentConfig;
+
+        return $this;
+    }
+
+    public function getComponent()
+    {
+        return $this->component;
+    }
+
     protected function getAuthUrl(): string
     {
         $path = 'oauth2/authorize';
@@ -84,6 +100,7 @@ class WeChat extends Base
     protected function getCodeFields(): array
     {
         if (!empty($this->component)) {
+            $this->prepareForComponent();
             $this->with(array_merge($this->parameters, ['component_appid' => $this->component['id']]));
         }
 
