@@ -23,6 +23,10 @@ class WeChat extends Base
     public function __construct(array $config)
     {
         parent::__construct($config);
+
+        if ($this->getConfig()->has('component')) {
+            $this->prepareForComponent((array) $this->getConfig()->get('component'));
+        }
     }
 
     /**
@@ -48,7 +52,7 @@ class WeChat extends Base
      * @param  string  $code
      *
      * @return array
-     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException|\GuzzleHttp\Exception\GuzzleException
      */
     public function tokenFromCode(string $code): array
     {
@@ -61,10 +65,11 @@ class WeChat extends Base
      * @param  array  $componentConfig  ['id' => xxx, 'token' => xxx]
      *
      * @return \Overtrue\Socialite\Providers\WeChat
+     * @throws \Overtrue\Socialite\Exceptions\InvalidArgumentException
      */
     public function withComponent(array $componentConfig)
     {
-        $this->component = $componentConfig;
+        $this->prepareForComponent($componentConfig);
 
         return $this;
     }
@@ -100,7 +105,6 @@ class WeChat extends Base
     protected function getCodeFields(): array
     {
         if (!empty($this->component)) {
-            $this->prepareForComponent();
             $this->with(array_merge($this->parameters, ['component_appid' => $this->component['id']]));
         }
 
@@ -127,7 +131,7 @@ class WeChat extends Base
      * @param string $code
      *
      * @return \Overtrue\Socialite\User
-     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException|\GuzzleHttp\Exception\GuzzleException
      */
     public function userFromCode(string $code): User
     {
@@ -221,15 +225,9 @@ class WeChat extends Base
         ]);
     }
 
-    protected function prepareForComponent()
+    protected function prepareForComponent(array $component)
     {
-        if (!$this->getConfig()->has('component')) {
-            return;
-        }
-
         $config = [];
-        $component = $this->getConfig()->get('component');
-
         foreach ($component as $key => $value) {
             if (\is_callable($value)) {
                 $value = \call_user_func($value, $this);
