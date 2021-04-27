@@ -30,7 +30,13 @@ abstract class Base implements ProviderInterface
     public function __construct(array $config)
     {
         $this->config = new Config($config);
-        $this->scopes = $config['scopes'] ?? $this->scopes ?? [];
+
+        // set scopes
+        if ($this->config->has('scopes') && is_array($this->config->get('scopes'))) {
+            $this->scopes = $this->getConfig()->get('scopes');
+        } else if ($this->config->has('scope') && is_string($this->getConfig()->get('scope'))) {
+            $this->scopes = array($this->getConfig()->get('scope'));
+        }
 
         // normalize 'client_id'
         if (!$this->config->has('client_id')) {
