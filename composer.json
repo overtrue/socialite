@@ -22,7 +22,7 @@
   },
   "require-dev": {
     "mockery/mockery": "~1.2",
-    "phpunit/phpunit": "~6"
+    "phpunit/phpunit": "^6.0|^7.0|^8.0|^9.0"
   },
   "license": "MIT",
   "authors": [
