@@ -65,7 +65,8 @@ class GoogleProvider extends AbstractProvider implements ProviderInterface
      */
     public function getAccessToken($code)
     {
-        $postKey = (1 === version_compare(ClientInterface::VERSION, '6')) ? 'form_params' : 'body';
+        $guzzleVersion = \defined(ClientInterface::class.'::VERSION') ? \constant(ClientInterface::class.'::VERSION') : 7;
+        $postKey = (1 === version_compare($guzzleVersion, '6')) ? 'form_params' : 'body';
 
         $response = $this->getHttpClient()->post($this->getTokenUrl(), [
             $postKey => $this->getTokenFields($code),
