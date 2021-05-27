@@ -57,15 +57,15 @@ class DouYin extends Base
             ]
         );
 
-        $response = \json_decode($response->getBody()->getContents(), true) ?? [];
+        $body = \json_decode($response->getBody()->getContents(), true) ?? [];
 
-        if (empty($response['data'])) {
-            throw new AuthorizeFailedException('Invalid token response', $response);
+        if (empty($body['data']) || $body['data']['error_code'] != 0) {
+            throw new AuthorizeFailedException('Invalid token response', $body);
         }
 
-        $this->withOpenId($response['data']['openid']);
+        $this->withOpenId($body['data']['open_id']);
 
-        return $this->normalizeAccessTokenResponse($response['data']);
+        return $this->normalizeAccessTokenResponse($body['data']);
     }
 
     /**
@@ -109,7 +109,9 @@ class DouYin extends Base
             ]
         );
 
-        return \json_decode($response->getBody(), true) ?? [];
+        $body = \json_decode($response->getBody()->getContents(), true);
+
+        return $body['data'] ?? [];
     }
 
     /**
