@@ -12,18 +12,18 @@ class Alipay extends Base
 {
     public const NAME = 'alipay';
     protected string $baseUrl = 'https://openapi.alipay.com/gateway.do';
+    protected string $authUrl = 'https://openauth.alipay.com/oauth2/publicAppAuthorize.htm';
     protected array $scopes = ['auth_user'];
     protected string $apiVersion = '1.0';
     protected string $signType = 'RSA2';
     protected string $postCharset = 'UTF-8';
     protected string $format = 'json';
     protected bool $sandbox = false;
-    protected string $authUrl = 'https://openauth.alipay.com/oauth2/publicAppAuthorize.htm';
 
     public function __construct(array $config)
     {
         parent::__construct($config);
-        $this->sandbox = $this->config->get('sandbox') ?? false;
+        $this->sandbox = $this->config->get('sandbox', false);
         if ($this->sandbox) {
             $this->baseUrl = 'https://openapi.alipaydev.com/gateway.do';
             $this->authUrl = 'https://openauth.alipaydev.com/oauth2/publicAppAuthorize.htm';
