@@ -252,6 +252,9 @@ $config = [
     // 确保这里的值与你在服务后台绑定的地址值一致
     // 这个键名还能像官方文档那样叫做 'redirect_url'
     'redirect' => 'http://localhost/socialite/callback.php',
+    
+    // 沙箱模式接入地址见 https://opendocs.alipay.com/open/220/105337#%E5%85%B3%E4%BA%8E%E6%B2%99%E7%AE%B1
+    'sandbox' => false,
   ]
   ...
 ];
