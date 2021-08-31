@@ -17,10 +17,22 @@ class Alipay extends Base
     protected string $signType = 'RSA2';
     protected string $postCharset = 'UTF-8';
     protected string $format = 'json';
+    protected bool $sandbox = false;
+    protected string $authUrl = 'https://openauth.alipay.com/oauth2/publicAppAuthorize.htm';
+
+    public function __construct(array $config)
+    {
+        parent::__construct($config);
+        $this->sandbox = $this->config->get('sandbox') ?? false;
+        if ($this->sandbox) {
+            $this->baseUrl = 'https://openapi.alipaydev.com/gateway.do';
+            $this->authUrl = 'https://openauth.alipaydev.com/oauth2/publicAppAuthorize.htm';
+        }
+    }
 
     protected function getAuthUrl(): string
     {
-        return $this->buildAuthUrlFromBase('https://openauth.alipay.com/oauth2/publicAppAuthorize.htm');
+        return $this->buildAuthUrlFromBase($this->authUrl);
     }
 
     protected function getTokenUrl(): string
@@ -29,7 +41,7 @@ class Alipay extends Base
     }
 
     /**
-     * @param  string  $token
+     * @param string $token
      *
      * @return array
      * @throws \Overtrue\Socialite\Exceptions\InvalidArgumentException
@@ -78,7 +90,7 @@ class Alipay extends Base
     }
 
     /**
-     * @param  string  $code
+     * @param string $code
      *
      * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
@@ -205,8 +217,8 @@ class Alipay extends Base
     }
 
     /**
-     * @param array          $params
-     * @param bool           $urlencode
+     * @param array $params
+     * @param bool $urlencode
      * @param array|string[] $except
      *
      * @return string
