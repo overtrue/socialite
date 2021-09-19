@@ -13,6 +13,15 @@ class WeWork extends Base
     protected bool $detailed = false;
     protected ?int $agentId;
     protected ?string $apiAccessToken;
+    protected string $baseUrl = 'https://qyapi.weixin.qq.com';
+
+    public function __construct(array $config)
+    {
+        parent::__construct($config);
+        if ($this->getConfig()->has('base_url')) {
+            $this->baseUrl = $this->getConfig()->get('base_url');
+        }
+    }
 
     /**
      * @param int $agentId
@@ -24,6 +33,11 @@ class WeWork extends Base
         $this->agentId = $agentId;
 
         return $this;
+    }
+
+    public function getBaseUrl()
+    {
+        return $this->baseUrl;
     }
 
     public function userFromCode(string $code): User
@@ -128,7 +142,7 @@ class WeWork extends Base
     protected function getUserId(string $token, string $code): array
     {
         $response = $this->getHttpClient()->get(
-            'https://qyapi.weixin.qq.com/cgi-bin/user/getuserinfo',
+            $this->baseUrl . '/cgi-bin/user/getuserinfo',
             [
                 'query' => array_filter(
                     [
@@ -160,7 +174,7 @@ class WeWork extends Base
     protected function getUserById(string $userId): array
     {
         $response = $this->getHttpClient()->post(
-            'https://qyapi.weixin.qq.com/cgi-bin/user/get',
+            $this->baseUrl . '/cgi-bin/user/get',
             [
                 'query' => [
                     'access_token' => $this->getApiAccessToken(),
@@ -211,7 +225,7 @@ class WeWork extends Base
     protected function createApiAccessToken(): string
     {
         $response = $this->getHttpClient()->get(
-            'https://qyapi.weixin.qq.com/cgi-bin/gettoken',
+            $this->baseUrl . '/cgi-bin/gettoken',
             [
                 'query' => array_filter(
                     [
