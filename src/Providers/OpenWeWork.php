@@ -14,7 +14,7 @@ class OpenWeWork extends Base
 {
     public const NAME = 'open-wework';
     protected bool $detailed = false;
-    protected ?int $suiteTicket;
+    protected ?string $suiteTicket;
     protected ?int $agentId;
     protected ?string $suiteAccessToken;
     protected string $baseUrl = 'https://qyapi.weixin.qq.com';
@@ -108,7 +108,7 @@ class OpenWeWork extends Base
     protected function getUser(string $token, string $code): array
     {
         $response = $this->getHttpClient()->get(
-            $this->baseUrl . '/cgi-bin/user/getuserinfo3rd',
+            $this->baseUrl . '/cgi-bin/service/getuserinfo3rd',
             [
                 'query' => array_filter(
                     [
@@ -188,22 +188,21 @@ class OpenWeWork extends Base
      */
     protected function requestSuiteAccessToken(): string
     {
-        $response = $this->getHttpClient()->get(
-            $this->baseUrl . '/cgi-bin/get_suite_token',
+        $response = $this->getHttpClient()->post(
+            $this->baseUrl . '/cgi-bin/service/get_suite_token',
             [
-                'query' => array_filter(
+                'json' =>
                     [
                         'suite_id' => $this->config->get('suite_id') ?? $this->config->get('client_id'),
                         'suite_secret' => $this->config->get('suite_secret') ?? $this->config->get('client_secret'),
                         'suite_ticket' => $this->suiteTicket,
                     ]
-                ),
             ]
         );
 
-        $response = \json_decode($response->getBody(), true) ?? [];
+        $response = \json_decode($response->getBody()->getContents(), true) ?? [];
 
-        if (($response['errcode'] ?? 1) > 0) {
+        if (isset($response['errcode']) && $response['errcode'] > 0) {
             throw new AuthorizeFailedException('Failed to get api access_token:' . $response['errmsg'] ?? 'Unknown.', $response);
         }
 
