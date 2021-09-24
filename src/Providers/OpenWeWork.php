@@ -8,14 +8,15 @@ use Overtrue\Socialite\Exceptions\MethodDoesNotSupportException;
 use Overtrue\Socialite\User;
 
 /**
- * @link https://open.work.weixin.qq.com/api/doc/90000/90135/91022
+ * @link https://open.work.weixin.qq.com/api/doc/90001/90143/91120
  */
-class WeWork extends Base
+class OpenWeWork extends Base
 {
-    public const NAME = 'wework';
+    public const NAME = 'open-wework';
     protected bool $detailed = false;
+    protected ?int $suiteTicket;
     protected ?int $agentId;
-    protected ?string $apiAccessToken;
+    protected ?string $suiteAccessToken;
     protected string $baseUrl = 'https://qyapi.weixin.qq.com';
 
     public function __construct(array $config)
@@ -27,116 +28,91 @@ class WeWork extends Base
         }
     }
 
-    /**
-     * @deprecated will remove at 4.0
-     */
-    public function setAgentId(int $agentId): WeWork
+    public function withAgentId(int $agentId): OpenWeWork
     {
         $this->agentId = $agentId;
 
         return $this;
-    }
-
-    /**
-     * @deprecated will remove at 4.0
-     */
-    public function withAgentId(int $agentId): WeWork
-    {
-        $this->agentId = $agentId;
-
-        return $this;
-    }
-
-    public function getBaseUrl()
-    {
-        return $this->baseUrl;
     }
 
     public function userFromCode(string $code): User
     {
-        $token = $this->getApiAccessToken();
-        $user = $this->getUser($token, $code);
+        $user = $this->getUser($this->getSuiteAccessToken(), $code);
 
         if ($this->detailed) {
-            $user = $this->getUserById($user['UserId']);
+            $user = array_merge($user, $this->getUserByTicket($user['user_ticket']));
         }
 
         return $this->mapUserToObject($user)->setProvider($this)->setRaw($user);
     }
 
-    public function detailed(): self
+    public function withSuiteTicket(string $suiteTicket): OpenWeWork
     {
-        $this->detailed = true;
+        $this->suiteTicket = $suiteTicket;
 
         return $this;
     }
 
-    public function withApiAccessToken(string $apiAccessToken): WeWork
+    public function withSuiteAccessToken(string $suiteAccessToken): OpenWeWork
     {
-        $this->apiAccessToken = $apiAccessToken;
+        $this->suiteAccessToken = $suiteAccessToken;
 
         return $this;
     }
 
     public function getAuthUrl(): string
     {
-        // 网页授权登录
-        if (empty($this->agentId)) {
-            $queries = [
-                'appid' => $this->getClientId(),
-                'redirect_uri' => $this->redirectUrl,
-                'response_type' => 'code',
-                'scope' => $this->formatScopes($this->scopes, $this->scopeSeparator),
-                'state' => $this->state,
-            ];
-
-            return sprintf('https://open.weixin.qq.com/connect/oauth2/authorize?%s#wechat_redirect', http_build_query($queries));
-        }
-
-        // 第三方网页应用登录（扫码登录）
-        return $this->getQrConnectUrl();
-    }
-
-    /**
-     * @deprecated will remove at 4.0
-     */
-    public function getQrConnectUrl()
-    {
         $queries = [
             'appid' => $this->getClientId(),
-            'agentid' => $this->agentId ?? $this->config->get('agentid'),
             'redirect_uri' => $this->redirectUrl,
+            'response_type' => 'code',
+            'scope' => $this->formatScopes($this->scopes, $this->scopeSeparator),
             'state' => $this->state,
         ];
 
-        if (empty($queries['agentid'])) {
-            throw new InvalidArgumentException('You must config the `agentid` in configuration or using `setAgentid($agentId)`.');
+        if ((\in_array('snsapi_userinfo', $this->scopes) || \in_array('snsapi_privateinfo', $this->scopes)) && empty($this->agentId)) {
+            throw new InvalidArgumentException('agentid is required when scopes is snsapi_userinfo or snsapi_privateinfo.');
         }
 
-        return sprintf('https://open.work.weixin.qq.com/wwopen/sso/qrConnect?%s#wechat_redirect', http_build_query($queries));
+        return sprintf('https://open.weixin.qq.com/connect/oauth2/authorize?%s#wechat_redirect', http_build_query($queries));
     }
 
     /**
+     * @param string $token
+     *
+     * @return array
      * @throws \Overtrue\Socialite\Exceptions\MethodDoesNotSupportException
      */
     protected function getUserByToken(string $token): array
     {
-        throw new MethodDoesNotSupportException('WeWork doesn\'t support access_token mode');
+        throw new MethodDoesNotSupportException('Open WeWork doesn\'t support access_token mode');
     }
 
-    protected function getApiAccessToken(): string
+    /**
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     */
+    protected function getSuiteAccessToken(): string
     {
-        return $this->apiAccessToken ?? $this->apiAccessToken = $this->requestApiAccessToken();
+        return $this->suiteAccessToken ?? $this->suiteAccessToken = $this->requestSuiteAccessToken();
     }
 
+    /**
+     * @param  string  $token
+     * @param  string  $code
+     *
+     * @return array
+     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
     protected function getUser(string $token, string $code): array
     {
         $response = $this->getHttpClient()->get(
-            $this->baseUrl . '/cgi-bin/user/getuserinfo',
+            $this->baseUrl . '/cgi-bin/user/getuserinfo3rd',
             [
                 'query' => array_filter(
                     [
-                        'access_token' => $token,
+                        'suite_access_token' => $token,
                         'code' => $code,
                     ]
                 ),
@@ -145,27 +121,28 @@ class WeWork extends Base
 
         $response = \json_decode($response->getBody(), true) ?? [];
 
-        if (($response['errcode'] ?? 1) > 0 || (empty($response['UserId']) && empty($response['OpenId']))) {
+        if (($response['errcode'] ?? 1) > 0 || (empty($response['UserId']) && empty($response['open_userid']))) {
             throw new AuthorizeFailedException('Failed to get user openid:' . $response['errmsg'] ?? 'Unknown.', $response);
-        } elseif (empty($response['UserId'])) {
-            $this->detailed = false;
         }
 
         return $response;
     }
 
     /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @param  string  $userTicket
+     *
+     * @return array
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    protected function getUserById(string $userId): array
+    protected function getUserByTicket(string $userTicket): array
     {
         $response = $this->getHttpClient()->post(
             $this->baseUrl . '/cgi-bin/user/get',
             [
                 'query' => [
-                    'access_token' => $this->getApiAccessToken(),
-                    'userid' => $userId,
+                    'suite_access_token' => $this->getSuiteAccessToken(),
+                    'user_ticket' => $userTicket,
                 ],
             ]
         );
@@ -209,15 +186,16 @@ class WeWork extends Base
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    protected function requestApiAccessToken(): string
+    protected function requestSuiteAccessToken(): string
     {
         $response = $this->getHttpClient()->get(
-            $this->baseUrl . '/cgi-bin/gettoken',
+            $this->baseUrl . '/cgi-bin/get_suite_token',
             [
                 'query' => array_filter(
                     [
-                        'corpid' => $this->config->get('corp_id') ?? $this->config->get('corpid') ?? $this->config->get('client_id'),
-                        'corpsecret' => $this->config->get('corp_secret') ?? $this->config->get('corpsecret') ?? $this->config->get('client_secret'),
+                        'suite_id' => $this->config->get('suite_id') ?? $this->config->get('client_id'),
+                        'suite_secret' => $this->config->get('suite_secret') ?? $this->config->get('client_secret'),
+                        'suite_ticket' => $this->suiteTicket,
                     ]
                 ),
             ]
@@ -229,7 +207,7 @@ class WeWork extends Base
             throw new AuthorizeFailedException('Failed to get api access_token:' . $response['errmsg'] ?? 'Unknown.', $response);
         }
 
-        return $response['access_token'];
+        return $response['suite_access_token'];
     }
 
     protected function getTokenUrl(): string

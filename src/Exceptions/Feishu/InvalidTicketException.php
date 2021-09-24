@@ -9,5 +9,4 @@ use Overtrue\Socialite\Exceptions\Exception;
  */
 class InvalidTicketException extends Exception
 {
-
 }

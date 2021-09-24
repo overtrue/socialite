@@ -15,8 +15,8 @@ use Overtrue\Socialite\User;
 class FeiShu extends Base
 {
     public const NAME = 'feishu';
-    protected string $baseUrl       = 'https://open.feishu.cn/open-apis';
-    protected string $expiresInKey  = 'refresh_expires_in';
+    protected string $baseUrl = 'https://open.feishu.cn/open-apis';
+    protected string $expiresInKey = 'refresh_expires_in';
     protected bool   $isInternalApp = false;
 
     public function __construct(array $config)
@@ -34,7 +34,7 @@ class FeiShu extends Base
     {
         return [
             'redirect_uri' => $this->redirectUrl,
-            'app_id'       => $this->getClientId(),
+            'app_id' => $this->getClientId(),
         ];
     }
 
@@ -72,8 +72,8 @@ class FeiShu extends Base
             [
                 'json' => [
                     'app_access_token' => $this->config->get('app_access_token'),
-                    'code'             => $code,
-                    'grant_type'       => 'authorization_code',
+                    'code' => $code,
+                    'grant_type' => 'authorization_code',
                 ],
             ]
         );
@@ -98,7 +98,7 @@ class FeiShu extends Base
             $this->baseUrl . '/authen/v1/user_info',
             [
                 'headers' => ['Content-Type' => 'application/json', 'Authorization' => 'Bearer ' . $token],
-                'query'   => array_filter(
+                'query' => array_filter(
                     [
                         'user_access_token' => $token,
                     ]
@@ -124,11 +124,11 @@ class FeiShu extends Base
     {
         return new User(
             [
-                'id'       => $user['user_id'] ?? null,
-                'name'     => $user['name'] ?? null,
+                'id' => $user['user_id'] ?? null,
+                'name' => $user['name'] ?? null,
                 'nickname' => $user['name'] ?? null,
-                'avatar'   => $user['avatar_url'] ?? null,
-                'email'    => $user['email'] ?? null,
+                'avatar' => $user['avatar_url'] ?? null,
+                'email' => $user['email'] ?? null,
             ]
         );
     }
@@ -168,7 +168,7 @@ class FeiShu extends Base
         $url = $this->baseUrl . '/auth/v3/app_access_token/';
         $params = [
             'json' => [
-                'app_id'     => $this->config->get('client_id'),
+                'app_id' => $this->config->get('client_id'),
                 'app_secret' => $this->config->get('client_secret'),
                 'app_ticket' => $this->config->get('app_ticket'),
             ],
@@ -178,7 +178,7 @@ class FeiShu extends Base
             $url = $this->baseUrl . '/auth/v3/app_access_token/internal/';
             $params = [
                 'json' => [
-                    'app_id'     => $this->config->get('client_id'),
+                    'app_id' => $this->config->get('client_id'),
                     'app_secret' => $this->config->get('client_secret'),
                 ],
             ];
@@ -208,7 +208,7 @@ class FeiShu extends Base
         $url = $this->baseUrl . '/auth/v3/tenant_access_token/';
         $params = [
             'json' => [
-                'app_id'     => $this->config->get('client_id'),
+                'app_id' => $this->config->get('client_id'),
                 'app_secret' => $this->config->get('client_secret'),
                 'app_ticket' => $this->config->get('app_ticket'),
             ],
@@ -218,7 +218,7 @@ class FeiShu extends Base
             $url = $this->baseUrl . '/auth/v3/tenant_access_token/internal/';
             $params = [
                 'json' => [
-                    'app_id'     => $this->config->get('client_id'),
+                    'app_id' => $this->config->get('client_id'),
                     'app_secret' => $this->config->get('client_secret'),
                 ],
             ];

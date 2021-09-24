@@ -14,11 +14,12 @@ class SocialiteManager implements FactoryInterface
     protected array $customCreators = [];
     protected array $providers = [
         Providers\QQ::NAME => Providers\QQ::class,
+        Providers\Tapd::NAME => Providers\Tapd::class,
+        Providers\Weibo::NAME => Providers\Weibo::class,
         Providers\Alipay::NAME => Providers\Alipay::class,
         Providers\QCloud::NAME => Providers\QCloud::class,
         Providers\GitHub::NAME => Providers\GitHub::class,
         Providers\Google::NAME => Providers\Google::class,
-        Providers\Weibo::NAME => Providers\Weibo::class,
         Providers\WeChat::NAME => Providers\WeChat::class,
         Providers\Douban::NAME => Providers\Douban::class,
         Providers\WeWork::NAME => Providers\WeWork::class,
@@ -29,7 +30,7 @@ class SocialiteManager implements FactoryInterface
         Providers\Linkedin::NAME => Providers\Linkedin::class,
         Providers\Facebook::NAME => Providers\Facebook::class,
         Providers\DingTalk::NAME => Providers\DingTalk::class,
-        Providers\Tapd::NAME => Providers\Tapd::class,
+        Providers\OpenWeWork::NAME => Providers\OpenWeWork::class,
     ];
 
     public function __construct(array $config)

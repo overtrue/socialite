@@ -14,17 +14,17 @@ abstract class Base implements ProviderInterface
 {
     public const NAME = null;
 
-    protected ?string      $state           = null;
+    protected ?string      $state = null;
     protected Config       $config;
     protected ?string      $redirectUrl;
-    protected array        $parameters      = [];
-    protected array        $scopes          = [];
-    protected string       $scopeSeparator  = ',';
+    protected array        $parameters = [];
+    protected array        $scopes = [];
+    protected string       $scopeSeparator = ',';
     protected GuzzleClient $httpClient;
-    protected array        $guzzleOptions   = [];
-    protected int          $encodingType    = PHP_QUERY_RFC1738;
-    protected string       $expiresInKey    = 'expires_in';
-    protected string       $accessTokenKey  = 'access_token';
+    protected array        $guzzleOptions = [];
+    protected int          $encodingType = PHP_QUERY_RFC1738;
+    protected string       $expiresInKey = 'expires_in';
+    protected string       $accessTokenKey = 'access_token';
     protected string       $refreshTokenKey = 'refresh_token';
 
     public function __construct(array $config)
@@ -34,7 +34,7 @@ abstract class Base implements ProviderInterface
         // set scopes
         if ($this->config->has('scopes') && is_array($this->config->get('scopes'))) {
             $this->scopes = $this->getConfig()->get('scopes');
-        } else if ($this->config->has('scope') && is_string($this->getConfig()->get('scope'))) {
+        } elseif ($this->config->has('scope') && is_string($this->getConfig()->get('scope'))) {
             $this->scopes = array($this->getConfig()->get('scope'));
         }
 
@@ -124,7 +124,7 @@ abstract class Base implements ProviderInterface
             $this->getTokenUrl(),
             [
                 'form_params' => $this->getTokenFields($code),
-                'headers'     => [
+                'headers' => [
                     'Accept' => 'application/json',
                 ],
             ]
@@ -259,10 +259,10 @@ abstract class Base implements ProviderInterface
     protected function getTokenFields(string $code): array
     {
         return [
-            'client_id'     => $this->getClientId(),
+            'client_id' => $this->getClientId(),
             'client_secret' => $this->getClientSecret(),
-            'code'          => $code,
-            'redirect_uri'  => $this->redirectUrl,
+            'code' => $code,
+            'redirect_uri' => $this->redirectUrl,
         ];
     }
 
@@ -282,9 +282,9 @@ abstract class Base implements ProviderInterface
     {
         $fields = array_merge(
             [
-                'client_id'     => $this->getClientId(),
-                'redirect_uri'  => $this->redirectUrl,
-                'scope'         => $this->formatScopes($this->scopes, $this->scopeSeparator),
+                'client_id' => $this->getClientId(),
+                'redirect_uri' => $this->redirectUrl,
+                'scope' => $this->formatScopes($this->scopes, $this->scopeSeparator),
                 'response_type' => 'code',
             ],
             $this->parameters
@@ -325,9 +325,9 @@ abstract class Base implements ProviderInterface
         }
 
         return $response + [
-                'access_token'  => $response[$this->accessTokenKey],
+                'access_token' => $response[$this->accessTokenKey],
                 'refresh_token' => $response[$this->refreshTokenKey] ?? null,
-                'expires_in'    => \intval($response[$this->expiresInKey] ?? 0),
+                'expires_in' => \intval($response[$this->expiresInKey] ?? 0),
             ];
     }
 }

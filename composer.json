@@ -26,7 +26,8 @@
   },
   "require-dev": {
     "mockery/mockery": "~1.2",
-    "phpunit/phpunit": "~9.0"
+    "phpunit/phpunit": "~9.0",
+    "friendsofphp/php-cs-fixer": "^3.0"
   },
   "license": "MIT",
   "authors": [
@@ -36,8 +37,8 @@
     }
   ],
   "scripts": {
-    "check-style": "php-cs-fixer fix --using-cache=no --diff --config=.php_cs --dry-run --ansi",
-    "fix-style": "php-cs-fixer fix --using-cache=no --config=.php_cs --ansi",
+    "check-style": "php-cs-fixer fix --using-cache=no --diff --dry-run --ansi",
+    "fix-style": "php-cs-fixer fix --using-cache=no --ansi",
     "test": "vendor/bin/phpunit --colors=always"
   }
 }

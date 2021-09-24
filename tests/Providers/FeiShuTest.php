@@ -17,9 +17,9 @@ class FeiShuTest extends TestCase
     {
         // one way
         $config = [
-            'app_id'     => 'xxxxx',
+            'app_id' => 'xxxxx',
             'app_secret' => 'yyyyy',
-            'app_mode'   => 'internal'
+            'app_mode' => 'internal'
         ];
         $f = new FeiShu($config);
         $rf = new \ReflectionObject($f);
@@ -33,9 +33,9 @@ class FeiShuTest extends TestCase
 
         // diff filed way
         $config = [
-            'client_id'     => 'xxxxx',
+            'client_id' => 'xxxxx',
             'client_secret' => 'yyyyy',
-            'mode'          => 'internal'
+            'mode' => 'internal'
         ];
 
         $f = new FeiShu($config);
@@ -49,7 +49,7 @@ class FeiShuTest extends TestCase
 
         // no mode config way
         $config = [
-            'client_id'     => 'xxxxx',
+            'client_id' => 'xxxxx',
             'client_secret' => 'yyyyy',
         ];
 
@@ -66,7 +66,7 @@ class FeiShuTest extends TestCase
     public function testProviderWithInternalAppModeWork()
     {
         $config = [
-            'client_id'     => 'xxxxx',
+            'client_id' => 'xxxxx',
             'client_secret' => 'yyyyy',
         ];
 
@@ -86,7 +86,7 @@ class FeiShuTest extends TestCase
     public function testProviderWithAppTicketWork()
     {
         $config = [
-            'client_id'     => 'xxxxx',
+            'client_id' => 'xxxxx',
             'client_secret' => 'yyyyy',
         ];
 
@@ -98,7 +98,7 @@ class FeiShuTest extends TestCase
     public function testConfigAppAccessTokenWithDefaultModeNoAppTicketWork()
     {
         $config = [
-            'client_id'     => 'xxxxx',
+            'client_id' => 'xxxxx',
             'client_secret' => 'yyyyy',
         ];
 
@@ -135,7 +135,7 @@ class FeiShuTest extends TestCase
     public function testConfigAppAccessTokenWithDefaultModeAndAppTicketWorkInBadResponse()
     {
         $config = [
-            'client_id'     => 'xxxxx',
+            'client_id' => 'xxxxx',
             'client_secret' => 'yyyyy',
         ];
 
@@ -161,7 +161,7 @@ class FeiShuTest extends TestCase
     public function testConfigAppAccessTokenWithDefaultModeAndAppTicketWorkInGoodResponse()
     {
         $config = [
-            'client_id'     => 'xxxxx',
+            'client_id' => 'xxxxx',
             'client_secret' => 'yyyyy',
         ];
 
@@ -190,9 +190,9 @@ class FeiShuTest extends TestCase
     public function testConfigAppAccessTokenWithInternalInBadResponse()
     {
         $config = [
-            'client_id'     => 'xxxxx',
+            'client_id' => 'xxxxx',
             'client_secret' => 'yyyyy',
-            'mode'          => 'internal'
+            'mode' => 'internal'
         ];
 
         $f = new FeiShu($config);
@@ -217,9 +217,9 @@ class FeiShuTest extends TestCase
     public function testConfigAppAccessTokenWithInternalInGoodResponse()
     {
         $config = [
-            'client_id'     => 'xxxxx',
+            'client_id' => 'xxxxx',
             'client_secret' => 'yyyyy',
-            'mode'          => 'internal'
+            'mode' => 'internal'
         ];
 
         $f = new FeiShu($config);

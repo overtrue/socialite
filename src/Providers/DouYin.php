@@ -22,9 +22,6 @@ class DouYin extends Base
         return $this->buildAuthUrlFromBase($this->baseUrl . '/platform/oauth/connect/');
     }
 
-    /**
-     * @return array
-     */
     public function getCodeFields(): array
     {
         return [
@@ -68,12 +65,7 @@ class DouYin extends Base
         return $this->normalizeAccessTokenResponse($body['data']);
     }
 
-    /**
-     * @param string $code
-     *
-     * @return array
-     */
-    protected function getTokenFields($code): array
+    protected function getTokenFields(string $code): array
     {
         return [
             'client_key' => $this->getClientId(),
@@ -83,14 +75,6 @@ class DouYin extends Base
         ];
     }
 
-    /**
-     * @param  string  $token
-     *
-     * @return array
-     * @throws \Overtrue\Socialite\Exceptions\InvalidArgumentException
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     *
-     */
     protected function getUserByToken(string $token): array
     {
         $userUrl = $this->baseUrl . '/oauth/userinfo/';
@@ -114,11 +98,6 @@ class DouYin extends Base
         return $body['data'] ?? [];
     }
 
-    /**
-     * @param array $user
-     *
-     * @return \Overtrue\Socialite\User
-     */
     protected function mapUserToObject(array $user): User
     {
         return new User(
