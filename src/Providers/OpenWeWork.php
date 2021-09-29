@@ -62,13 +62,14 @@ class OpenWeWork extends Base
 
     public function getAuthUrl(): string
     {
-        $queries = [
+        $queries = \array_filter([
             'appid' => $this->getClientId(),
             'redirect_uri' => $this->redirectUrl,
             'response_type' => 'code',
             'scope' => $this->formatScopes($this->scopes, $this->scopeSeparator),
             'state' => $this->state,
-        ];
+            'agentid' => $this->agentId,
+        ]);
 
         if ((\in_array('snsapi_userinfo', $this->scopes) || \in_array('snsapi_privateinfo', $this->scopes)) && empty($this->agentId)) {
             throw new InvalidArgumentException('agentid is required when scopes is snsapi_userinfo or snsapi_privateinfo.');
