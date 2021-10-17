@@ -146,7 +146,8 @@ class WeChat extends Base
         $user = $this->userFromToken($token[$this->accessTokenKey]);
 
         return $user->setRefreshToken($token['refresh_token'])
-            ->setExpiresIn($token['expires_in']);
+            ->setExpiresIn($token['expires_in'])
+            ->setTokenResponse($token);
     }
 
     /**
