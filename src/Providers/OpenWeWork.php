@@ -14,9 +14,9 @@ class OpenWeWork extends Base
 {
     public const NAME = 'open-wework';
     protected bool $detailed = false;
-    protected ?string $suiteTicket;
-    protected ?int $agentId;
-    protected ?string $suiteAccessToken;
+    protected ?string $suiteTicket = null;
+    protected ?int $agentId = null;
+    protected ?string $suiteAccessToken = null;
     protected string $baseUrl = 'https://qyapi.weixin.qq.com';
 
     public function __construct(array $config)
