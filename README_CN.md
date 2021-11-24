@@ -12,7 +12,7 @@
 
 <p align="center">Socialite 是一个 <a href="https://oauth.net/2/">OAuth2</a> 认证工具。 它的灵感来源于 <a href="https://github.com/laravel/socialite">laravel/socialite</a>， 你可以很轻易的在任何 PHP 项目中使用它。</p>
 
-<p align="center">该工具现已支持平台有：Facebook，Github，Google，Linkedin，Outlook，QQ，TAPD，支付宝，淘宝，百度，钉钉，微博，微信，抖音，飞书，豆瓣，企业微信，腾讯云，Line。</p>
+<p align="center">该工具现已支持平台有：Facebook，Github，Google，Linkedin，Outlook，QQ，TAPD，支付宝，淘宝，百度，钉钉，微博，微信，抖音，飞书，豆瓣，企业微信，腾讯云，Line，Gitee。</p>
 
 - [版本要求](#版本要求)
 - [安装](#安装)
@@ -595,6 +595,7 @@ $user = $socialite->userFromToken($accessToken);
 - [飞书 - 授权说明](https://open.feishu.cn/document/ukTMukTMukTM/uMTNz4yM1MjLzUzM)
 - [Tapd - 用户授权说明](https://www.tapd.cn/help/show#1120003271001000093)
 - [Line - OAuth 2.0](https://developers.line.biz/en/docs/line-login/integrate-line-login/)
+- [Gitee - OAuth文档](https://gitee.com/api/v5/oauth_doc#/)
 
 
 
