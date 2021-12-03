@@ -1,21 +1,18 @@
 <?php
 
-
 namespace Overtrue\Socialite\Providers;
 
-
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
+use Overtrue\Socialite\Contracts\UserInterface;
 use Overtrue\Socialite\User;
 
 class Gitee extends Base
 {
     public const NAME = 'gitee';
-
     protected string $expiresInKey = 'expires_in';
-
     protected string $accessTokenKey = 'access_token';
-
     protected string $refreshTokenKey = 'refresh_token';
-
     protected array $scopes = ['user_info'];
 
 
@@ -41,7 +38,8 @@ class Gitee extends Base
         return \json_decode($response->getBody()->getContents(), true) ?? [];
     }
 
-    protected function mapUserToObject(array $user): User
+    #[Pure]
+    protected function mapUserToObject(array $user): UserInterface
     {
         return new User([
             'id' => $user['id'] ?? null,
@@ -52,6 +50,13 @@ class Gitee extends Base
         ]);
     }
 
+    #[ArrayShape([
+        'client_id' => "null|string",
+        'client_secret' => "null|string",
+        'code' => "string",
+        'redirect_uri' => "mixed",
+        'grant_type' => "string"
+    ])]
     protected function getTokenFields(string $code): array
     {
         return [

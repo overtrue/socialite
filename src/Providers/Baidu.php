@@ -2,6 +2,9 @@
 
 namespace Overtrue\Socialite\Providers;
 
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
+use Overtrue\Socialite\Contracts\UserInterface;
 use Overtrue\Socialite\User;
 
 /**
@@ -15,11 +18,6 @@ class Baidu extends Base
     protected array $scopes = ['basic'];
     protected string $display = 'popup';
 
-    /**
-     * @param string $display
-     *
-     * @return $this
-     */
     public function withDisplay(string $display): self
     {
         $this->display = $display;
@@ -27,11 +25,6 @@ class Baidu extends Base
         return $this;
     }
 
-    /**
-     * @param array $scopes
-     *
-     * @return self
-     */
     public function withScopes(array $scopes): self
     {
         $this->scopes = $scopes;
@@ -39,9 +32,6 @@ class Baidu extends Base
         return $this;
     }
 
-    /**
-     * @return string
-     */
     protected function getAuthUrl(): string
     {
         return $this->buildAuthUrlFromBase($this->baseUrl . '/oauth/' . $this->version . '/authorize');
@@ -58,28 +48,23 @@ class Baidu extends Base
             ] + $this->parameters;
     }
 
-    /**
-     * @return string
-     */
     protected function getTokenUrl(): string
     {
         return $this->baseUrl . '/oauth/' . $this->version . '/token';
     }
 
-    /**
-     * @param string $code
-     *
-     * @return array
-     */
-    protected function getTokenFields($code): array
+    #[ArrayShape([
+        'client_id' => "\null|string",
+        'client_secret' => "\null|string",
+        'code' => "string",
+        'redirect_uri' => "mixed"
+    ])]
+    protected function getTokenFields(string $code): array
     {
         return parent::getTokenFields($code) + ['grant_type' => 'authorization_code'];
     }
 
     /**
-     * @param  string  $token
-     *
-     * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     protected function getUserByToken(string $token): array
@@ -99,12 +84,8 @@ class Baidu extends Base
         return json_decode($response->getBody(), true) ?? [];
     }
 
-    /**
-     * @param array $user
-     *
-     * @return \Overtrue\Socialite\User
-     */
-    protected function mapUserToObject(array $user): User
+    #[Pure]
+    protected function mapUserToObject(array $user): UserInterface
     {
         return new User(
             [

@@ -2,6 +2,9 @@
 
 namespace Overtrue\Socialite\Providers;
 
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
+use Overtrue\Socialite\Contracts\UserInterface;
 use Overtrue\Socialite\User;
 
 /**
@@ -15,7 +18,7 @@ class Taobao extends Base
     protected string $view = 'web';
     protected array $scopes = ['user_info'];
 
-    public function withView(string $view): self
+    public function withView(string $view): static
     {
         $this->view = $view;
 
@@ -27,6 +30,12 @@ class Taobao extends Base
         return $this->buildAuthUrlFromBase($this->baseUrl.'/authorize');
     }
 
+    #[ArrayShape([
+        'client_id' => "null|string",
+        'redirect_uri' => "mixed",
+        'view' => "string",
+        'response_type' => "string"
+    ])]
     public function getCodeFields(): array
     {
         return [
@@ -42,20 +51,18 @@ class Taobao extends Base
         return $this->baseUrl.'/token';
     }
 
-    /**
-     * @param string $code
-     *
-     * @return array
-     */
+    #[ArrayShape([
+        'client_id' => "\null|string",
+        'client_secret' => "\null|string",
+        'code' => "string",
+        'redirect_uri' => "mixed"
+    ])]
     protected function getTokenFields($code): array
     {
         return parent::getTokenFields($code) + ['grant_type' => 'authorization_code', 'view' => $this->view];
     }
 
     /**
-     * @param  string  $code
-     *
-     * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      */
@@ -69,10 +76,6 @@ class Taobao extends Base
     }
 
     /**
-     * @param  string  $token
-     * @param  array|null  $query
-     *
-     * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     protected function getUserByToken(string $token, ?array $query = []): array
@@ -82,12 +85,8 @@ class Taobao extends Base
         return \json_decode($response->getBody()->getContents(), true) ?? [];
     }
 
-    /**
-     * @param array $user
-     *
-     * @return \Overtrue\Socialite\User
-     */
-    protected function mapUserToObject(array $user): User
+    #[Pure]
+    protected function mapUserToObject(array $user): UserInterface
     {
         return new User([
             'id' => $user['open_id'] ?? null,
@@ -98,19 +97,14 @@ class Taobao extends Base
         ]);
     }
 
-    /**
-     * @param array $params
-     *
-     * @return string
-     */
-    protected function generateSign(array $params)
+    protected function generateSign(array $params): string
     {
         ksort($params);
 
         $stringToBeSigned = $this->getConfig()->get('client_secret');
 
         foreach ($params as $k => $v) {
-            if (!is_array($v) && '@' != substr($v, 0, 1)) {
+            if (!is_array($v) && !str_starts_with($v, '@')) {
                 $stringToBeSigned .= "$k$v";
             }
         }
@@ -120,13 +114,7 @@ class Taobao extends Base
         return strtoupper(md5($stringToBeSigned));
     }
 
-    /**
-     * @param string $token
-     * @param array  $apiFields
-     *
-     * @return array
-     */
-    protected function getPublicFields(string $token, array $apiFields = [])
+    protected function getPublicFields(string $token, array $apiFields = []): array
     {
         $fields = [
             'app_key' => $this->getClientId(),
@@ -143,13 +131,7 @@ class Taobao extends Base
         return $fields;
     }
 
-    /**
-     * @param string $url
-     * @param string $token
-     *
-     * @return string
-     */
-    protected function getUserInfoUrl(string $url, string $token)
+    protected function getUserInfoUrl(string $url, string $token): string
     {
         $apiFields = ['method' => 'taobao.miniapp.userInfo.get'];
 

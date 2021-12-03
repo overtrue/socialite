@@ -14,7 +14,7 @@ class WechatTest extends TestCase
         ]))->redirect();
 
         $this->assertStringStartsWith('https://open.weixin.qq.com/connect/qrconnect', $response);
-        $this->assertRegExp('/redirect_uri=http%3A%2F%2Flocalhost%2Fsocialite%2Fcallback.php/', $response);
+        $this->assertMatchesRegularExpression('/redirect_uri=http%3A%2F%2Flocalhost%2Fsocialite%2Fcallback.php/', $response);
     }
 
     public function testWeChatProviderTokenUrlAndRequestFields()

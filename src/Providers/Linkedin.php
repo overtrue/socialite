@@ -2,6 +2,8 @@
 
 namespace Overtrue\Socialite\Providers;
 
+use JetBrains\PhpStorm\ArrayShape;
+use Overtrue\Socialite\Contracts\UserInterface;
 use Overtrue\Socialite\User;
 
 /**
@@ -22,21 +24,18 @@ class Linkedin extends Base
         return 'https://www.linkedin.com/oauth/v2/accessToken';
     }
 
-    /**
-     * @param string $code
-     *
-     * @return array
-     */
+    #[ArrayShape([
+        'client_id' => "\null|string",
+        'client_secret' => "\null|string",
+        'code' => "string",
+        'redirect_uri' => "mixed"
+    ])]
     protected function getTokenFields($code): array
     {
         return parent::getTokenFields($code) + ['grant_type' => 'authorization_code'];
     }
 
     /**
-     * @param  string  $token
-     * @param  array|null  $query
-     *
-     * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     protected function getUserByToken(string $token, ?array $query = []): array
@@ -48,12 +47,9 @@ class Linkedin extends Base
     }
 
     /**
-     * @param  string  $token
-     *
-     * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    protected function getBasicProfile(string $token)
+    protected function getBasicProfile(string $token): array
     {
         $url = 'https://api.linkedin.com/v2/me?projection=(id,firstName,lastName,profilePicture(displayImage~:playableStreams))';
 
@@ -68,12 +64,9 @@ class Linkedin extends Base
     }
 
     /**
-     * @param  string  $token
-     *
-     * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    protected function getEmailAddress(string $token)
+    protected function getEmailAddress(string $token): array
     {
         $url = 'https://api.linkedin.com/v2/emailAddress?q=members&projection=(elements*(handle~))';
 
@@ -87,12 +80,7 @@ class Linkedin extends Base
         return \json_decode($response->getBody(), true)['elements.0.handle~'] ?? [];
     }
 
-    /**
-     * @param array $user
-     *
-     * @return \Overtrue\Socialite\User
-     */
-    protected function mapUserToObject(array $user): User
+    protected function mapUserToObject(array $user): UserInterface
     {
         $preferredLocale = ($user['firstName.preferredLocale.language'] ?? null).'_'.($user['firstName.preferredLocale.country']) ?? null;
         $firstName = $user['firstName.localized.'.$preferredLocale] ?? null;

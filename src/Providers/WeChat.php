@@ -2,6 +2,8 @@
 
 namespace Overtrue\Socialite\Providers;
 
+use JetBrains\PhpStorm\Pure;
+use Overtrue\Socialite\Contracts\UserInterface;
 use Overtrue\Socialite\Exceptions\InvalidArgumentException;
 use Overtrue\Socialite\User;
 use Psr\Http\Message\ResponseInterface;
@@ -20,6 +22,9 @@ class WeChat extends Base
     protected ?array $component = null;
     protected ?string $openid = null;
 
+    /**
+     * @throws \Overtrue\Socialite\Exceptions\InvalidArgumentException
+     */
     public function __construct(array $config)
     {
         parent::__construct($config);
@@ -29,19 +34,14 @@ class WeChat extends Base
         }
     }
 
-    /**
-     * @param string $openid
-     *
-     * @return $this
-     */
-    public function withOpenid(string $openid): self
+    public function withOpenid(string $openid): static
     {
         $this->openid = $openid;
 
         return $this;
     }
 
-    public function withCountryCode()
+    public function withCountryCode(): static
     {
         $this->withCountryCode = true;
 
@@ -49,9 +49,6 @@ class WeChat extends Base
     }
 
     /**
-     * @param  string  $code
-     *
-     * @return array
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException|\GuzzleHttp\Exception\GuzzleException
      */
     public function tokenFromCode(string $code): array
@@ -67,14 +64,14 @@ class WeChat extends Base
      * @return \Overtrue\Socialite\Providers\WeChat
      * @throws \Overtrue\Socialite\Exceptions\InvalidArgumentException
      */
-    public function withComponent(array $componentConfig)
+    public function withComponent(array $componentConfig): static
     {
         $this->prepareForComponent($componentConfig);
 
         return $this;
     }
 
-    public function getComponent()
+    public function getComponent(): ?array
     {
         return $this->component;
     }
@@ -90,11 +87,6 @@ class WeChat extends Base
         return $this->buildAuthUrlFromBase("https://open.weixin.qq.com/connect/{$path}");
     }
 
-    /**
-     * @param string $url
-     *
-     * @return string
-     */
     protected function buildAuthUrlFromBase(string $url): string
     {
         $query = http_build_query($this->getCodeFields(), '', '&', $this->encodingType);
@@ -128,9 +120,6 @@ class WeChat extends Base
     }
 
     /**
-     * @param string $code
-     *
-     * @return \Overtrue\Socialite\User
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException|\GuzzleHttp\Exception\GuzzleException
      */
     public function userFromCode(string $code): User
@@ -151,9 +140,6 @@ class WeChat extends Base
     }
 
     /**
-     * @param  string  $token
-     *
-     * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     protected function getUserByToken(string $token): array
@@ -171,12 +157,8 @@ class WeChat extends Base
         return \json_decode($response->getBody()->getContents(), true) ?? [];
     }
 
-    /**
-     * @param array $user
-     *
-     * @return \Overtrue\Socialite\User
-     */
-    protected function mapUserToObject(array $user): User
+    #[Pure]
+    protected function mapUserToObject(array $user): UserInterface
     {
         return new User([
             'id' => $user['openid'] ?? null,
@@ -187,11 +169,6 @@ class WeChat extends Base
         ]);
     }
 
-    /**
-     * @param string $code
-     *
-     * @return array
-     */
     protected function getTokenFields(string $code): array
     {
         if (!empty($this->component)) {
@@ -213,9 +190,6 @@ class WeChat extends Base
     }
 
     /**
-     * @param  string  $code
-     *
-     * @return \Psr\Http\Message\ResponseInterface
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     protected function getTokenFromCode(string $code): ResponseInterface
@@ -226,6 +200,9 @@ class WeChat extends Base
         ]);
     }
 
+    /**
+     * @throws \Overtrue\Socialite\Exceptions\InvalidArgumentException
+     */
     protected function prepareForComponent(array $component)
     {
         $config = [];

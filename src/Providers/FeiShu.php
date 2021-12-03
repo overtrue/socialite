@@ -3,6 +3,9 @@
 namespace Overtrue\Socialite\Providers;
 
 use GuzzleHttp\Exception\GuzzleException;
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
+use Overtrue\Socialite\Contracts\UserInterface;
 use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
 use Overtrue\Socialite\Exceptions\BadRequestException;
 use Overtrue\Socialite\Exceptions\Feishu\InvalidTicketException;
@@ -30,6 +33,7 @@ class FeiShu extends Base
         return $this->buildAuthUrlFromBase($this->baseUrl . '/authen/v1/index');
     }
 
+    #[ArrayShape(['redirect_uri' => "mixed", 'app_id' => "null|string"])]
     protected function getCodeFields(): array
     {
         return [
@@ -44,9 +48,6 @@ class FeiShu extends Base
     }
 
     /**
-     * @param string $code
-     *
-     * @return array
      * @throws AuthorizeFailedException
      * @throws GuzzleException
      */
@@ -56,13 +57,10 @@ class FeiShu extends Base
     }
 
     /**
-     * @param string $code
-     *
-     * @return array
-     * @throws AuthorizeFailedException
-     *
-     * @throws AuthorizeFailedException
-     * @throws GuzzleException
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     * @throws \Overtrue\Socialite\Exceptions\Feishu\InvalidTicketException
+     * @throws \Overtrue\Socialite\Exceptions\InvalidTokenException
      */
     protected function getTokenFromCode(string $code): array
     {
@@ -87,10 +85,7 @@ class FeiShu extends Base
     }
 
     /**
-     * @param string $token
-     *
-     * @return array
-     * @throws GuzzleException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     protected function getUserByToken(string $token): array
     {
@@ -115,12 +110,8 @@ class FeiShu extends Base
         return $response['data'];
     }
 
-    /**
-     * @param array $user
-     *
-     * @return User
-     */
-    protected function mapUserToObject(array $user): User
+    #[Pure]
+    protected function mapUserToObject(array $user): UserInterface
     {
         return new User(
             [
@@ -133,28 +124,27 @@ class FeiShu extends Base
         );
     }
 
-    public function withInternalAppMode(): self
+    public function withInternalAppMode(): static
     {
         $this->isInternalApp = true;
+
         return $this;
     }
 
-    public function withDefaultMode(): self
+    public function withDefaultMode(): static
     {
         $this->isInternalApp = false;
+
         return $this;
     }
 
     /**
      * set 'app_ticket' in config attribute
-     *
-     * @param string $appTicket
-     *
-     * @return FeiShu
      */
-    public function withAppTicket(string $appTicket): self
+    public function withAppTicket(string $appTicket): static
     {
         $this->config->set('app_ticket', $appTicket);
+
         return $this;
     }
 
@@ -162,6 +152,9 @@ class FeiShu extends Base
      * 设置 app_access_token 到 config 设置中
      * 应用维度授权凭证，开放平台可据此识别调用方的应用身份
      * 分内建和自建
+     *
+     * @throws \Overtrue\Socialite\Exceptions\Feishu\InvalidTicketException
+     * @throws \Overtrue\Socialite\Exceptions\InvalidTokenException
      */
     protected function configAppAccessToken()
     {
@@ -202,6 +195,9 @@ class FeiShu extends Base
      * 设置 tenant_access_token 到 config 属性中
      * 应用的企业授权凭证，开放平台据此识别调用方的应用身份和企业身份
      * 分内建和自建
+     *
+     * @throws \Overtrue\Socialite\Exceptions\BadRequestException
+     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      */
     protected function configTenantAccessToken()
     {

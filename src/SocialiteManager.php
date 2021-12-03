@@ -4,6 +4,7 @@ namespace Overtrue\Socialite;
 
 use Closure;
 use InvalidArgumentException;
+use JetBrains\PhpStorm\Pure;
 use Overtrue\Socialite\Contracts\FactoryInterface;
 use Overtrue\Socialite\Contracts\ProviderInterface;
 
@@ -35,28 +36,19 @@ class SocialiteManager implements FactoryInterface
         Providers\Gitee::NAME => Providers\Gitee::class,
     ];
 
+    #[Pure]
     public function __construct(array $config)
     {
         $this->config = new Config($config);
     }
 
-    /**
-     * @param \Overtrue\Socialite\Config $config
-     *
-     * @return $this
-     */
-    public function config(Config $config)
+    public function config(Config $config): static
     {
         $this->config = $config;
 
         return $this;
     }
 
-    /**
-     * @param string $name
-     *
-     * @return \Overtrue\Socialite\Contracts\ProviderInterface
-     */
     public function create(string $name): ProviderInterface
     {
         $name = strtolower($name);
@@ -68,12 +60,6 @@ class SocialiteManager implements FactoryInterface
         return $this->resolved[$name];
     }
 
-    /**
-     * @param string   $name
-     * @param \Closure $callback
-     *
-     * @return $this
-     */
     public function extend(string $name, Closure $callback): self
     {
         $this->customCreators[strtolower($name)] = $callback;
@@ -81,33 +67,20 @@ class SocialiteManager implements FactoryInterface
         return $this;
     }
 
-    /**
-     * @return \Overtrue\Socialite\Contracts\ProviderInterface[]
-     */
     public function getResolvedProviders(): array
     {
         return $this->resolved;
     }
 
-    /**
-     * @param string $provider
-     * @param array  $config
-     *
-     * @return \Overtrue\Socialite\Contracts\ProviderInterface
-     */
     public function buildProvider(string $provider, array $config): ProviderInterface
     {
         return new $provider($config);
     }
 
     /**
-     * @param string $name
-     *
-     * @return ProviderInterface
      * @throws \InvalidArgumentException
-     *
      */
-    protected function createProvider(string $name)
+    protected function createProvider(string $name): ProviderInterface
     {
         $config = $this->config->get($name, []);
         $provider = $config['provider'] ?? $name;
@@ -123,22 +96,11 @@ class SocialiteManager implements FactoryInterface
         return $this->buildProvider($this->providers[$provider] ?? $provider, $config);
     }
 
-    /**
-     * @param string $driver
-     * @param array  $config
-     *
-     * @return ProviderInterface
-     */
-    protected function callCustomCreator(string $driver, array $config): ProviderInterface
+    protected function callCustomCreator(string $name, array $config): ProviderInterface
     {
-        return $this->customCreators[$driver]($config);
+        return $this->customCreators[$name]($config);
     }
 
-    /**
-     * @param string $provider
-     *
-     * @return bool
-     */
     protected function isValidProvider(string $provider): bool
     {
         return isset($this->providers[$provider]) || is_subclass_of($provider, ProviderInterface::class);

@@ -86,27 +86,27 @@ class Config implements ArrayAccess, \JsonSerializable
         return (bool) $this->get($key);
     }
 
-    public function offsetExists($offset)
+    public function offsetExists(mixed $offset): bool
     {
         return array_key_exists($offset, $this->config);
     }
 
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         return $this->get($offset);
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, $value): void
     {
         $this->set($offset, $value);
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset(mixed $offset): void
     {
         $this->set($offset, null);
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return $this->config;
     }

@@ -8,22 +8,16 @@ use Overtrue\Socialite\Contracts\ProviderInterface;
 use Overtrue\Socialite\Contracts\UserInterface;
 use Overtrue\Socialite\Traits\HasAttributes;
 
-class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializable
+class User implements ArrayAccess, UserInterface, JsonSerializable
 {
     use HasAttributes;
 
-    /**
-     * @var \Overtrue\Socialite\Contracts\ProviderInterface|null
-     */
-    protected ?ProviderInterface $provider;
-
-    public function __construct(array $attributes, ProviderInterface $provider = null)
+    public function __construct(array $attributes, protected ?ProviderInterface $provider = null)
     {
         $this->attributes = $attributes;
-        $this->provider = $provider;
     }
 
-    public function getId()
+    public function getId(): mixed
     {
         return $this->getAttribute('id') ?? $this->getEmail();
     }
@@ -96,7 +90,7 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
         return $this->getAttribute('raw');
     }
 
-    public function setTokenResponse(array $response)
+    public function setTokenResponse(array $response): static
     {
         $this->setAttribute('token_response', $response);
 
@@ -113,30 +107,22 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
         return $this->attributes;
     }
 
-    public function serialize()
+    public function __serialize()
     {
         return serialize($this->attributes);
     }
 
-    public function unserialize($serialized)
+    public function __unserialize($serialized)
     {
         $this->attributes = unserialize($serialized) ?: [];
     }
 
-    /**
-     * @return \Overtrue\Socialite\Contracts\ProviderInterface
-     */
     public function getProvider(): \Overtrue\Socialite\Contracts\ProviderInterface
     {
         return $this->provider;
     }
 
-    /**
-     * @param \Overtrue\Socialite\Contracts\ProviderInterface $provider
-     *
-     * @return $this
-     */
-    public function setProvider(\Overtrue\Socialite\Contracts\ProviderInterface $provider)
+    public function setProvider(\Overtrue\Socialite\Contracts\ProviderInterface $provider): static
     {
         $this->provider = $provider;
 

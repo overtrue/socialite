@@ -2,6 +2,9 @@
 
 namespace Overtrue\Socialite\Providers;
 
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
+use Overtrue\Socialite\Contracts\UserInterface;
 use Overtrue\Socialite\User;
 
 class Outlook extends Base
@@ -21,10 +24,6 @@ class Outlook extends Base
     }
 
     /**
-     * @param  string  $token
-     * @param  array|null  $query
-     *
-     * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     protected function getUserByToken(string $token, ?array $query = []): array
@@ -41,12 +40,8 @@ class Outlook extends Base
         return \json_decode($response->getBody()->getContents(), true) ?? [];
     }
 
-    /**
-     * @param array $user
-     *
-     * @return \Overtrue\Socialite\User
-     */
-    protected function mapUserToObject(array $user): User
+    #[Pure]
+    protected function mapUserToObject(array $user): UserInterface
     {
         return new User([
             'id' => $user['id'] ?? null,
@@ -57,11 +52,12 @@ class Outlook extends Base
         ]);
     }
 
-    /**
-     * @param string $code
-     *
-     * @return array|string[]
-     */
+    #[ArrayShape([
+        'client_id' => "\null|string",
+        'client_secret' => "\null|string",
+        'code' => "string",
+        'redirect_uri' => "mixed"
+    ])]
     protected function getTokenFields(string $code): array
     {
         return parent::getTokenFields($code) + [

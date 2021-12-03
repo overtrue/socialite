@@ -2,6 +2,9 @@
 
 namespace Overtrue\Socialite\Providers;
 
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
+use Overtrue\Socialite\Contracts\UserInterface;
 use Overtrue\Socialite\Exceptions\InvalidTokenException;
 use Overtrue\Socialite\User;
 
@@ -24,20 +27,18 @@ class Weibo extends Base
         return $this->baseUrl.'/2/oauth2/access_token';
     }
 
-    /**
-     * @param string $code
-     *
-     * @return array
-     */
+    #[ArrayShape([
+        'client_id' => "\null|string",
+        'client_secret' => "\null|string",
+        'code' => "string",
+        'redirect_uri' => "mixed"
+    ])]
     protected function getTokenFields(string $code): array
     {
         return parent::getTokenFields($code) + ['grant_type' => 'authorization_code'];
     }
 
     /**
-     * @param  string  $token
-     *
-     * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
      *
      * @throws \Overtrue\Socialite\Exceptions\InvalidTokenException
@@ -64,9 +65,6 @@ class Weibo extends Base
     }
 
     /**
-     * @param  string  $token
-     *
-     * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Overtrue\Socialite\Exceptions\InvalidTokenException
      */
@@ -90,12 +88,8 @@ class Weibo extends Base
         return $response;
     }
 
-    /**
-     * @param array $user
-     *
-     * @return \Overtrue\Socialite\User
-     */
-    protected function mapUserToObject(array $user): User
+    #[Pure]
+    protected function mapUserToObject(array $user): UserInterface
     {
         return new User([
             'id' => $user['id'] ?? null,

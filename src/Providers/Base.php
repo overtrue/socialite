@@ -4,11 +4,12 @@ namespace Overtrue\Socialite\Providers;
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Psr7\Stream;
+use JetBrains\PhpStorm\ArrayShape;
 use Overtrue\Socialite\Config;
 use Overtrue\Socialite\Contracts\ProviderInterface;
+use Overtrue\Socialite\Contracts\UserInterface;
 use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
 use Overtrue\Socialite\Exceptions\MethodDoesNotSupportException;
-use Overtrue\Socialite\User;
 
 abstract class Base implements ProviderInterface
 {
@@ -67,13 +68,8 @@ abstract class Base implements ProviderInterface
 
     abstract protected function getUserByToken(string $token): array;
 
-    abstract protected function mapUserToObject(array $user): User;
+    abstract protected function mapUserToObject(array $user): UserInterface;
 
-    /**
-     * @param string|null $redirectUrl
-     *
-     * @return string
-     */
     public function redirect(?string $redirectUrl = null): string
     {
         if (!empty($redirectUrl)) {
@@ -84,13 +80,10 @@ abstract class Base implements ProviderInterface
     }
 
     /**
-     * @param string $code
-     *
-     * @return \Overtrue\Socialite\User
-     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      */
-    public function userFromCode(string $code): User
+    public function userFromCode(string $code): UserInterface
     {
         $tokenResponse = $this->tokenFromCode($code);
         $user = $this->userFromToken($tokenResponse[$this->accessTokenKey]);
@@ -100,12 +93,7 @@ abstract class Base implements ProviderInterface
             ->setTokenResponse($tokenResponse);
     }
 
-    /**
-     * @param string $token
-     *
-     * @return \Overtrue\Socialite\User
-     */
-    public function userFromToken(string $token): User
+    public function userFromToken(string $token): UserInterface
     {
         $user = $this->getUserByToken($token);
 
@@ -113,9 +101,6 @@ abstract class Base implements ProviderInterface
     }
 
     /**
-     * @param string $code
-     *
-     * @return array
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException|\GuzzleHttp\Exception\GuzzleException
      */
     public function tokenFromCode(string $code): array
@@ -134,8 +119,6 @@ abstract class Base implements ProviderInterface
     }
 
     /**
-     * @param string $refreshToken
-     *
      * @throws \Overtrue\Socialite\Exceptions\MethodDoesNotSupportException
      */
     public function refreshToken(string $refreshToken)
@@ -143,11 +126,6 @@ abstract class Base implements ProviderInterface
         throw new MethodDoesNotSupportException('refreshToken does not support.');
     }
 
-    /**
-     * @param string $redirectUrl
-     *
-     * @return $this|\Overtrue\Socialite\Contracts\ProviderInterface
-     */
     public function withRedirectUrl(string $redirectUrl): ProviderInterface
     {
         $this->redirectUrl = $redirectUrl;
@@ -155,11 +133,6 @@ abstract class Base implements ProviderInterface
         return $this;
     }
 
-    /**
-     * @param string $state
-     *
-     * @return \Overtrue\Socialite\Contracts\ProviderInterface
-     */
     public function withState(string $state): ProviderInterface
     {
         $this->state = $state;
@@ -167,24 +140,14 @@ abstract class Base implements ProviderInterface
         return $this;
     }
 
-    /**
-     * @param array $scopes
-     *
-     * @return $this
-     */
-    public function scopes(array $scopes): self
+    public function scopes(array $scopes): ProviderInterface
     {
         $this->scopes = $scopes;
 
         return $this;
     }
 
-    /**
-     * @param array $parameters
-     *
-     * @return $this
-     */
-    public function with(array $parameters): self
+    public function with(array $parameters): ProviderInterface
     {
         $this->parameters = $parameters;
 
@@ -196,12 +159,7 @@ abstract class Base implements ProviderInterface
         return $this->config;
     }
 
-    /**
-     * @param string $scopeSeparator
-     *
-     * @return self
-     */
-    public function withScopeSeparator(string $scopeSeparator): self
+    public function withScopeSeparator(string $scopeSeparator): ProviderInterface
     {
         $this->scopeSeparator = $scopeSeparator;
 
@@ -223,12 +181,7 @@ abstract class Base implements ProviderInterface
         return $this->httpClient ?? new GuzzleClient($this->guzzleOptions);
     }
 
-    /**
-     * @param array $config
-     *
-     * @return \Overtrue\Socialite\Contracts\ProviderInterface
-     */
-    public function setGuzzleOptions($config = []): ProviderInterface
+    public function setGuzzleOptions(array $config): ProviderInterface
     {
         $this->guzzleOptions = $config;
 
@@ -240,22 +193,17 @@ abstract class Base implements ProviderInterface
         return $this->guzzleOptions;
     }
 
-    /**
-     * @param array  $scopes
-     * @param string $scopeSeparator
-     *
-     * @return string
-     */
-    protected function formatScopes(array $scopes, $scopeSeparator): string
+    protected function formatScopes(array $scopes, string $scopeSeparator): string
     {
         return implode($scopeSeparator, $scopes);
     }
 
-    /**
-     * @param string $code
-     *
-     * @return array
-     */
+    #[ArrayShape([
+        'client_id' => "null|string",
+        'client_secret' => "null|string",
+        'code' => "string",
+        'redirect_uri' => "mixed"
+    ])]
     protected function getTokenFields(string $code): array
     {
         return [
@@ -266,11 +214,6 @@ abstract class Base implements ProviderInterface
         ];
     }
 
-    /**
-     * @param string $url
-     *
-     * @return string
-     */
     protected function buildAuthUrlFromBase(string $url): string
     {
         $query = $this->getCodeFields() + ($this->state ? ['state' => $this->state] : []);
@@ -298,12 +241,7 @@ abstract class Base implements ProviderInterface
     }
 
     /**
-     * @param array|string $response
-     *
-     * @return mixed
-     * @return array
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
-     *
      */
     protected function normalizeAccessTokenResponse($response): array
     {

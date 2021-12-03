@@ -1,21 +1,16 @@
-<h1 align="center"> Socialite</h1>
-<p align="center">
-<a href="https://packagist.org/packages/overtrue/socialite"><img src="https://poser.pugx.org/overtrue/socialite/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/overtrue/socialite"><img src="https://poser.pugx.org/overtrue/socialite/v/unstable.svg" alt="Latest Unstable Version"></a>
-<a href="https://scrutinizer-ci.com/g/overtrue/socialite/build-status/master"><img src="https://scrutinizer-ci.com/g/overtrue/socialite/badges/build.png?b=master" alt="Build Status"></a>
-<a href="https://packagist.org/packages/overtrue/socialite"><img src="https://poser.pugx.org/overtrue/socialite/downloads" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/overtrue/socialite"><img src="https://poser.pugx.org/overtrue/socialite/license" alt="License"></a>
-</p>
+# Socialite
 
+Socialite is an [OAuth2](https://oauth.net/2/)  Authentication tool. It is inspired by [laravel/socialite](https://github.com/laravel/socialite), You can easily use it in any PHP project.    [中文文档](/README_CN.md)
 
-<p align="center">Socialite is an <a href="https://oauth.net/2/">OAuth2</a>  Authentication tool. It is inspired by <a href="https://github.com/laravel/socialite">laravel/socialite</a>, You can easily use it in any PHP project.       <a href="/README_CN.md">中文文档</a></p>
-
-<p align="center">This tool now supports platforms such as Facebook, GitHub, Google, LinkedIn, Outlook, QQ, Tapd, Alipay, Taobao, Baidu, DingTalk, Weibo, WeChat, Douyin, Feishu, Douban, WeWork, Tencent Cloud, Line, Gitee.</p>
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/overtrue/laravel-socialite?style=flat-square)
+![GitHub License](https://img.shields.io/github/license/overtrue/laravel-socialite?style=flat-square)
+![Packagist Downloads](https://img.shields.io/packagist/dt/overtrue/laravel-socialite?style=flat-square)
 
 [![Sponsor me](https://github.com/overtrue/overtrue/blob/master/sponsor-me-button-s.svg?raw=true)](https://github.com/sponsors/overtrue)
 
-如果你喜欢我的项目并想支持它，[点击这里 :heart:](https://github.com/sponsors/overtrue)
+This tool now supports platforms such as Facebook, GitHub, Google, LinkedIn, Outlook, QQ, Tapd, Alipay, Taobao, Baidu, DingTalk, Weibo, WeChat, Douyin, Feishu, Douban, WeWork, Tencent Cloud, Line, Gitee.
 
+如果你喜欢我的项目并想支持它，[点击这里 :heart:](https://github.com/sponsors/overtrue)
 
 - [Requirement](#requirement)
 - [Installation](#installation)
@@ -51,7 +46,7 @@
 # Requirement
 
 ```
-PHP >= 7.4
+PHP >= 8.0.2
 ```
 # Installation
 

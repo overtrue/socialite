@@ -2,6 +2,9 @@
 
 namespace Overtrue\Socialite\Providers;
 
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
+use Overtrue\Socialite\Contracts\UserInterface;
 use Overtrue\Socialite\User;
 
 /**
@@ -24,11 +27,12 @@ class QQ extends Base
         return $this->baseUrl.'/oauth2.0/token';
     }
 
-    /**
-     * @param  string  $code
-     *
-     * @return array
-     */
+    #[ArrayShape([
+        'client_id' => "\null|string",
+        'client_secret' => "\null|string",
+        'code' => "string",
+        'redirect_uri' => "mixed"
+    ])]
     protected function getTokenFields(string $code): array
     {
         return parent::getTokenFields($code) + [
@@ -37,9 +41,6 @@ class QQ extends Base
     }
 
     /**
-     * @param  string  $code
-     *
-     * @return array
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
@@ -54,7 +55,7 @@ class QQ extends Base
         return $this->normalizeAccessTokenResponse($token);
     }
 
-    public function withUnionId(): self
+    public function withUnionId(): static
     {
         $this->withUnionId = true;
 
@@ -62,9 +63,6 @@ class QQ extends Base
     }
 
     /**
-     * @param string $token
-     *
-     * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     protected function getUserByToken(string $token): array
@@ -91,12 +89,8 @@ class QQ extends Base
         ];
     }
 
-    /**
-     * @param array $user
-     *
-     * @return \Overtrue\Socialite\User
-     */
-    protected function mapUserToObject(array $user): User
+    #[Pure]
+    protected function mapUserToObject(array $user): UserInterface
     {
         return new User([
             'id' => $user['openid'] ?? null,

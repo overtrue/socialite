@@ -2,8 +2,9 @@
 
 namespace Overtrue\Socialite\Providers;
 
+use JetBrains\PhpStorm\Pure;
+use Overtrue\Socialite\Contracts\UserInterface;
 use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
-use Overtrue\Socialite\Exceptions\InvalidArgumentException;
 use Overtrue\Socialite\Exceptions\MethodDoesNotSupportException;
 use Overtrue\Socialite\User;
 
@@ -14,7 +15,6 @@ class WeWork extends Base
 {
     public const NAME = 'wework';
     protected bool $detailed = false;
-    protected ?int $agentId;
     protected ?string $apiAccessToken;
     protected string $baseUrl = 'https://qyapi.weixin.qq.com';
 
@@ -27,32 +27,12 @@ class WeWork extends Base
         }
     }
 
-    /**
-     * @deprecated will remove at 4.0
-     */
-    public function setAgentId(int $agentId): WeWork
-    {
-        $this->agentId = $agentId;
-
-        return $this;
-    }
-
-    /**
-     * @deprecated will remove at 4.0
-     */
-    public function withAgentId(int $agentId): WeWork
-    {
-        $this->agentId = $agentId;
-
-        return $this;
-    }
-
     public function getBaseUrl()
     {
         return $this->baseUrl;
     }
 
-    public function userFromCode(string $code): User
+    public function userFromCode(string $code): UserInterface
     {
         $token = $this->getApiAccessToken();
         $user = $this->getUser($token, $code);
@@ -64,56 +44,34 @@ class WeWork extends Base
         return $this->mapUserToObject($user)->setProvider($this)->setRaw($user);
     }
 
-    public function detailed(): self
+    public function detailed(): static
     {
         $this->detailed = true;
 
         return $this;
     }
 
-    public function withApiAccessToken(string $apiAccessToken): WeWork
+    public function withApiAccessToken(string $apiAccessToken): static
     {
         $this->apiAccessToken = $apiAccessToken;
 
         return $this;
     }
 
-    public function getAuthUrl(): string
-    {
-        // 网页授权登录
-        if (empty($this->agentId)) {
-            $queries = [
-                'appid' => $this->getClientId(),
-                'redirect_uri' => $this->redirectUrl,
-                'response_type' => 'code',
-                'scope' => $this->formatScopes($this->scopes, $this->scopeSeparator),
-                'state' => $this->state,
-            ];
-
-            return sprintf('https://open.weixin.qq.com/connect/oauth2/authorize?%s#wechat_redirect', http_build_query($queries));
-        }
-
-        // 第三方网页应用登录（扫码登录）
-        return $this->getQrConnectUrl();
-    }
-
     /**
-     * @deprecated will remove at 4.0
+     * @throws \Overtrue\Socialite\Exceptions\InvalidArgumentException
      */
-    public function getQrConnectUrl()
+    public function getAuthUrl(): string
     {
         $queries = [
             'appid' => $this->getClientId(),
-            'agentid' => $this->agentId ?? $this->config->get('agentid'),
             'redirect_uri' => $this->redirectUrl,
+            'response_type' => 'code',
+            'scope' => $this->formatScopes($this->scopes, $this->scopeSeparator),
             'state' => $this->state,
         ];
 
-        if (empty($queries['agentid'])) {
-            throw new InvalidArgumentException('You must config the `agentid` in configuration or using `setAgentid($agentId)`.');
-        }
-
-        return sprintf('https://open.work.weixin.qq.com/wwopen/sso/qrConnect?%s#wechat_redirect', http_build_query($queries));
+        return sprintf('https://open.weixin.qq.com/connect/oauth2/authorize?%s#wechat_redirect', http_build_query($queries));
     }
 
     /**
@@ -126,9 +84,14 @@ class WeWork extends Base
 
     protected function getApiAccessToken(): string
     {
-        return $this->apiAccessToken ?? $this->apiAccessToken = $this->requestApiAccessToken();
+        return $this->apiAccessToken ?? $this->apiAccessToken = $this->createApiAccessToken();
     }
 
+    /**
+     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     */
     protected function getUser(string $token, string $code): array
     {
         $response = $this->getHttpClient()->get(
@@ -155,6 +118,7 @@ class WeWork extends Base
     }
 
     /**
+     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      */
@@ -179,12 +143,8 @@ class WeWork extends Base
         return $response;
     }
 
-    /**
-     * @param array $user
-     *
-     * @return \Overtrue\Socialite\User
-     */
-    protected function mapUserToObject(array $user): User
+    #[Pure]
+    protected function mapUserToObject(array $user): UserInterface
     {
         if ($this->detailed) {
             return new User(
@@ -205,7 +165,6 @@ class WeWork extends Base
     }
 
     /**
-     * @return string
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */

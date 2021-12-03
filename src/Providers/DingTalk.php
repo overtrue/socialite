@@ -2,6 +2,8 @@
 
 namespace Overtrue\Socialite\Providers;
 
+use JetBrains\PhpStorm\Pure;
+use Overtrue\Socialite\Contracts\UserInterface;
 use Overtrue\Socialite\User;
 
 /**
@@ -28,22 +30,13 @@ class DingTalk extends Base
         throw new \InvalidArgumentException('not supported to get access token.');
     }
 
-    /**
-     * @param string $token
-     *
-     * @return array
-     */
     protected function getUserByToken(string $token): array
     {
         throw new \InvalidArgumentException('Unable to use token get User.');
     }
 
-    /**
-     * @param array $user
-     *
-     * @return \Overtrue\Socialite\User
-     */
-    protected function mapUserToObject(array $user): User
+    #[Pure]
+    protected function mapUserToObject(array $user): UserInterface
     {
         return new User(
             [
@@ -81,20 +74,16 @@ class DingTalk extends Base
             ?? $this->getConfig()->get('client_secret');
     }
 
-    protected function createSignature(int $time)
+    protected function createSignature(int $time): string
     {
         return base64_encode(hash_hmac('sha256', $time, $this->getClientSecret(), true));
     }
 
     /**
-     * @param  string  $code
-     *
-     * @return User
-     *
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @see https://ding-doc.dingtalk.com/doc#/personnal/tmudue
      */
-    public function userFromCode(string $code): User
+    public function userFromCode(string $code): UserInterface
     {
         $time = (int)microtime(true) * 1000;
         $queryParams = [

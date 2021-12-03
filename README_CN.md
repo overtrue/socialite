@@ -1,18 +1,14 @@
-<h1 align="center"> Socialite</h1>
-<p align="center">
-<a href="https://packagist.org/packages/overtrue/socialite"><img src="https://poser.pugx.org/overtrue/socialite/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/overtrue/socialite"><img src="https://poser.pugx.org/overtrue/socialite/v/unstable.svg" alt="Latest Unstable Version"></a>
-<a href="https://scrutinizer-ci.com/g/overtrue/socialite/build-status/master"><img src="https://scrutinizer-ci.com/g/overtrue/socialite/badges/build.png?b=master" alt="Build Status"></a>
-<a href="https://scrutinizer-ci.com/g/overtrue/socialite/?branch=master"><img src="https://scrutinizer-ci.com/g/overtrue/socialite/badges/quality-score.png?b=master" alt="Scrutinizer Code Quality"></a>
-<a href="https://scrutinizer-ci.com/g/overtrue/socialite/?branch=master"><img src="https://scrutinizer-ci.com/g/overtrue/socialite/badges/coverage.png?b=master" alt="Code Coverage"></a>
-<a href="https://packagist.org/packages/overtrue/socialite"><img src="https://poser.pugx.org/overtrue/socialite/downloads" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/overtrue/socialite"><img src="https://poser.pugx.org/overtrue/socialite/license" alt="License"></a>
-</p>
+# Socialite
 
+Socialite 是一个 [OAuth2](https://oauth.net/2/) 认证工具。 它的灵感来源于 [laravel/socialite](https://github.com/laravel/socialite) ， 你可以很轻易的在任何 PHP 项目中使用它。
 
-<p align="center">Socialite 是一个 <a href="https://oauth.net/2/">OAuth2</a> 认证工具。 它的灵感来源于 <a href="https://github.com/laravel/socialite">laravel/socialite</a>， 你可以很轻易的在任何 PHP 项目中使用它。</p>
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/overtrue/laravel-socialite?style=flat-square)
+![GitHub License](https://img.shields.io/github/license/overtrue/laravel-socialite?style=flat-square)
+![Packagist Downloads](https://img.shields.io/packagist/dt/overtrue/laravel-socialite?style=flat-square)
 
-<p align="center">该工具现已支持平台有：Facebook，Github，Google，Linkedin，Outlook，QQ，TAPD，支付宝，淘宝，百度，钉钉，微博，微信，抖音，飞书，豆瓣，企业微信，腾讯云，Line，Gitee。</p>
+[![Sponsor me](https://github.com/overtrue/overtrue/blob/master/sponsor-me-button-s.svg?raw=true)](https://github.com/sponsors/overtrue)
+
+该工具现已支持平台有：Facebook，Github，Google，Linkedin，Outlook，QQ，TAPD，支付宝，淘宝，百度，钉钉，微博，微信，抖音，飞书，豆瓣，企业微信，腾讯云，Line，Gitee。
 
 - [版本要求](#版本要求)
 - [安装](#安装)
@@ -48,7 +44,7 @@
 # 版本要求
 
 ```
-PHP >= 7.4
+PHP >= 8.0.2
 ```
 
 # 安装

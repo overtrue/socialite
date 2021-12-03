@@ -2,6 +2,9 @@
 
 namespace Overtrue\Socialite\Providers;
 
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
+use Overtrue\Socialite\Contracts\UserInterface;
 use Overtrue\Socialite\Exceptions\InvalidArgumentException;
 use Overtrue\Socialite\User;
 
@@ -41,11 +44,8 @@ class Alipay extends Base
     }
 
     /**
-     * @param string $token
-     *
-     * @return array
-     * @throws \Overtrue\Socialite\Exceptions\InvalidArgumentException
      * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Overtrue\Socialite\Exceptions\InvalidArgumentException
      */
     protected function getUserByToken(string $token): array
     {
@@ -72,12 +72,8 @@ class Alipay extends Base
         return $response['alipay_user_info_share_response'];
     }
 
-    /**
-     * @param array $user
-     *
-     * @return \Overtrue\Socialite\User
-     */
-    protected function mapUserToObject(array $user): User
+    #[Pure]
+    protected function mapUserToObject(array $user): UserInterface
     {
         return new User(
             [
@@ -90,9 +86,6 @@ class Alipay extends Base
     }
 
     /**
-     * @param string $code
-     *
-     * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      * @throws \Overtrue\Socialite\Exceptions\InvalidArgumentException
@@ -118,7 +111,6 @@ class Alipay extends Base
     }
 
     /**
-     * @return array
      * @throws \Overtrue\Socialite\Exceptions\InvalidArgumentException
      */
     protected function getCodeFields(): array
@@ -140,11 +132,14 @@ class Alipay extends Base
     }
 
     /**
-     * @param string $code
-     *
-     * @return array|string[]
      * @throws \Overtrue\Socialite\Exceptions\InvalidArgumentException
      */
+    #[ArrayShape([
+        'client_id' => "\null|string",
+        'client_secret' => "\null|string",
+        'code' => "string",
+        'redirect_uri' => "mixed"
+    ])]
     protected function getTokenFields(string $code): array
     {
         $params = $this->getPublicFields('alipay.system.oauth.token');
@@ -157,11 +152,15 @@ class Alipay extends Base
         return $params;
     }
 
-    /**
-     * @param string $method
-     *
-     * @return array
-     */
+    #[ArrayShape([
+        'app_id' => "array|mixed",
+        'format' => "string",
+        'charset' => "string",
+        'sign_type' => "string",
+        'method' => "string",
+        'timestamp' => "string",
+        'version' => "string"
+    ])]
     public function getPublicFields(string $method): array
     {
         return [
@@ -176,32 +175,20 @@ class Alipay extends Base
     }
 
     /**
-     * @param $params
-     *
-     * @return string
      * @throws InvalidArgumentException
-     *
      * @see https://opendocs.alipay.com/open/289/105656
      */
-    protected function generateSign($params)
+    protected function generateSign($params): string
     {
         ksort($params);
 
-        $signContent = $this->buildParams($params);
-        $key = $this->getConfig()->get('rsa_private_key');
-        $signValue = $this->signWithSHA256RSA($signContent, $key);
-
-        return $signValue;
+        return $this->signWithSHA256RSA($this->buildParams($params), $this->getConfig()->get('rsa_private_key'));
     }
 
     /**
-     * @param string $signContent
-     * @param string $key
-     *
-     * @return string
      * @throws \Overtrue\Socialite\Exceptions\InvalidArgumentException
      */
-    protected function signWithSHA256RSA(string $signContent, string $key)
+    protected function signWithSHA256RSA(string $signContent, string $key): string
     {
         if (empty($key)) {
             throw new InvalidArgumentException('no RSA private key set.');
@@ -216,14 +203,7 @@ class Alipay extends Base
         return base64_encode($signValue);
     }
 
-    /**
-     * @param array $params
-     * @param bool $urlencode
-     * @param array|string[] $except
-     *
-     * @return string
-     */
-    public static function buildParams(array $params, bool $urlencode = false, array $except = ['sign'])
+    public static function buildParams(array $params, bool $urlencode = false, array $except = ['sign']): string
     {
         $param_str = '';
         foreach ($params as $k => $v) {

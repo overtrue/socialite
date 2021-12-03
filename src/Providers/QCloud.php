@@ -2,7 +2,9 @@
 
 namespace Overtrue\Socialite\Providers;
 
+use JetBrains\PhpStorm\Pure;
 use Overtrue\Socialite\Contracts\ProviderInterface;
+use Overtrue\Socialite\Contracts\UserInterface;
 use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
 use Overtrue\Socialite\User;
 
@@ -42,9 +44,7 @@ class QCloud extends Base implements ProviderInterface
     }
 
     /**
-     * @param  string  $code
-     *
-     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      */
     public function TokenFromCode(string $code): array
@@ -65,9 +65,7 @@ class QCloud extends Base implements ProviderInterface
     }
 
     /**
-     * @param string $token
-     *
-     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      */
     protected function getUserByToken(string $token): array
@@ -89,12 +87,8 @@ class QCloud extends Base implements ProviderInterface
         );
     }
 
-    /**
-     * @param array $user
-     *
-     * @return \Overtrue\Socialite\User
-     */
-    protected function mapUserToObject(array $user): User
+    #[Pure]
+    protected function mapUserToObject(array $user): UserInterface
     {
         return new User(
             [
@@ -105,7 +99,11 @@ class QCloud extends Base implements ProviderInterface
         );
     }
 
-    public function performRequest(string $method, string $host, string $action, string $version, array $options = [], ?string $secretId = null, ?string $secretKey = null)
+    /**
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     */
+    public function performRequest(string $method, string $host, string $action, string $version, array $options = [], ?string $secretId = null, ?string $secretKey = null): array
     {
         $method = \strtoupper($method);
         $timestamp = \time();
@@ -128,7 +126,6 @@ class QCloud extends Base implements ProviderInterface
                 $credential,
                 $signature
             );
-        $options['debug'] = \fopen(storage_path('logs/laravel-2020-07-15.log'), 'w+');
         $response = $this->getHttpClient()->get("https://{$host}/", $options);
 
         $response = json_decode($response->getBody()->getContents(), true) ?? [];
@@ -143,7 +140,7 @@ class QCloud extends Base implements ProviderInterface
         return $response['Response'] ?? [];
     }
 
-    protected function sign(string $requestMethod, string $host, array $query, string $payload, $headers, $credential, ?string $secretKey = null)
+    protected function sign(string $requestMethod, string $host, array $query, string $payload, $headers, $credential, ?string $secretKey = null): bool|string
     {
         $canonicalRequestString = \join(
             "\n",
@@ -176,12 +173,9 @@ class QCloud extends Base implements ProviderInterface
     }
 
     /**
-     * @param string|array $body
-     *
-     * @return array
      * @throws AuthorizeFailedException
      */
-    protected function parseAccessToken($body)
+    protected function parseAccessToken(array | string $body)
     {
         if (!is_array($body)) {
             $body = json_decode($body, true);
@@ -198,12 +192,10 @@ class QCloud extends Base implements ProviderInterface
     }
 
     /**
-     * @param string $accessToken
-     *
-     * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      */
-    protected function getFederationToken(string $accessToken)
+    protected function getFederationToken(string $accessToken): array
     {
         $response = $this->performRequest(
             'GET',
@@ -248,13 +240,8 @@ class QCloud extends Base implements ProviderInterface
         return $fields;
     }
 
-    /**
-     * @param string $host
-     *
-     * @return mixed|string
-     */
-    protected function getServiceFromHost(string $host)
+    protected function getServiceFromHost(string $host): string
     {
-        return explode('.', $host)[0];
+        return explode('.', $host)[0] ?? '';
     }
 }

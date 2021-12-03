@@ -2,6 +2,8 @@
 
 namespace Overtrue\Socialite\Providers;
 
+use JetBrains\PhpStorm\Pure;
+use Overtrue\Socialite\Contracts\UserInterface;
 use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
 use Overtrue\Socialite\Exceptions\InvalidArgumentException;
 use Overtrue\Socialite\Exceptions\MethodDoesNotSupportException;
@@ -28,14 +30,14 @@ class OpenWeWork extends Base
         }
     }
 
-    public function withAgentId(int $agentId): OpenWeWork
+    public function withAgentId(int $agentId): static
     {
         $this->agentId = $agentId;
 
         return $this;
     }
 
-    public function userFromCode(string $code): User
+    public function userFromCode(string $code): UserInterface
     {
         $user = $this->getUser($this->getSuiteAccessToken(), $code);
 
@@ -60,6 +62,9 @@ class OpenWeWork extends Base
         return $this;
     }
 
+    /**
+     * @throws \Overtrue\Socialite\Exceptions\InvalidArgumentException
+     */
     public function getAuthUrl(): string
     {
         $queries = \array_filter([
@@ -79,9 +84,6 @@ class OpenWeWork extends Base
     }
 
     /**
-     * @param string $token
-     *
-     * @return array
      * @throws \Overtrue\Socialite\Exceptions\MethodDoesNotSupportException
      */
     protected function getUserByToken(string $token): array
@@ -99,10 +101,6 @@ class OpenWeWork extends Base
     }
 
     /**
-     * @param  string  $token
-     * @param  string  $code
-     *
-     * @return array
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
@@ -130,9 +128,6 @@ class OpenWeWork extends Base
     }
 
     /**
-     * @param  string  $userTicket
-     *
-     * @return array
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
@@ -157,12 +152,8 @@ class OpenWeWork extends Base
         return $response;
     }
 
-    /**
-     * @param array $user
-     *
-     * @return \Overtrue\Socialite\User
-     */
-    protected function mapUserToObject(array $user): User
+    #[Pure]
+    protected function mapUserToObject(array $user): UserInterface
     {
         if ($this->detailed) {
             return new User(
@@ -183,7 +174,6 @@ class OpenWeWork extends Base
     }
 
     /**
-     * @return string
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */

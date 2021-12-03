@@ -2,6 +2,9 @@
 
 namespace Overtrue\Socialite\Providers;
 
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
+use Overtrue\Socialite\Contracts\UserInterface;
 use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
 use Overtrue\Socialite\Exceptions\InvalidArgumentException;
 use Overtrue\Socialite\User;
@@ -22,6 +25,12 @@ class DouYin extends Base
         return $this->buildAuthUrlFromBase($this->baseUrl . '/platform/oauth/connect/');
     }
 
+    #[ArrayShape([
+        'client_key' => "null|string",
+        'redirect_uri' => "mixed",
+        'scope' => "string",
+        'response_type' => "string"
+    ])]
     public function getCodeFields(): array
     {
         return [
@@ -38,14 +47,11 @@ class DouYin extends Base
     }
 
     /**
-     * @param  string  $code
-     *
-     * @return array
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      * @throws \GuzzleHttp\Exception\GuzzleException
      *
      */
-    public function tokenFromCode($code): array
+    public function tokenFromCode(string $code): array
     {
         $response = $this->getHttpClient()->get(
             $this->getTokenUrl(),
@@ -65,6 +71,12 @@ class DouYin extends Base
         return $this->normalizeAccessTokenResponse($body['data']);
     }
 
+    #[ArrayShape([
+        'client_key' => "null|string",
+        'client_secret' => "null|string",
+        'code' => "string",
+        'grant_type' => "string"
+    ])]
     protected function getTokenFields(string $code): array
     {
         return [
@@ -75,6 +87,10 @@ class DouYin extends Base
         ];
     }
 
+    /**
+     * @throws \Overtrue\Socialite\Exceptions\InvalidArgumentException
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
     protected function getUserByToken(string $token): array
     {
         $userUrl = $this->baseUrl . '/oauth/userinfo/';
@@ -98,7 +114,8 @@ class DouYin extends Base
         return $body['data'] ?? [];
     }
 
-    protected function mapUserToObject(array $user): User
+    #[Pure]
+    protected function mapUserToObject(array $user): UserInterface
     {
         return new User(
             [

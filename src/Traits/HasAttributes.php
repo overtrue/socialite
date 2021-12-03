@@ -2,70 +2,52 @@
 
 namespace Overtrue\Socialite\Traits;
 
+use JetBrains\PhpStorm\Pure;
+
 trait HasAttributes
 {
     protected array $attributes = [];
 
-    /**
-     * @return array
-     */
-    public function getAttributes()
+    public function getAttributes(): array
     {
         return $this->attributes;
     }
 
-    /**
-     * @param string $name
-     * @param string $default
-     *
-     * @return mixed
-     */
-    public function getAttribute($name, $default = null)
+    public function getAttribute(string $name, mixed $default = null)
     {
-        return isset($this->attributes[$name]) ? $this->attributes[$name] : $default;
+        return $this->attributes[$name] ?? $default;
     }
 
-    /**
-     * @param string $name
-     * @param mixed  $value
-     *
-     * @return $this
-     */
-    public function setAttribute($name, $value)
+    public function setAttribute(string $name, mixed $value): static
     {
         $this->attributes[$name] = $value;
 
         return $this;
     }
 
-    /**
-     * @param array $attributes
-     *
-     * @return $this
-     */
-    public function merge(array $attributes)
+    public function merge(array $attributes): static
     {
         $this->attributes = array_merge($this->attributes, $attributes);
 
         return $this;
     }
 
-    public function offsetExists($offset)
+    public function offsetExists(mixed $offset): bool
     {
         return array_key_exists($offset, $this->attributes);
     }
 
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         return $this->getAttribute($offset);
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         $this->setAttribute($offset, $value);
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset(mixed $offset): void
     {
         unset($this->attributes[$offset]);
     }
@@ -75,6 +57,7 @@ trait HasAttributes
         return $this->getAttribute($property);
     }
 
+    #[Pure]
     public function toArray(): array
     {
         return $this->getAttributes();

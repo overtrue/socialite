@@ -2,6 +2,9 @@
 
 namespace Overtrue\Socialite\Providers;
 
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
+use Overtrue\Socialite\Contracts\UserInterface;
 use Overtrue\Socialite\User;
 
 /**
@@ -25,11 +28,13 @@ class Line extends Base
         return $this->baseUrl.$this->version.'/token';
     }
 
-    /**
-     * @param  string  $code
-     *
-     * @return array
-     */
+    #[ArrayShape([
+        'client_id' => "null|string",
+        'client_secret' => "null|string",
+        'code' => "string",
+        'grant_type' => "string",
+        'redirect_uri' => "mixed"
+    ])]
     protected function getTokenFields(string $code): array
     {
         return [
@@ -42,9 +47,6 @@ class Line extends Base
     }
 
     /**
-     * @param  string  $token
-     *
-     * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     protected function getUserByToken(string $token): array
@@ -62,7 +64,8 @@ class Line extends Base
         return \json_decode($response->getBody(), true) ?? [];
     }
 
-    protected function mapUserToObject(array $user): User
+    #[Pure]
+    protected function mapUserToObject(array $user): UserInterface
     {
         return new User(
             [

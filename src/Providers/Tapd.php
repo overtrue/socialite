@@ -3,6 +3,8 @@
 namespace Overtrue\Socialite\Providers;
 
 use GuzzleHttp\Psr7\Stream;
+use JetBrains\PhpStorm\ArrayShape;
+use Overtrue\Socialite\Contracts\UserInterface;
 use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
 use Overtrue\Socialite\Exceptions\BadRequestException;
 use Overtrue\Socialite\User;
@@ -15,38 +17,26 @@ class Tapd extends Base
     public const NAME = 'tapd';
     protected string $baseUrl = 'https://api.tapd.cn';
 
-    /**
-     * @return string
-     */
     protected function getAuthUrl(): string
     {
         return $this->buildAuthUrlFromBase($this->baseUrl . '/quickstart/testauth');
     }
 
-    /**
-     * @return string
-     */
     protected function getTokenUrl(): string
     {
         return $this->baseUrl . '/tokens/request_token';
     }
 
-    /**
-     * @return string
-     */
     protected function getRefreshTokenUrl(): string
     {
         return $this->baseUrl . '/tokens/refresh_token';
     }
 
     /**
-     * @param  string  $code
-     *
-     * @return array
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function tokenFromCode($code): array
+    public function tokenFromCode(string $code): array
     {
         $response = $this->getHttpClient()->post($this->getTokenUrl(), [
             'headers' => [
@@ -59,11 +49,7 @@ class Tapd extends Base
         return $this->normalizeAccessTokenResponse($response->getBody()->getContents());
     }
 
-    /**
-     * @param string $code
-     *
-     * @return array
-     */
+    #[ArrayShape(['grant_type' => "string", 'redirect_uri' => "mixed", 'code' => "string"])]
     protected function getTokenFields(string $code): array
     {
         return [
@@ -73,12 +59,8 @@ class Tapd extends Base
         ];
     }
 
-    /**
-     * @param $refreshToken
-     *
-     * @return array
-     */
-    protected function getRefreshTokenFields($refreshToken): array
+    #[ArrayShape(['grant_type' => "string", 'redirect_uri' => "mixed", 'refresh_token' => ""])]
+    protected function getRefreshTokenFields(string $refreshToken): array
     {
         return [
             'grant_type' => 'refresh_token',
@@ -88,10 +70,6 @@ class Tapd extends Base
     }
 
     /**
-     * @param string $refreshToken
-     *
-     * @return array
-     *
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      */
@@ -109,10 +87,6 @@ class Tapd extends Base
     }
 
     /**
-     * @param string $token
-     *
-     * @return array
-     *
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     protected function getUserByToken(string $token): array
@@ -128,13 +102,9 @@ class Tapd extends Base
     }
 
     /**
-     * @param array $user
-     *
-     * @return \Overtrue\Socialite\User
-     *
      * @throws \Overtrue\Socialite\Exceptions\BadRequestException
      */
-    protected function mapUserToObject(array $user): User
+    protected function mapUserToObject(array $user): UserInterface
     {
         if (!isset($user['status']) && $user['status'] != 1) {
             throw new BadRequestException("用户信息获取失败");
@@ -150,12 +120,7 @@ class Tapd extends Base
     }
 
     /**
-     * @param array|string $response
-     *
-     * @return mixed
-     * @return array
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
-     *
      */
     protected function normalizeAccessTokenResponse($response): array
     {

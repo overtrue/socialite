@@ -2,15 +2,14 @@
 
 namespace Overtrue\Socialite\Exceptions;
 
+use JetBrains\PhpStorm\Pure;
+
 class AuthorizeFailedException extends Exception
 {
     public array $body;
 
-    /**
-     * @param string $message
-     * @param array  $body
-     */
-    public function __construct(string $message, $body)
+    #[Pure]
+    public function __construct(string $message, mixed $body)
     {
         parent::__construct($message, -1);
 

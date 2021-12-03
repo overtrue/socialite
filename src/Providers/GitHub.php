@@ -2,6 +2,9 @@
 
 namespace Overtrue\Socialite\Providers;
 
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
+use Overtrue\Socialite\Contracts\UserInterface;
 use Overtrue\Socialite\User;
 
 class GitHub extends Base
@@ -21,9 +24,6 @@ class GitHub extends Base
     }
 
     /**
-     * @param  string  $token
-     *
-     * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     protected function getUserByToken(string $token): array
@@ -44,12 +44,7 @@ class GitHub extends Base
         return $user;
     }
 
-    /**
-     * @param  string  $token
-     *
-     * @return string
-     */
-    protected function getEmailByToken(string $token)
+    protected function getEmailByToken(string $token): string
     {
         $emailsUrl = 'https://api.github.com/user/emails';
 
@@ -67,9 +62,12 @@ class GitHub extends Base
                 return $email['email'];
             }
         }
+
+        return '';
     }
 
-    protected function mapUserToObject(array $user): User
+    #[Pure]
+    protected function mapUserToObject(array $user): UserInterface
     {
         return new User([
             'id' => $user['id'] ?? null,
@@ -80,12 +78,8 @@ class GitHub extends Base
         ]);
     }
 
-    /**
-     * @param string $token
-     *
-     * @return array
-     */
-    protected function createAuthorizationHeaders(string $token)
+    #[ArrayShape(['headers' => "array"])]
+    protected function createAuthorizationHeaders(string $token): array
     {
         return [
             'headers' => [

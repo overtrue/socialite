@@ -2,6 +2,8 @@
 
 namespace Overtrue\Socialite\Providers;
 
+use JetBrains\PhpStorm\Pure;
+use Overtrue\Socialite\Contracts\UserInterface;
 use Overtrue\Socialite\User;
 
 /**
@@ -27,9 +29,6 @@ class Facebook extends Base
     }
 
     /**
-     * @param  string  $code
-     *
-     * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      */
@@ -46,10 +45,6 @@ class Facebook extends Base
     }
 
     /**
-     * @param  string  $token
-     * @param  array|null  $query
-     *
-     * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     protected function getUserByToken(string $token, ?array $query = []): array
@@ -70,7 +65,8 @@ class Facebook extends Base
         return \json_decode($response->getBody(), true) ?? [];
     }
 
-    protected function mapUserToObject(array $user): User
+    #[Pure]
+    protected function mapUserToObject(array $user): UserInterface
     {
         $userId = $user['id'] ?? null;
         $avatarUrl = $this->graphUrl . '/' . $this->version . '/' . $userId . '/picture';
@@ -101,22 +97,14 @@ class Facebook extends Base
         return $fields;
     }
 
-    /**
-     * @param array $fields
-     *
-     * @return $this
-     */
-    public function fields(array $fields)
+    public function fields(array $fields): static
     {
         $this->fields = $fields;
 
         return $this;
     }
 
-    /**
-     * @return $this
-     */
-    public function asPopup()
+    public function asPopup(): static
     {
         $this->popup = true;
 
