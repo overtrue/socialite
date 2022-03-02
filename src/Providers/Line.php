@@ -19,7 +19,7 @@ class Line extends Base
 
     protected function getAuthUrl(): string
     {
-        $this->state = $this->state ?: md5(uniqid());
+        $this->state = $this->state ?: \md5(\uniqid('state', true));
         return $this->buildAuthUrlFromBase('https://access.line.me/oauth2/'.$this->version.'/authorize');
     }
 
