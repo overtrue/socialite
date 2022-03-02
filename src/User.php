@@ -107,14 +107,14 @@ class User implements ArrayAccess, UserInterface, JsonSerializable
         return $this->attributes;
     }
 
-    public function __serialize()
+    public function __serialize(): array
     {
-        return serialize($this->attributes);
+        return $this->attributes;
     }
 
-    public function __unserialize($serialized)
+    public function __unserialize(array $serialized)
     {
-        $this->attributes = unserialize($serialized) ?: [];
+        $this->attributes = $serialized ?: [];
     }
 
     public function getProvider(): \Overtrue\Socialite\Contracts\ProviderInterface
