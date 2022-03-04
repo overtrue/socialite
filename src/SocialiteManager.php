@@ -28,6 +28,7 @@ class SocialiteManager implements FactoryInterface
         Providers\Taobao::NAME => Providers\Taobao::class,
         Providers\FeiShu::NAME => Providers\FeiShu::class,
         Providers\Outlook::NAME => Providers\Outlook::class,
+        Providers\Azure::NAME => Providers\Azure::class,
         Providers\Linkedin::NAME => Providers\Linkedin::class,
         Providers\Facebook::NAME => Providers\Facebook::class,
         Providers\DingTalk::NAME => Providers\DingTalk::class,
