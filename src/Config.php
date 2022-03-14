@@ -3,7 +3,6 @@
 namespace Overtrue\Socialite;
 
 use ArrayAccess;
-use InvalidArgumentException;
 
 class Config implements ArrayAccess, \JsonSerializable
 {

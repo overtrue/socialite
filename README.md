@@ -8,7 +8,7 @@ Socialite is an [OAuth2](https://oauth.net/2/)  Authentication tool. It is inspi
 
 [![Sponsor me](https://github.com/overtrue/overtrue/blob/master/sponsor-me-button-s.svg?raw=true)](https://github.com/sponsors/overtrue)
 
-This tool now supports platforms such as Facebook, GitHub, Google, LinkedIn, Outlook, QQ, Tapd, Alipay, Taobao, Baidu, DingTalk, Weibo, WeChat, Douyin, Feishu, Douban, WeWork, Tencent Cloud, Line, Gitee.
+This tool now supports platforms such as Facebook, GitHub, Google, Figma, LinkedIn, Outlook, QQ, Tapd, Alipay, Taobao, Baidu, DingTalk, Weibo, WeChat, Douyin, Feishu, Douban, WeWork, Tencent Cloud, Line, Gitee.
 
 如果你喜欢我的项目并想支持它，[点击这里 :heart:](https://github.com/sponsors/overtrue)
 
@@ -557,6 +557,7 @@ $user = $socialite->userFromToken($accessToken);
 - [DingTalk - 扫码登录第三方网站](https://ding-doc.dingtalk.com/doc#/serverapi3/mrugr3)
 - [Google - OpenID Connect](https://developers.google.com/identity/protocols/OpenIDConnect)
 - [Github - Authorizing OAuth Apps](https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/)
+- [Figma - OAuth 2](https://www.figma.com/developers/api#auth-oauth2)
 - [Facebook - Graph API](https://developers.facebook.com/docs/graph-api)
 - [Linkedin - Authenticating with OAuth 2.0](https://developer.linkedin.com/docs/oauth2)
 - [微博 - OAuth 2.0 授权机制说明](http://open.weibo.com/wiki/%E6%8E%88%E6%9D%83%E6%9C%BA%E5%88%B6%E8%AF%B4%E6%98%8E)

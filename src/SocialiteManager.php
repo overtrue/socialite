@@ -21,6 +21,7 @@ class SocialiteManager implements FactoryInterface
         Providers\QCloud::NAME => Providers\QCloud::class,
         Providers\GitHub::NAME => Providers\GitHub::class,
         Providers\Google::NAME => Providers\Google::class,
+        Providers\Figma::NAME => Providers\Figma::class,
         Providers\WeChat::NAME => Providers\WeChat::class,
         Providers\Douban::NAME => Providers\Douban::class,
         Providers\WeWork::NAME => Providers\WeWork::class,
