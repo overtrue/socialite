@@ -556,7 +556,7 @@ $user = $socialite->userFromToken($accessToken);
 - [Alipay - 用户信息授权](https://opendocs.alipay.com/open/289/105656)
 - [DingTalk - 扫码登录第三方网站](https://ding-doc.dingtalk.com/doc#/serverapi3/mrugr3)
 - [Google - OpenID Connect](https://developers.google.com/identity/protocols/OpenIDConnect)
-- [Github - Authorizing OAuth Apps](https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/)
+- [GitHub - Authorizing OAuth Apps](https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/)
 - [Figma - OAuth 2](https://www.figma.com/developers/api#auth-oauth2)
 - [Facebook - Graph API](https://developers.facebook.com/docs/graph-api)
 - [Linkedin - Authenticating with OAuth 2.0](https://developer.linkedin.com/docs/oauth2)
