@@ -84,7 +84,7 @@ class WeWork extends Base
 
     protected function getApiAccessToken(): string
     {
-        return $this->apiAccessToken ?? $this->apiAccessToken = $this->createApiAccessToken();
+        return $this->apiAccessToken ?? $this->apiAccessToken = $this->requestApiAccessToken();
     }
 
     /**
