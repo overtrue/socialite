@@ -6,4 +6,4 @@ composer.lock
 Thumbs.db
 /*.php
 sftp-config.json
-*.cache
+*.cache.phpunit.result.cache
