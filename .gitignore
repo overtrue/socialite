@@ -7,3 +7,4 @@ Thumbs.db
 /*.php
 sftp-config.json
 *.cache.phpunit.result.cache
+.phpunit.result.cache
