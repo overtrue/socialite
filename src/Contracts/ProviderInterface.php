@@ -9,4 +9,8 @@ interface ProviderInterface
     public function userFromCode(string $code): UserInterface;
 
     public function userFromToken(string $token): UserInterface;
+
+    public function withState(string $state): ProviderInterface;
+
+    public function scopes(array $scopes): ProviderInterface;
 }
