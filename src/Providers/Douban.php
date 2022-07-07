@@ -4,7 +4,7 @@ namespace Overtrue\Socialite\Providers;
 
 use JetBrains\PhpStorm\ArrayShape;
 use JetBrains\PhpStorm\Pure;
-use Overtrue\Socialite\Contracts\UserInterface;
+use Overtrue\Socialite\Contracts;
 use Overtrue\Socialite\User;
 
 /**
@@ -25,56 +25,50 @@ class Douban extends Base
     }
 
     /**
-     * @param  string  $token
-     * @param  array|null  $query
-     *
-     * @return array
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @param string $token
+     * @param ?array $query
      */
     protected function getUserByToken(string $token, ?array $query = []): array
     {
         $response = $this->getHttpClient()->get('https://api.douban.com/v2/user/~me', [
             'headers' => [
-                'Authorization' => 'Bearer '.$token,
+                'Authorization' => 'Bearer ' . $token,
             ],
         ]);
 
-        return json_decode($response->getBody()->getContents(), true) ?? [];
+        return $this->fromJsonBody($response);
     }
 
     #[Pure]
-    protected function mapUserToObject(array $user): UserInterface
+    protected function mapUserToObject(array $user): Contracts\UserInterface
     {
         return new User([
-            'id' => $user['id'] ?? null,
-            'nickname' => $user['name'] ?? null,
-            'name' => $user['name'] ?? null,
-            'avatar' => $user['avatar'] ?? null,
-            'email' => null,
+            Contracts\ABNF_ID => $user[Contracts\ABNF_ID] ?? null,
+            Contracts\ABNF_NICKNAME => $user[Contracts\ABNF_NAME] ?? null,
+            Contracts\ABNF_NAME => $user[Contracts\ABNF_NAME] ?? null,
+            Contracts\ABNF_AVATAR => $user[Contracts\ABNF_AVATAR] ?? null,
+            Contracts\ABNF_EMAIL => null,
         ]);
     }
 
     #[ArrayShape([
-        'client_id' => "\null|string",
-        'client_secret' => "\null|string",
-        'code' => "string",
-        'redirect_uri' => "mixed"
+        Contracts\RFC6749_ABNF_CLIENT_ID => 'null|string',
+        Contracts\RFC6749_ABNF_CLIENT_SECRET => 'null|string',
+        Contracts\RFC6749_ABNF_CODE => 'string',
+        Contracts\RFC6749_ABNF_REDIRECT_URI => 'null|string',
+        Contracts\RFC6749_ABNF_GRANT_TYPE => 'string',
     ])]
     protected function getTokenFields(string $code): array
     {
-        return parent::getTokenFields($code) + ['grant_type' => 'authorization_code'];
+        return parent::getTokenFields($code) + [Contracts\RFC6749_ABNF_GRANT_TYPE => Contracts\RFC6749_ABNF_AUTHORATION_CODE];
     }
 
-    /**
-     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
     public function tokenFromCode(string $code): array
     {
         $response = $this->getHttpClient()->post($this->getTokenUrl(), [
             'form_params' => $this->getTokenFields($code),
         ]);
 
-        return $this->normalizeAccessTokenResponse($response->getBody()->getContents());
+        return $this->normalizeAccessTokenResponse($response->getBody());
     }
 }

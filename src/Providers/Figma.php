@@ -4,7 +4,7 @@ namespace Overtrue\Socialite\Providers;
 
 use JetBrains\PhpStorm\ArrayShape;
 use JetBrains\PhpStorm\Pure;
-use Overtrue\Socialite\Contracts\UserInterface;
+use Overtrue\Socialite\Contracts;
 use Overtrue\Socialite\User;
 
 /**
@@ -13,6 +13,7 @@ use Overtrue\Socialite\User;
 class Figma extends Base
 {
     public const NAME = 'figma';
+
     protected string $scopeSeparator = '';
     protected array $scopes = ['file_read'];
 
@@ -40,46 +41,44 @@ class Figma extends Base
     }
 
     #[ArrayShape([
-        'client_id' => "\null|string",
-        'client_secret' => "\null|string",
-        'code' => "string",
-        'redirect_uri' => "mixed"
+        Contracts\RFC6749_ABNF_CLIENT_ID => "null|string",
+        Contracts\RFC6749_ABNF_CLIENT_SECRET => "null|string",
+        Contracts\RFC6749_ABNF_CODE => "string",
+        Contracts\RFC6749_ABNF_REDIRECT_URI => "null|string",
+        Contracts\RFC6749_ABNF_GRANT_TYPE => 'string'
     ])]
     protected function getTokenFields(string $code): array
     {
-        return parent::getTokenFields($code) + ['grant_type' => 'authorization_code'];
+        return parent::getTokenFields($code) + [Contracts\RFC6749_ABNF_GRANT_TYPE => Contracts\RFC6749_ABNF_AUTHORATION_CODE];
     }
 
     protected function getCodeFields(): array
     {
-        return parent::getCodeFields() + ['state' => \md5(\uniqid('state_', true))];
+        return parent::getCodeFields() + [Contracts\RFC6749_ABNF_STATE => \md5(\uniqid('state_', true))];
     }
 
-    /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
     protected function getUserByToken(string $token, ?array $query = []): array
     {
         $response = $this->getHttpClient()->get('https://api.figma.com/v1/me', [
             'headers' => [
                 'Accept' => 'application/json',
-                'Authorization' => 'Bearer '.$token,
+                'Authorization' => 'Bearer ' . $token,
             ],
         ]);
 
-        return \json_decode($response->getBody(), true) ?? [];
+        return $this->fromJsonBody($response);
     }
 
     #[Pure]
-    protected function mapUserToObject(array $user): UserInterface
+    protected function mapUserToObject(array $user): Contracts\UserInterface
     {
         return new User([
-            'id' => $user['id'] ?? null,
-            'username' => $user['email'] ?? null,
-            'nickname' => $user['handle'] ?? null,
-            'name' => $user['handle'] ?? null,
-            'email' => $user['email'] ?? null,
-            'avatar' => $user['img_url'] ?? null,
+            Contracts\ABNF_ID => $user[Contracts\ABNF_ID] ?? null,
+            'username' => $user[Contracts\ABNF_EMAIL] ?? null,
+            Contracts\ABNF_NICKNAME => $user['handle'] ?? null,
+            Contracts\ABNF_NAME => $user['handle'] ?? null,
+            Contracts\ABNF_EMAIL => $user[Contracts\ABNF_EMAIL] ?? null,
+            Contracts\ABNF_AVATAR => $user['img_url'] ?? null,
         ]);
     }
 }

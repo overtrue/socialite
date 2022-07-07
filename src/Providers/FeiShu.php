@@ -2,14 +2,10 @@
 
 namespace Overtrue\Socialite\Providers;
 
-use GuzzleHttp\Exception\GuzzleException;
 use JetBrains\PhpStorm\ArrayShape;
 use JetBrains\PhpStorm\Pure;
-use Overtrue\Socialite\Contracts\UserInterface;
-use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
-use Overtrue\Socialite\Exceptions\BadRequestException;
-use Overtrue\Socialite\Exceptions\Feishu\InvalidTicketException;
-use Overtrue\Socialite\Exceptions\InvalidTokenException;
+use Overtrue\Socialite\Contracts;
+use Overtrue\Socialite\Exceptions;
 use Overtrue\Socialite\User;
 
 /**
@@ -18,6 +14,8 @@ use Overtrue\Socialite\User;
 class FeiShu extends Base
 {
     public const NAME = 'feishu';
+    private const APP_TICKET = 'app_ticket';
+
     protected string $baseUrl = 'https://open.feishu.cn/open-apis';
     protected string $expiresInKey = 'refresh_expires_in';
     protected bool   $isInternalApp = false;
@@ -33,12 +31,12 @@ class FeiShu extends Base
         return $this->buildAuthUrlFromBase($this->baseUrl . '/authen/v1/index');
     }
 
-    #[ArrayShape(['redirect_uri' => "mixed", 'app_id' => "null|string"])]
+    #[ArrayShape([Contracts\RFC6749_ABNF_REDIRECT_URI => 'null|string', Contracts\ABNF_APP_ID => 'null|string'])]
     protected function getCodeFields(): array
     {
         return [
-            'redirect_uri' => $this->redirectUrl,
-            'app_id' => $this->getClientId(),
+            Contracts\RFC6749_ABNF_REDIRECT_URI => $this->redirectUrl,
+            Contracts\ABNF_APP_ID => $this->getClientId(),
         ];
     }
 
@@ -47,91 +45,79 @@ class FeiShu extends Base
         return $this->baseUrl . '/authen/v1/access_token';
     }
 
-    /**
-     * @throws AuthorizeFailedException
-     * @throws GuzzleException
-     */
     public function tokenFromCode(string $code): array
     {
         return $this->normalizeAccessTokenResponse($this->getTokenFromCode($code));
     }
 
     /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
-     * @throws \Overtrue\Socialite\Exceptions\Feishu\InvalidTicketException
-     * @throws \Overtrue\Socialite\Exceptions\InvalidTokenException
+     * @throws Exceptions\AuthorizeFailedException
      */
     protected function getTokenFromCode(string $code): array
     {
         $this->configAppAccessToken();
-        $response = $this->getHttpClient()->post(
-            $this->getTokenUrl(),
-            [
-                'json' => [
-                    'app_access_token' => $this->config->get('app_access_token'),
-                    'code' => $code,
-                    'grant_type' => 'authorization_code',
-                ],
-            ]
-        );
-        $response = \json_decode($response->getBody(), true) ?? [];
+        $responseInstance = $this->getHttpClient()->post($this->getTokenUrl(), [
+            'json' => [
+                'app_access_token' => $this->config->get('app_access_token'),
+                Contracts\RFC6749_ABNF_CODE => $code,
+                Contracts\RFC6749_ABNF_GRANT_TYPE => Contracts\RFC6749_ABNF_AUTHORATION_CODE,
+            ],
+        ]);
+        $response = $this->fromJsonBody($responseInstance);
 
-        if (empty($response['data'])) {
-            throw new AuthorizeFailedException('Invalid token response', $response);
+        if (empty($response['data'] ?? null)) {
+            throw new Exceptions\AuthorizeFailedException('Invalid token response', $response);
         }
 
         return $this->normalizeAccessTokenResponse($response['data']);
     }
 
     /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws Exceptions\BadRequestException
      */
     protected function getUserByToken(string $token): array
     {
-        $response = $this->getHttpClient()->get(
-            $this->baseUrl . '/authen/v1/user_info',
-            [
-                'headers' => ['Content-Type' => 'application/json', 'Authorization' => 'Bearer ' . $token],
-                'query' => array_filter(
-                    [
-                        'user_access_token' => $token,
-                    ]
-                ),
-            ]
-        );
+        $responseInstance = $this->getHttpClient()->get($this->baseUrl . '/authen/v1/user_info', [
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Bearer ' . $token
+            ],
+            'query' => \array_filter(
+                [
+                    'user_access_token' => $token,
+                ]
+            ),
+        ]);
 
-        $response = \json_decode($response->getBody(), true) ?? [];
+        $response = $this->fromJsonBody($responseInstance);
 
-        if (empty($response['data'])) {
-            throw new \InvalidArgumentException('You have error! ' . json_encode($response, JSON_UNESCAPED_UNICODE));
+        if (empty($response['data'] ?? null)) {
+            throw new Exceptions\BadRequestException((string)$responseInstance->getBody());
         }
 
         return $response['data'];
     }
 
     #[Pure]
-    protected function mapUserToObject(array $user): UserInterface
+    protected function mapUserToObject(array $user): Contracts\UserInterface
     {
-        return new User(
-            [
-                'id' => $user['user_id'] ?? null,
-                'name' => $user['name'] ?? null,
-                'nickname' => $user['name'] ?? null,
-                'avatar' => $user['avatar_url'] ?? null,
-                'email' => $user['email'] ?? null,
-            ]
-        );
+        return new User([
+            Contracts\ABNF_ID => $user['user_id'] ?? null,
+            Contracts\ABNF_NAME => $user[Contracts\ABNF_NAME] ?? null,
+            Contracts\ABNF_NICKNAME => $user[Contracts\ABNF_NAME] ?? null,
+            Contracts\ABNF_AVATAR => $user['avatar_url'] ?? null,
+            Contracts\ABNF_EMAIL => $user[Contracts\ABNF_EMAIL] ?? null,
+        ]);
     }
 
-    public function withInternalAppMode(): static
+    public function withInternalAppMode(): self
     {
         $this->isInternalApp = true;
 
         return $this;
     }
 
-    public function withDefaultMode(): static
+    public function withDefaultMode(): self
     {
         $this->isInternalApp = false;
 
@@ -139,11 +125,11 @@ class FeiShu extends Base
     }
 
     /**
-     * set 'app_ticket' in config attribute
+     * set self::APP_TICKET in config attribute
      */
-    public function withAppTicket(string $appTicket): static
+    public function withAppTicket(string $appTicket): self
     {
-        $this->config->set('app_ticket', $appTicket);
+        $this->config->set(self::APP_TICKET, $appTicket);
 
         return $this;
     }
@@ -153,17 +139,17 @@ class FeiShu extends Base
      * 应用维度授权凭证，开放平台可据此识别调用方的应用身份
      * 分内建和自建
      *
-     * @throws \Overtrue\Socialite\Exceptions\Feishu\InvalidTicketException
-     * @throws \Overtrue\Socialite\Exceptions\InvalidTokenException
+     * @throws Exceptions\FeiShu\InvalidTicketException
+     * @throws Exceptions\InvalidTokenException
      */
     protected function configAppAccessToken()
     {
         $url = $this->baseUrl . '/auth/v3/app_access_token/';
         $params = [
             'json' => [
-                'app_id' => $this->config->get('client_id'),
-                'app_secret' => $this->config->get('client_secret'),
-                'app_ticket' => $this->config->get('app_ticket'),
+                Contracts\ABNF_APP_ID => $this->config->get(Contracts\RFC6749_ABNF_CLIENT_ID),
+                Contracts\ABNF_APP_SECRET => $this->config->get(Contracts\RFC6749_ABNF_CLIENT_SECRET),
+                self::APP_TICKET => $this->config->get(self::APP_TICKET),
             ],
         ];
 
@@ -171,21 +157,21 @@ class FeiShu extends Base
             $url = $this->baseUrl . '/auth/v3/app_access_token/internal/';
             $params = [
                 'json' => [
-                    'app_id' => $this->config->get('client_id'),
-                    'app_secret' => $this->config->get('client_secret'),
+                    Contracts\ABNF_APP_ID => $this->config->get(Contracts\RFC6749_ABNF_CLIENT_ID),
+                    Contracts\ABNF_APP_SECRET => $this->config->get(Contracts\RFC6749_ABNF_CLIENT_SECRET),
                 ],
             ];
         }
 
-        if (!$this->isInternalApp && !$this->config->has('app_ticket')) {
-            throw new InvalidTicketException('You are using default mode, please config \'app_ticket\' first');
+        if (!$this->isInternalApp && !$this->config->has(self::APP_TICKET)) {
+            throw new Exceptions\FeiShu\InvalidTicketException('You are using default mode, please config \'app_ticket\' first');
         }
 
-        $response = $this->getHttpClient()->post($url, $params);
-        $response = \json_decode($response->getBody(), true) ?? [];
+        $responseInstance = $this->getHttpClient()->post($url, $params);
+        $response = $this->fromJsonBody($responseInstance);
 
-        if (empty($response['app_access_token'])) {
-            throw new InvalidTokenException('Invalid \'app_access_token\' response', json_encode($response));
+        if (empty($response['app_access_token'] ?? null)) {
+            throw new Exceptions\InvalidTokenException('Invalid \'app_access_token\' response', (string) $responseInstance->getBody());
         }
 
         $this->config->set('app_access_token', $response['app_access_token']);
@@ -196,17 +182,17 @@ class FeiShu extends Base
      * 应用的企业授权凭证，开放平台据此识别调用方的应用身份和企业身份
      * 分内建和自建
      *
-     * @throws \Overtrue\Socialite\Exceptions\BadRequestException
-     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     * @throws Exceptions\BadRequestException
+     * @throws Exceptions\AuthorizeFailedException
      */
     protected function configTenantAccessToken()
     {
         $url = $this->baseUrl . '/auth/v3/tenant_access_token/';
         $params = [
             'json' => [
-                'app_id' => $this->config->get('client_id'),
-                'app_secret' => $this->config->get('client_secret'),
-                'app_ticket' => $this->config->get('app_ticket'),
+                Contracts\ABNF_APP_ID => $this->config->get(Contracts\RFC6749_ABNF_CLIENT_ID),
+                Contracts\ABNF_APP_SECRET => $this->config->get(Contracts\RFC6749_ABNF_CLIENT_SECRET),
+                self::APP_TICKET => $this->config->get(self::APP_TICKET),
             ],
         ];
 
@@ -214,20 +200,20 @@ class FeiShu extends Base
             $url = $this->baseUrl . '/auth/v3/tenant_access_token/internal/';
             $params = [
                 'json' => [
-                    'app_id' => $this->config->get('client_id'),
-                    'app_secret' => $this->config->get('client_secret'),
+                    Contracts\ABNF_APP_ID => $this->config->get(Contracts\RFC6749_ABNF_CLIENT_ID),
+                    Contracts\ABNF_APP_SECRET => $this->config->get(Contracts\RFC6749_ABNF_CLIENT_SECRET),
                 ],
             ];
         }
 
-        if (!$this->isInternalApp && !$this->config->has('app_ticket')) {
-            throw new BadRequestException('You are using default mode, please config \'app_ticket\' first');
+        if (!$this->isInternalApp && !$this->config->has(self::APP_TICKET)) {
+            throw new Exceptions\BadRequestException('You are using default mode, please config \'app_ticket\' first');
         }
 
         $response = $this->getHttpClient()->post($url, $params);
-        $response = \json_decode($response->getBody(), true) ?? [];
+        $response = $this->fromJsonBody($response);
         if (empty($response['tenant_access_token'])) {
-            throw new AuthorizeFailedException('Invalid tenant_access_token response', $response);
+            throw new Exceptions\AuthorizeFailedException('Invalid tenant_access_token response', $response);
         }
 
         $this->config->set('tenant_access_token', $response['tenant_access_token']);

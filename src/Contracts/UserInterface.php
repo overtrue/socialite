@@ -2,6 +2,12 @@
 
 namespace Overtrue\Socialite\Contracts;
 
+const ABNF_ID = 'id';
+const ABNF_NAME = 'name';
+const ABNF_NICKNAME = 'nickname';
+const ABNF_EMAIL = 'email';
+const ABNF_AVATAR = 'avatar';
+
 interface UserInterface
 {
     public function getId(): mixed;
@@ -19,4 +25,18 @@ interface UserInterface
     public function getRefreshToken(): ?string;
 
     public function getExpiresIn(): ?int;
+
+    public function getProvider(): ProviderInterface;
+
+    public function setRefreshToken(?string $refreshToken): self;
+
+    public function setExpiresIn(int $expiresIn): self;
+
+    public function setTokenResponse(array $response): self;
+
+    public function setProvider(ProviderInterface $provider): self;
+
+    public function setRaw(array $user): self;
+
+    public function setAccessToken(string $token): self;
 }

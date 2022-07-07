@@ -4,14 +4,15 @@ namespace Overtrue\Socialite\Providers;
 
 use JetBrains\PhpStorm\ArrayShape;
 use JetBrains\PhpStorm\Pure;
-use Overtrue\Socialite\Contracts\UserInterface;
+use Overtrue\Socialite\Contracts;
 use Overtrue\Socialite\User;
 
 class GitHub extends Base
 {
     public const     NAME = 'github';
-    protected array     $scopes = ['read:user'];
-    protected string    $scopeSeparator = ' ';
+
+    protected array  $scopes = ['read:user'];
+    protected string $scopeSeparator = ' ';
 
     protected function getAuthUrl(): string
     {
@@ -23,9 +24,6 @@ class GitHub extends Base
         return 'https://github.com/login/oauth/access_token';
     }
 
-    /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
     protected function getUserByToken(string $token): array
     {
         $userUrl = 'https://api.github.com/user';
@@ -35,10 +33,10 @@ class GitHub extends Base
             $this->createAuthorizationHeaders($token)
         );
 
-        $user = json_decode($response->getBody(), true);
+        $user = $this->fromJsonBody($response);
 
-        if (in_array('user:email', $this->scopes)) {
-            $user['email'] = $this->getEmailByToken($token);
+        if (\in_array('user:email', $this->scopes)) {
+            $user[Contracts\ABNF_EMAIL] = $this->getEmailByToken($token);
         }
 
         return $user;
@@ -57,9 +55,9 @@ class GitHub extends Base
             return '';
         }
 
-        foreach (json_decode($response->getBody(), true) as $email) {
+        foreach ($this->fromJsonBody($response) as $email) {
             if ($email['primary'] && $email['verified']) {
-                return $email['email'];
+                return $email[Contracts\ABNF_EMAIL];
             }
         }
 
@@ -67,14 +65,14 @@ class GitHub extends Base
     }
 
     #[Pure]
-    protected function mapUserToObject(array $user): UserInterface
+    protected function mapUserToObject(array $user): Contracts\UserInterface
     {
         return new User([
-            'id' => $user['id'] ?? null,
-            'nickname' => $user['login'] ?? null,
-            'name' => $user['name'] ?? null,
-            'email' => $user['email'] ?? null,
-            'avatar' => $user['avatar_url'] ?? null,
+            Contracts\ABNF_ID => $user[Contracts\ABNF_ID] ?? null,
+            Contracts\ABNF_NICKNAME => $user['login'] ?? null,
+            Contracts\ABNF_NAME => $user[Contracts\ABNF_NAME] ?? null,
+            Contracts\ABNF_EMAIL => $user[Contracts\ABNF_EMAIL] ?? null,
+            Contracts\ABNF_AVATAR => $user['avatar_url'] ?? null,
         ]);
     }
 
@@ -84,7 +82,7 @@ class GitHub extends Base
         return [
             'headers' => [
                 'Accept' => 'application/vnd.github.v3+json',
-                'Authorization' => sprintf('token %s', $token),
+                'Authorization' => \sprintf('token %s', $token),
             ],
         ];
     }

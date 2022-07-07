@@ -2,11 +2,10 @@
 
 namespace Overtrue\Socialite\Providers;
 
-use GuzzleHttp\Psr7\Stream;
+use Psr\Http\Message\StreamInterface;
 use JetBrains\PhpStorm\ArrayShape;
-use Overtrue\Socialite\Contracts\UserInterface;
-use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
-use Overtrue\Socialite\Exceptions\BadRequestException;
+use Overtrue\Socialite\Contracts;
+use Overtrue\Socialite\Exceptions;
 use Overtrue\Socialite\User;
 
 /**
@@ -15,6 +14,7 @@ use Overtrue\Socialite\User;
 class Tapd extends Base
 {
     public const NAME = 'tapd';
+
     protected string $baseUrl = 'https://api.tapd.cn';
 
     protected function getAuthUrl(): string
@@ -32,10 +32,6 @@ class Tapd extends Base
         return $this->baseUrl . '/tokens/refresh_token';
     }
 
-    /**
-     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
     public function tokenFromCode(string $code): array
     {
         $response = $this->getHttpClient()->post($this->getTokenUrl(), [
@@ -46,33 +42,37 @@ class Tapd extends Base
             'form_params' => $this->getTokenFields($code),
         ]);
 
-        return $this->normalizeAccessTokenResponse($response->getBody()->getContents());
+        return $this->normalizeAccessTokenResponse($response->getBody());
     }
 
-    #[ArrayShape(['grant_type' => "string", 'redirect_uri' => "mixed", 'code' => "string"])]
+    #[ArrayShape([
+        Contracts\RFC6749_ABNF_GRANT_TYPE => 'string',
+        Contracts\RFC6749_ABNF_REDIRECT_URI => 'null|string',
+        Contracts\RFC6749_ABNF_CODE => 'string'
+    ])]
     protected function getTokenFields(string $code): array
     {
         return [
-            'grant_type' => 'authorization_code',
-            'redirect_uri' => $this->redirectUrl,
-            'code' => $code,
+            Contracts\RFC6749_ABNF_GRANT_TYPE => Contracts\RFC6749_ABNF_AUTHORATION_CODE,
+            Contracts\RFC6749_ABNF_REDIRECT_URI => $this->redirectUrl,
+            Contracts\RFC6749_ABNF_CODE => $code,
         ];
     }
 
-    #[ArrayShape(['grant_type' => "string", 'redirect_uri' => "mixed", 'refresh_token' => ""])]
+    #[ArrayShape([
+        Contracts\RFC6749_ABNF_GRANT_TYPE => 'string',
+        Contracts\RFC6749_ABNF_REDIRECT_URI => 'null|string',
+        Contracts\RFC6749_ABNF_REFRESH_TOKEN => 'string'
+    ])]
     protected function getRefreshTokenFields(string $refreshToken): array
     {
         return [
-            'grant_type' => 'refresh_token',
-            'redirect_uri' => $this->redirectUrl,
-            'refresh_token' => $refreshToken,
+            Contracts\RFC6749_ABNF_GRANT_TYPE => Contracts\RFC6749_ABNF_REFRESH_TOKEN,
+            Contracts\RFC6749_ABNF_REDIRECT_URI => $this->redirectUrl,
+            Contracts\RFC6749_ABNF_REFRESH_TOKEN => $refreshToken,
         ];
     }
 
-    /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
-     */
     public function tokenFromRefreshToken(string $refreshToken): array
     {
         $response = $this->getHttpClient()->post($this->getRefreshTokenUrl(), [
@@ -83,12 +83,9 @@ class Tapd extends Base
             'form_params' => $this->getRefreshTokenFields($refreshToken),
         ]);
 
-        return $this->normalizeAccessTokenResponse($response->getBody()->getContents());
+        return $this->normalizeAccessTokenResponse((string)$response->getBody());
     }
 
-    /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
     protected function getUserByToken(string $token): array
     {
         $response = $this->getHttpClient()->get($this->baseUrl . '/users/info', [
@@ -98,53 +95,53 @@ class Tapd extends Base
             ],
         ]);
 
-        return \json_decode($response->getBody(), true) ?? [];
+        return $this->fromJsonBody($response);
     }
 
     /**
-     * @throws \Overtrue\Socialite\Exceptions\BadRequestException
+     * @throws Exceptions\BadRequestException
      */
-    protected function mapUserToObject(array $user): UserInterface
+    protected function mapUserToObject(array $user): Contracts\UserInterface
     {
         if (!isset($user['status']) && $user['status'] != 1) {
-            throw new BadRequestException("用户信息获取失败");
+            throw new Exceptions\BadRequestException('用户信息获取失败');
         }
 
         return new User([
-            'id' => $user['data']['id'] ?? null,
-            'nickname' => $user['data']['nick'] ?? null,
-            'name' => $user['data']['name'] ?? null,
-            'email' => $user['data']['email'] ?? null,
-            'avatar' => $user['data']['avatar'] ?? null,
+            Contracts\ABNF_ID => $user['data'][Contracts\ABNF_ID] ?? null,
+            Contracts\ABNF_NICKNAME => $user['data']['nick'] ?? null,
+            Contracts\ABNF_NAME => $user['data'][Contracts\ABNF_NAME] ?? null,
+            Contracts\ABNF_EMAIL => $user['data'][Contracts\ABNF_EMAIL] ?? null,
+            Contracts\ABNF_AVATAR => $user['data'][Contracts\ABNF_AVATAR] ?? null,
         ]);
     }
 
     /**
-     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     * @throws Exceptions\AuthorizeFailedException
      */
     protected function normalizeAccessTokenResponse($response): array
     {
-        if ($response instanceof Stream) {
+        if ($response instanceof StreamInterface) {
             $response->rewind();
-            $response = $response->getContents();
+            $response = (string)$response;
         }
 
         if (\is_string($response)) {
-            $response = json_decode($response, true) ?? [];
+            $response = \json_decode($response, true) ?? [];
         }
 
         if (!\is_array($response)) {
-            throw new AuthorizeFailedException('Invalid token response', [$response]);
+            throw new Exceptions\AuthorizeFailedException('Invalid token response', [$response]);
         }
 
-        if (empty($response['data'][$this->accessTokenKey])) {
-            throw new AuthorizeFailedException('Authorize Failed: ' . json_encode($response, JSON_UNESCAPED_UNICODE), $response);
+        if (empty($response['data'][$this->accessTokenKey] ?? null)) {
+            throw new Exceptions\AuthorizeFailedException('Authorize Failed: ' . \json_encode($response, JSON_UNESCAPED_UNICODE), $response);
         }
 
         return $response + [
-                'access_token' => $response['data'][$this->accessTokenKey],
-                'refresh_token' => $response['data'][$this->refreshTokenKey] ?? null,
-                'expires_in' => \intval($response['data'][$this->expiresInKey] ?? 0),
-            ];
+            Contracts\RFC6749_ABNF_ACCESS_TOKEN => $response['data'][$this->accessTokenKey],
+            Contracts\RFC6749_ABNF_REFRESH_TOKEN => $response['data'][$this->refreshTokenKey] ?? null,
+            Contracts\RFC6749_ABNF_EXPIRES_IN => \intval($response['data'][$this->expiresInKey] ?? 0),
+        ];
     }
 }

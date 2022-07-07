@@ -4,78 +4,75 @@ namespace Overtrue\Socialite;
 
 use ArrayAccess;
 use JsonSerializable;
-use Overtrue\Socialite\Contracts\ProviderInterface;
-use Overtrue\Socialite\Contracts\UserInterface;
-use Overtrue\Socialite\Traits\HasAttributes;
 
-class User implements ArrayAccess, UserInterface, JsonSerializable
+class User implements ArrayAccess, Contracts\UserInterface, JsonSerializable
 {
-    use HasAttributes;
+    use Traits\HasAttributes;
 
-    public function __construct(array $attributes, protected ?ProviderInterface $provider = null)
+    public function __construct(array $attributes, protected ?Contracts\ProviderInterface $provider = null)
     {
         $this->attributes = $attributes;
     }
 
     public function getId(): mixed
     {
-        return $this->getAttribute('id') ?? $this->getEmail();
+        return $this->getAttribute(Contracts\ABNF_ID) ?? $this->getEmail();
     }
 
     public function getNickname(): ?string
     {
-        return $this->getAttribute('nickname') ?? $this->getName();
+        return $this->getAttribute(Contracts\ABNF_NICKNAME) ?? $this->getName();
     }
 
     public function getName(): ?string
     {
-        return $this->getAttribute('name');
+        return $this->getAttribute(Contracts\ABNF_NAME);
     }
 
     public function getEmail(): ?string
     {
-        return $this->getAttribute('email');
+        return $this->getAttribute(Contracts\ABNF_EMAIL);
     }
 
     public function getAvatar(): ?string
     {
-        return $this->getAttribute('avatar');
+        return $this->getAttribute(Contracts\ABNF_AVATAR);
     }
 
-    public function setAccessToken(string $token): self
+    public function setAccessToken(string $value): self
     {
-        $this->setAttribute('access_token', $token);
+        $this->setAttribute(Contracts\RFC6749_ABNF_ACCESS_TOKEN, $value);
 
         return $this;
     }
 
     public function getAccessToken(): ?string
     {
-        return $this->getAttribute('access_token');
+        return $this->getAttribute(Contracts\RFC6749_ABNF_ACCESS_TOKEN);
     }
 
-    public function setRefreshToken(?string $refreshToken): self
+    public function setRefreshToken(?string $value): self
     {
-        $this->setAttribute('refresh_token', $refreshToken);
+        $this->setAttribute(Contracts\RFC6749_ABNF_REFRESH_TOKEN, $value);
 
         return $this;
     }
 
     public function getRefreshToken(): ?string
     {
-        return $this->getAttribute('refresh_token');
+        return $this->getAttribute(Contracts\RFC6749_ABNF_REFRESH_TOKEN);
     }
 
-    public function setExpiresIn(int $expiresIn): self
+    public function setExpiresIn(int $value): self
     {
-        $this->setAttribute('expires_in', $expiresIn);
+        $this->setAttribute(Contracts\RFC6749_ABNF_EXPIRES_IN, $value);
 
         return $this;
     }
 
     public function getExpiresIn(): ?int
     {
-        return $this->getAttribute('expires_in');
+        return $this->getAttribute(Contracts\RFC6749_ABNF_EXPIRES_IN);
     }
 
     public function setRaw(array $user): self
@@ -90,7 +87,7 @@ class User implements ArrayAccess, UserInterface, JsonSerializable
         return $this->getAttribute('raw');
     }
 
-    public function setTokenResponse(array $response): static
+    public function setTokenResponse(array $response): self
     {
         $this->setAttribute('token_response', $response);
 
@@ -117,12 +114,12 @@ class User implements ArrayAccess, UserInterface, JsonSerializable
         $this->attributes = $serialized ?: [];
     }
 
-    public function getProvider(): \Overtrue\Socialite\Contracts\ProviderInterface
+    public function getProvider(): Contracts\ProviderInterface
     {
         return $this->provider;
     }
 
-    public function setProvider(\Overtrue\Socialite\Contracts\ProviderInterface $provider): static
+    public function setProvider(Contracts\ProviderInterface $provider): self
     {
         $this->provider = $provider;
 
