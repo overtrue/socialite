@@ -3,15 +3,15 @@
 namespace Overtrue\Socialite\Providers;
 
 use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Psr7\Stream;
+use GuzzleHttp\Utils;
+use Psr\Http\Message\MessageInterface;
+use Psr\Http\Message\StreamInterface;
 use JetBrains\PhpStorm\ArrayShape;
 use Overtrue\Socialite\Config;
-use Overtrue\Socialite\Contracts\ProviderInterface;
-use Overtrue\Socialite\Contracts\UserInterface;
-use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
-use Overtrue\Socialite\Exceptions\MethodDoesNotSupportException;
+use Overtrue\Socialite\Contracts;
+use Overtrue\Socialite\Exceptions;
 
-abstract class Base implements ProviderInterface
+abstract class Base implements Contracts\ProviderInterface
 {
     public const NAME = null;
 
@@ -24,9 +24,9 @@ abstract class Base implements ProviderInterface
     protected GuzzleClient $httpClient;
     protected array        $guzzleOptions = [];
     protected int          $encodingType = PHP_QUERY_RFC1738;
-    protected string       $expiresInKey = 'expires_in';
-    protected string       $accessTokenKey = 'access_token';
-    protected string       $refreshTokenKey = 'refresh_token';
+    protected string       $expiresInKey = Contracts\RFC6749_ABNF_EXPIRES_IN;
+    protected string       $accessTokenKey = Contracts\RFC6749_ABNF_ACCESS_TOKEN;
+    protected string       $refreshTokenKey = Contracts\RFC6749_ABNF_REFRESH_TOKEN;
 
     public function __construct(array $config)
     {
@@ -35,23 +35,23 @@ abstract class Base implements ProviderInterface
         // set scopes
         if ($this->config->has('scopes') && is_array($this->config->get('scopes'))) {
             $this->scopes = $this->getConfig()->get('scopes');
-        } elseif ($this->config->has('scope') && is_string($this->getConfig()->get('scope'))) {
-            $this->scopes = array($this->getConfig()->get('scope'));
+        } elseif ($this->config->has(Contracts\RFC6749_ABNF_SCOPE) && is_string($this->getConfig()->get(Contracts\RFC6749_ABNF_SCOPE))) {
+            $this->scopes = array($this->getConfig()->get(Contracts\RFC6749_ABNF_SCOPE));
         }
 
-        // normalize 'client_id'
-        if (!$this->config->has('client_id')) {
-            $id = $this->config->get('app_id');
+        // normalize Contracts\RFC6749_ABNF_CLIENT_ID
+        if (!$this->config->has(Contracts\RFC6749_ABNF_CLIENT_ID)) {
+            $id = $this->config->get(Contracts\ABNF_APP_ID);
             if (null != $id) {
-                $this->config->set('client_id', $id);
+                $this->config->set(Contracts\RFC6749_ABNF_CLIENT_ID, $id);
             }
         }
 
-        // normalize 'client_secret'
-        if (!$this->config->has('client_secret')) {
-            $secret = $this->config->get('app_secret');
+        // normalize Contracts\RFC6749_ABNF_CLIENT_SECRET
+        if (!$this->config->has(Contracts\RFC6749_ABNF_CLIENT_SECRET)) {
+            $secret = $this->config->get(Contracts\ABNF_APP_SECRET);
             if (null != $secret) {
-                $this->config->set('client_secret', $secret);
+                $this->config->set(Contracts\RFC6749_ABNF_CLIENT_SECRET, $secret);
             }
         }
 
@@ -68,7 +68,7 @@ abstract class Base implements ProviderInterface
 
     abstract protected function getUserByToken(string $token): array;
 
-    abstract protected function mapUserToObject(array $user): UserInterface;
+    abstract protected function mapUserToObject(array $user): Contracts\UserInterface;
 
     public function redirect(?string $redirectUrl = null): string
     {
@@ -79,11 +79,7 @@ abstract class Base implements ProviderInterface
         return $this->getAuthUrl();
     }
 
-    /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
-     */
-    public function userFromCode(string $code): UserInterface
+    public function userFromCode(string $code): Contracts\UserInterface
     {
         $tokenResponse = $this->tokenFromCode($code);
         $user = $this->userFromToken($tokenResponse[$this->accessTokenKey]);
@@ -93,16 +89,13 @@ abstract class Base implements ProviderInterface
             ->setTokenResponse($tokenResponse);
     }
 
-    public function userFromToken(string $token): UserInterface
+    public function userFromToken(string $token): Contracts\UserInterface
     {
         $user = $this->getUserByToken($token);
 
         return $this->mapUserToObject($user)->setProvider($this)->setRaw($user)->setAccessToken($token);
     }
 
-    /**
-     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException|\GuzzleHttp\Exception\GuzzleException
-     */
     public function tokenFromCode(string $code): array
     {
         $response = $this->getHttpClient()->post(
@@ -119,35 +112,35 @@ abstract class Base implements ProviderInterface
     }
 
     /**
-     * @throws \Overtrue\Socialite\Exceptions\MethodDoesNotSupportException
+     * @throws Exceptions\MethodDoesNotSupportException
      */
     public function refreshToken(string $refreshToken)
     {
-        throw new MethodDoesNotSupportException('refreshToken does not support.');
+        throw new Exceptions\MethodDoesNotSupportException('refreshToken does not support.');
     }
 
-    public function withRedirectUrl(string $redirectUrl): ProviderInterface
+    public function withRedirectUrl(string $redirectUrl): Contracts\ProviderInterface
     {
         $this->redirectUrl = $redirectUrl;
 
         return $this;
     }
 
-    public function withState(string $state): ProviderInterface
+    public function withState(string $state): Contracts\ProviderInterface
     {
         $this->state = $state;
 
         return $this;
     }
 
-    public function scopes(array $scopes): ProviderInterface
+    public function scopes(array $scopes): Contracts\ProviderInterface
     {
         $this->scopes = $scopes;
 
         return $this;
     }
 
-    public function with(array $parameters): ProviderInterface
+    public function with(array $parameters): Contracts\ProviderInterface
     {
         $this->parameters = $parameters;
 
@@ -159,7 +152,7 @@ abstract class Base implements ProviderInterface
         return $this->config;
     }
 
-    public function withScopeSeparator(string $scopeSeparator): ProviderInterface
+    public function withScopeSeparator(string $scopeSeparator): Contracts\ProviderInterface
     {
         $this->scopeSeparator = $scopeSeparator;
 
@@ -168,12 +161,12 @@ abstract class Base implements ProviderInterface
 
     public function getClientId(): ?string
     {
-        return $this->config->get('client_id');
+        return $this->config->get(Contracts\RFC6749_ABNF_CLIENT_ID);
     }
 
     public function getClientSecret(): ?string
     {
-        return $this->config->get('client_secret');
+        return $this->config->get(Contracts\RFC6749_ABNF_CLIENT_SECRET);
     }
 
     public function getHttpClient(): GuzzleClient
@@ -181,7 +174,7 @@ abstract class Base implements ProviderInterface
         return $this->httpClient ?? new GuzzleClient($this->guzzleOptions);
     }
 
-    public function setGuzzleOptions(array $config): ProviderInterface
+    public function setGuzzleOptions(array $config): Contracts\ProviderInterface
     {
         $this->guzzleOptions = $config;
 
@@ -195,28 +188,28 @@ abstract class Base implements ProviderInterface
 
     protected function formatScopes(array $scopes, string $scopeSeparator): string
     {
-        return implode($scopeSeparator, $scopes);
+        return \implode($scopeSeparator, $scopes);
     }
 
     #[ArrayShape([
-        'client_id' => "null|string",
-        'client_secret' => "null|string",
-        'code' => "string",
-        'redirect_uri' => "mixed"
+        Contracts\RFC6749_ABNF_CLIENT_ID => 'null|string',
+        Contracts\RFC6749_ABNF_CLIENT_SECRET => 'null|string',
+        Contracts\RFC6749_ABNF_CODE => 'string',
+        Contracts\RFC6749_ABNF_REDIRECT_URI => 'null|string'
     ])]
     protected function getTokenFields(string $code): array
     {
         return [
-            'client_id' => $this->getClientId(),
-            'client_secret' => $this->getClientSecret(),
-            'code' => $code,
-            'redirect_uri' => $this->redirectUrl,
+            Contracts\RFC6749_ABNF_CLIENT_ID => $this->getClientId(),
+            Contracts\RFC6749_ABNF_CLIENT_SECRET => $this->getClientSecret(),
+            Contracts\RFC6749_ABNF_CODE => $code,
+            Contracts\RFC6749_ABNF_REDIRECT_URI => $this->redirectUrl,
         ];
     }
 
     protected function buildAuthUrlFromBase(string $url): string
     {
-        $query = $this->getCodeFields() + ($this->state ? ['state' => $this->state] : []);
+        $query = $this->getCodeFields() + ($this->state ? [Contracts\RFC6749_ABNF_STATE => $this->state] : []);
 
         return $url . '?' . \http_build_query($query, '', '&', $this->encodingType);
     }
@@ -225,29 +218,29 @@ abstract class Base implements ProviderInterface
     {
         $fields = array_merge(
             [
-                'client_id' => $this->getClientId(),
-                'redirect_uri' => $this->redirectUrl,
-                'scope' => $this->formatScopes($this->scopes, $this->scopeSeparator),
-                'response_type' => 'code',
+                Contracts\RFC6749_ABNF_CLIENT_ID => $this->getClientId(),
+                Contracts\RFC6749_ABNF_REDIRECT_URI => $this->redirectUrl,
+                Contracts\RFC6749_ABNF_SCOPE => $this->formatScopes($this->scopes, $this->scopeSeparator),
+                Contracts\RFC6749_ABNF_RESPONSE_TYPE => Contracts\RFC6749_ABNF_CODE,
             ],
             $this->parameters
         );
 
         if ($this->state) {
-            $fields['state'] = $this->state;
+            $fields[Contracts\RFC6749_ABNF_STATE] = $this->state;
         }
 
         return $fields;
     }
 
     /**
-     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     * @throws Exceptions\AuthorizeFailedException
      */
     protected function normalizeAccessTokenResponse($response): array
     {
-        if ($response instanceof Stream) {
-            $response->rewind();
-            $response = $response->getContents();
+        if ($response instanceof StreamInterface) {
+            $response->tell() && $response->rewind();
+            $response = (string) $response;
         }
 
         if (\is_string($response)) {
@@ -255,17 +248,22 @@ abstract class Base implements ProviderInterface
         }
 
         if (!\is_array($response)) {
-            throw new AuthorizeFailedException('Invalid token response', [$response]);
+            throw new Exceptions\AuthorizeFailedException('Invalid token response', [$response]);
         }
 
         if (empty($response[$this->accessTokenKey])) {
-            throw new AuthorizeFailedException('Authorize Failed: ' . json_encode($response, JSON_UNESCAPED_UNICODE), $response);
+            throw new Exceptions\AuthorizeFailedException('Authorize Failed: ' . json_encode($response, JSON_UNESCAPED_UNICODE), $response);
         }
 
         return $response + [
-                'access_token' => $response[$this->accessTokenKey],
-                'refresh_token' => $response[$this->refreshTokenKey] ?? null,
-                'expires_in' => \intval($response[$this->expiresInKey] ?? 0),
-            ];
+            Contracts\RFC6749_ABNF_ACCESS_TOKEN => $response[$this->accessTokenKey],
+            Contracts\RFC6749_ABNF_REFRESH_TOKEN => $response[$this->refreshTokenKey] ?? null,
+            Contracts\RFC6749_ABNF_EXPIRES_IN => \intval($response[$this->expiresInKey] ?? 0),
+        ];
+    }
+
+    protected function fromJsonBody(MessageInterface $response): array
+    {
+        return Utils::jsonDecode((string) $response->getBody(), true);
     }
 }

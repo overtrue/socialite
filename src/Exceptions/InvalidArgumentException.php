@@ -2,7 +2,7 @@
 
 namespace Overtrue\Socialite\Exceptions;
 
-class InvalidArgumentException extends Exception
+class InvalidArgumentException extends \InvalidArgumentException
 {
     //
 }

@@ -3,6 +3,9 @@
 use PHPUnit\Framework\TestCase;
 use Overtrue\Socialite\Providers\WeChat;
 
+// here we need loaded the symbols first.
+\class_exists(\Overtrue\Socialite\Contracts\FactoryInterface::class);
+
 class WechatTest extends TestCase
 {
     public function testWeChatProviderHasCorrectlyRedirectResponse()

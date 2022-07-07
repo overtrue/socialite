@@ -3,8 +3,9 @@
 namespace Overtrue\Socialite;
 
 use ArrayAccess;
+use JsonSerializable;
 
-class Config implements ArrayAccess, \JsonSerializable
+class Config implements ArrayAccess, JsonSerializable
 {
     protected array $config;
 
@@ -24,8 +25,8 @@ class Config implements ArrayAccess, \JsonSerializable
             return $config[$key];
         }
 
-        foreach (explode('.', $key) as $segment) {
-            if (!is_array($config) || !array_key_exists($segment, $config)) {
+        foreach (\explode('.', $key) as $segment) {
+            if (!\is_array($config) || !\array_key_exists($segment, $config)) {
                 return $default;
             }
             $config = $config[$segment];
@@ -36,18 +37,18 @@ class Config implements ArrayAccess, \JsonSerializable
 
     public function set(string $key, $value): mixed
     {
-        $keys = explode('.', $key);
+        $keys = \explode('.', $key);
         $config = &$this->config;
 
-        while (count($keys) > 1) {
-            $key = array_shift($keys);
-            if (!isset($config[$key]) || !is_array($config[$key])) {
+        while (\count($keys) > 1) {
+            $key = \array_shift($keys);
+            if (!isset($config[$key]) || !\is_array($config[$key])) {
                 $config[$key] = [];
             }
             $config = &$config[$key];
         }
 
-        $config[array_shift($keys)] = $value;
+        $config[\array_shift($keys)] = $value;
 
         return $config;
     }
@@ -59,7 +60,7 @@ class Config implements ArrayAccess, \JsonSerializable
 
     public function offsetExists(mixed $offset): bool
     {
-        return array_key_exists($offset, $this->config);
+        return \array_key_exists($offset, $this->config);
     }
 
     public function offsetGet(mixed $offset): mixed

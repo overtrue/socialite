@@ -3,39 +3,36 @@
 namespace Overtrue\Socialite;
 
 use Closure;
-use InvalidArgumentException;
 use JetBrains\PhpStorm\Pure;
-use Overtrue\Socialite\Contracts\FactoryInterface;
-use Overtrue\Socialite\Contracts\ProviderInterface;
 
-class SocialiteManager implements FactoryInterface
+class SocialiteManager implements Contracts\FactoryInterface
 {
     protected Config $config;
     protected array $resolved = [];
-    protected array $customCreators = [];
-    protected array $providers = [
-        Providers\QQ::NAME => Providers\QQ::class,
-        Providers\Tapd::NAME => Providers\Tapd::class,
-        Providers\Weibo::NAME => Providers\Weibo::class,
+    protected static array $customCreators = [];
+    protected const PROVIDERS = [
         Providers\Alipay::NAME => Providers\Alipay::class,
-        Providers\QCloud::NAME => Providers\QCloud::class,
-        Providers\GitHub::NAME => Providers\GitHub::class,
-        Providers\Google::NAME => Providers\Google::class,
-        Providers\Figma::NAME => Providers\Figma::class,
-        Providers\WeChat::NAME => Providers\WeChat::class,
-        Providers\Douban::NAME => Providers\Douban::class,
-        Providers\WeWork::NAME => Providers\WeWork::class,
-        Providers\DouYin::NAME => Providers\DouYin::class,
-        Providers\Taobao::NAME => Providers\Taobao::class,
-        Providers\FeiShu::NAME => Providers\FeiShu::class,
-        Providers\Outlook::NAME => Providers\Outlook::class,
         Providers\Azure::NAME => Providers\Azure::class,
-        Providers\Linkedin::NAME => Providers\Linkedin::class,
-        Providers\Facebook::NAME => Providers\Facebook::class,
         Providers\DingTalk::NAME => Providers\DingTalk::class,
-        Providers\OpenWeWork::NAME => Providers\OpenWeWork::class,
-        Providers\Line::NAME => Providers\Line::class,
+        Providers\DouYin::NAME => Providers\DouYin::class,
+        Providers\Douban::NAME => Providers\Douban::class,
+        Providers\Facebook::NAME => Providers\Facebook::class,
+        Providers\FeiShu::NAME => Providers\FeiShu::class,
+        Providers\Figma::NAME => Providers\Figma::class,
+        Providers\GitHub::NAME => Providers\GitHub::class,
         Providers\Gitee::NAME => Providers\Gitee::class,
+        Providers\Google::NAME => Providers\Google::class,
+        Providers\Line::NAME => Providers\Line::class,
+        Providers\Linkedin::NAME => Providers\Linkedin::class,
+        Providers\OpenWeWork::NAME => Providers\OpenWeWork::class,
+        Providers\Outlook::NAME => Providers\Outlook::class,
+        Providers\QCloud::NAME => Providers\QCloud::class,
+        Providers\QQ::NAME => Providers\QQ::class,
+        Providers\Taobao::NAME => Providers\Taobao::class,
+        Providers\Tapd::NAME => Providers\Tapd::class,
+        Providers\WeChat::NAME => Providers\WeChat::class,
+        Providers\WeWork::NAME => Providers\WeWork::class,
+        Providers\Weibo::NAME => Providers\Weibo::class,
     ];
 
     #[Pure]
@@ -51,9 +48,9 @@ class SocialiteManager implements FactoryInterface
         return $this;
     }
 
-    public function create(string $name): ProviderInterface
+    public function create(string $name): Contracts\ProviderInterface
     {
-        $name = strtolower($name);
+        $name = \strtolower($name);
 
         if (!isset($this->resolved[$name])) {
             $this->resolved[$name] = $this->createProvider($name);
@@ -64,7 +61,7 @@ class SocialiteManager implements FactoryInterface
 
     public function extend(string $name, Closure $callback): self
     {
-        $this->customCreators[strtolower($name)] = $callback;
+        self::$customCreators[\strtolower($name)] = $callback;
 
         return $this;
     }
@@ -74,37 +71,37 @@ class SocialiteManager implements FactoryInterface
         return $this->resolved;
     }
 
-    public function buildProvider(string $provider, array $config): ProviderInterface
+    public function buildProvider(string $provider, array $config): Contracts\ProviderInterface
     {
         return new $provider($config);
     }
 
     /**
-     * @throws \InvalidArgumentException
+     * @throws Exceptions\InvalidArgumentException
      */
-    protected function createProvider(string $name): ProviderInterface
+    protected function createProvider(string $name): Contracts\ProviderInterface
     {
         $config = $this->config->get($name, []);
         $provider = $config['provider'] ?? $name;
 
-        if (isset($this->customCreators[$provider])) {
+        if (isset(self::$customCreators[$provider])) {
             return $this->callCustomCreator($provider, $config);
         }
 
         if (!$this->isValidProvider($provider)) {
-            throw new InvalidArgumentException("Provider [$provider] not supported.");
+            throw new Exceptions\InvalidArgumentException("Provider [{$name}] not supported.");
         }
 
-        return $this->buildProvider($this->providers[$provider] ?? $provider, $config);
+        return $this->buildProvider(self::PROVIDERS[$provider] ?? $provider, $config);
     }
 
-    protected function callCustomCreator(string $name, array $config): ProviderInterface
+    protected function callCustomCreator(string $name, array $config): Contracts\ProviderInterface
     {
-        return $this->customCreators[$name]($config);
+        return self::$customCreators[$name]($config);
     }
 
     protected function isValidProvider(string $provider): bool
     {
-        return isset($this->providers[$provider]) || is_subclass_of($provider, ProviderInterface::class);
+        return isset(self::PROVIDERS[$provider]) || \is_subclass_of($provider, Contracts\ProviderInterface::class);
     }
 }

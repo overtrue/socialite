@@ -3,7 +3,8 @@
 namespace Overtrue\Socialite\Providers;
 
 use JetBrains\PhpStorm\Pure;
-use Overtrue\Socialite\Contracts\UserInterface;
+use Overtrue\Socialite\Contracts;
+use Overtrue\Socialite\Exceptions;
 use Overtrue\Socialite\User;
 
 /**
@@ -17,36 +18,42 @@ use Overtrue\Socialite\User;
 class DingTalk extends Base
 {
     public const NAME = 'dingtalk';
+
     protected string $getUserByCode = 'https://oapi.dingtalk.com/sns/getuserinfo_bycode';
     protected array $scopes = ['snsapi_login'];
+    protected string $scopeSeparator = ' ';
 
     protected function getAuthUrl(): string
     {
         return $this->buildAuthUrlFromBase('https://oapi.dingtalk.com/connect/qrconnect');
     }
 
+    /**
+     * @throws Exceptions\InvalidArgumentException
+     */
     protected function getTokenUrl(): string
     {
-        throw new \InvalidArgumentException('not supported to get access token.');
+        throw new Exceptions\InvalidArgumentException('not supported to get access token.');
     }
 
+    /**
+     * @throws Exceptions\InvalidArgumentException
+     */
     protected function getUserByToken(string $token): array
     {
-        throw new \InvalidArgumentException('Unable to use token get User.');
+        throw new Exceptions\InvalidArgumentException('Unable to use token get User.');
     }
 
     #[Pure]
-    protected function mapUserToObject(array $user): UserInterface
+    protected function mapUserToObject(array $user): Contracts\UserInterface
     {
-        return new User(
-            [
-                'name' => $user['nick'] ?? null,
-                'nickname' => $user['nick'] ?? null,
-                'id' => $user['openid'] ?? null,
-                'email' => null,
-                'avatar' => null,
-            ]
-        );
+        return new User([
+            Contracts\ABNF_NAME => $user['nick'] ?? null,
+            Contracts\ABNF_NICKNAME => $user['nick'] ?? null,
+            Contracts\ABNF_ID => $user[Contracts\ABNF_OPEN_ID] ?? null,
+            Contracts\ABNF_EMAIL => null,
+            Contracts\ABNF_AVATAR => null,
+        ]);
     }
 
     protected function getCodeFields(): array
@@ -54,9 +61,9 @@ class DingTalk extends Base
         return array_merge(
             [
                 'appid' => $this->getClientId(),
-                'response_type' => 'code',
-                'scope' => implode($this->scopes),
-                'redirect_uri' => $this->redirectUrl,
+                Contracts\RFC6749_ABNF_GRANT_TYPE => Contracts\RFC6749_ABNF_AUTHORATION_CODE,
+                Contracts\RFC6749_ABNF_CODE => $this->formatScopes($this->scopes, $this->scopeSeparator),
+                Contracts\RFC6749_ABNF_REDIRECT_URI => $this->redirectUrl,
             ],
             $this->parameters
         );
@@ -64,52 +71,51 @@ class DingTalk extends Base
 
     public function getClientId(): ?string
     {
-        return $this->getConfig()->get('app_id') ?? $this->getConfig()->get('appid') ?? $this->getConfig()->get('appId')
-            ?? $this->getConfig()->get('client_id');
+        return $this->getConfig()->get(Contracts\ABNF_APP_ID)
+            ?? $this->getConfig()->get('appid')
+            ?? $this->getConfig()->get('appId')
+            ?? $this->getConfig()->get(Contracts\RFC6749_ABNF_CLIENT_ID);
     }
 
     public function getClientSecret(): ?string
     {
-        return $this->getConfig()->get('app_secret') ?? $this->getConfig()->get('appSecret')
-            ?? $this->getConfig()->get('client_secret');
+        return $this->getConfig()->get(Contracts\ABNF_APP_SECRET)
+            ?? $this->getConfig()->get('appSecret')
+            ?? $this->getConfig()->get(Contracts\RFC6749_ABNF_CLIENT_SECRET);
     }
 
     protected function createSignature(int $time): string
     {
-        return base64_encode(hash_hmac('sha256', $time, $this->getClientSecret(), true));
+        return \base64_encode(\hash_hmac('sha256', $time, $this->getClientSecret(), true));
     }
 
     /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
      * @see https://ding-doc.dingtalk.com/doc#/personnal/tmudue
+     *
+     * @throws Exceptions\BadRequestException
      */
-    public function userFromCode(string $code): UserInterface
+    public function userFromCode(string $code): Contracts\UserInterface
     {
-        $time = (int)microtime(true) * 1000;
-        $queryParams = [
-            'accessKey' => $this->getClientId(),
-            'timestamp' => $time,
-            'signature' => $this->createSignature($time),
-        ];
+        $time = (int)\microtime(true) * 1000;
 
-        $response = $this->getHttpClient()->post(
-            $this->getUserByCode . '?' . http_build_query($queryParams),
-            [
-                'json' => ['tmp_auth_code' => $code],
-            ]
-        );
-        $response = \json_decode($response->getBody()->getContents(), true);
+        $responseInstance = $this->getHttpClient()->post($this->getUserByCode, [
+            'query' => [
+                'accessKey' => $this->getClientId(),
+                'timestamp' => $time,
+                'signature' => $this->createSignature($time),
+            ],
+            'json' => ['tmp_auth_code' => $code],
+        ]);
+        $response = $this->fromJsonBody($responseInstance);
 
         if (0 != $response['errcode'] ?? 1) {
-            throw new \InvalidArgumentException('You get error: ' . json_encode($response, JSON_UNESCAPED_UNICODE));
+            throw new Exceptions\BadRequestException((string)$responseInstance->getBody());
         }
 
-        return new User(
-            [
-                'name' => $response['user_info']['nick'],
-                'nickname' => $response['user_info']['nick'],
-                'id' => $response['user_info']['openid'],
-            ]
-        );
+        return new User([
+            Contracts\ABNF_NAME => $response['user_info']['nick'],
+            Contracts\ABNF_NICKNAME => $response['user_info']['nick'],
+            Contracts\ABNF_ID => $response['user_info'][Contracts\ABNF_OPEN_ID],
+        ]);
     }
 }

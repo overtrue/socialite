@@ -18,23 +18,23 @@ trait HasAttributes
         return $this->attributes[$name] ?? $default;
     }
 
-    public function setAttribute(string $name, mixed $value): static
+    public function setAttribute(string $name, mixed $value): self
     {
         $this->attributes[$name] = $value;
 
         return $this;
     }
 
-    public function merge(array $attributes): static
+    public function merge(array $attributes): self
     {
-        $this->attributes = array_merge($this->attributes, $attributes);
+        $this->attributes = \array_merge($this->attributes, $attributes);
 
         return $this;
     }
 
     public function offsetExists(mixed $offset): bool
     {
-        return array_key_exists($offset, $this->attributes);
+        return \array_key_exists($offset, $this->attributes);
     }
 
     public function offsetGet(mixed $offset): mixed

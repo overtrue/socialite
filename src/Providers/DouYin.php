@@ -4,9 +4,8 @@ namespace Overtrue\Socialite\Providers;
 
 use JetBrains\PhpStorm\ArrayShape;
 use JetBrains\PhpStorm\Pure;
-use Overtrue\Socialite\Contracts\UserInterface;
-use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
-use Overtrue\Socialite\Exceptions\InvalidArgumentException;
+use Overtrue\Socialite\Contracts;
+use Overtrue\Socialite\Exceptions;
 use Overtrue\Socialite\User;
 
 /**
@@ -16,6 +15,7 @@ use Overtrue\Socialite\User;
 class DouYin extends Base
 {
     public const NAME = 'douyin';
+
     protected string $baseUrl = 'https://open.douyin.com';
     protected array $scopes = ['user_info'];
     protected ?string $openId;
@@ -26,18 +26,18 @@ class DouYin extends Base
     }
 
     #[ArrayShape([
-        'client_key' => "null|string",
-        'redirect_uri' => "mixed",
-        'scope' => "string",
-        'response_type' => "string"
+        'client_key' => 'null|string',
+        Contracts\RFC6749_ABNF_REDIRECT_URI => 'null|string',
+        Contracts\RFC6749_ABNF_SCOPE => 'string',
+        Contracts\RFC6749_ABNF_RESPONSE_TYPE => 'string',
     ])]
     public function getCodeFields(): array
     {
         return [
             'client_key' => $this->getClientId(),
-            'redirect_uri' => $this->redirectUrl,
-            'scope' => $this->formatScopes($this->scopes, $this->scopeSeparator),
-            'response_type' => 'code',
+            Contracts\RFC6749_ABNF_REDIRECT_URI => $this->redirectUrl,
+            Contracts\RFC6749_ABNF_SCOPE => $this->formatScopes($this->scopes, $this->scopeSeparator),
+            Contracts\RFC6749_ABNF_RESPONSE_TYPE => Contracts\RFC6749_ABNF_CODE,
         ];
     }
 
@@ -47,8 +47,7 @@ class DouYin extends Base
     }
 
     /**
-     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws Exceptions\AuthorizeFailedException
      *
      */
     public function tokenFromCode(string $code): array
@@ -60,72 +59,69 @@ class DouYin extends Base
             ]
         );
 
-        $body = \json_decode($response->getBody()->getContents(), true) ?? [];
+        $body = $this->fromJsonBody($response);
 
-        if (empty($body['data']) || $body['data']['error_code'] != 0) {
-            throw new AuthorizeFailedException('Invalid token response', $body);
+        if (empty($body['data'] ?? null) || ($body['data']['error_code'] ?? -1) != 0) {
+            throw new Exceptions\AuthorizeFailedException('Invalid token response', $body);
         }
 
-        $this->withOpenId($body['data']['open_id']);
+        $this->withOpenId($body['data'][Contracts\ABNF_OPEN_ID]);
 
         return $this->normalizeAccessTokenResponse($body['data']);
     }
 
     #[ArrayShape([
-        'client_key' => "null|string",
-        'client_secret' => "null|string",
-        'code' => "string",
-        'grant_type' => "string"
+        'client_key' => 'null|string',
+        Contracts\RFC6749_ABNF_CLIENT_SECRET => 'null|string',
+        Contracts\RFC6749_ABNF_CODE => 'string',
+        Contracts\RFC6749_ABNF_GRANT_TYPE => 'string',
     ])]
     protected function getTokenFields(string $code): array
     {
         return [
             'client_key' => $this->getClientId(),
-            'client_secret' => $this->getClientSecret(),
-            'code' => $code,
-            'grant_type' => 'authorization_code',
+            Contracts\RFC6749_ABNF_CLIENT_SECRET => $this->getClientSecret(),
+            Contracts\RFC6749_ABNF_CODE => $code,
+            Contracts\RFC6749_ABNF_GRANT_TYPE => Contracts\RFC6749_ABNF_AUTHORATION_CODE,
         ];
     }
 
     /**
-     * @throws \Overtrue\Socialite\Exceptions\InvalidArgumentException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws Exceptions\InvalidArgumentException
      */
     protected function getUserByToken(string $token): array
     {
         $userUrl = $this->baseUrl . '/oauth/userinfo/';
 
         if (empty($this->openId)) {
-            throw new InvalidArgumentException('please set open_id before your query.');
+            throw new Exceptions\InvalidArgumentException('please set the `open_id` before issue the API request.');
         }
 
         $response = $this->getHttpClient()->get(
             $userUrl,
             [
                 'query' => [
-                    'access_token' => $token,
-                    'open_id' => $this->openId,
+                    Contracts\RFC6749_ABNF_ACCESS_TOKEN => $token,
+                    Contracts\ABNF_OPEN_ID => $this->openId,
                 ],
             ]
         );
 
-        $body = \json_decode($response->getBody()->getContents(), true);
+        $body = $this->fromJsonBody($response);
 
         return $body['data'] ?? [];
     }
 
     #[Pure]
-    protected function mapUserToObject(array $user): UserInterface
+    protected function mapUserToObject(array $user): Contracts\UserInterface
     {
-        return new User(
-            [
-                'id' => $user['open_id'] ?? null,
-                'name' => $user['nickname'] ?? null,
-                'nickname' => $user['nickname'] ?? null,
-                'avatar' => $user['avatar'] ?? null,
-                'email' => $user['email'] ?? null,
-            ]
-        );
+        return new User([
+            Contracts\ABNF_ID => $user[Contracts\ABNF_OPEN_ID] ?? null,
+            Contracts\ABNF_NAME => $user[Contracts\ABNF_NICKNAME] ?? null,
+            Contracts\ABNF_NICKNAME => $user[Contracts\ABNF_NICKNAME] ?? null,
+            Contracts\ABNF_AVATAR => $user[Contracts\ABNF_AVATAR] ?? null,
+            Contracts\ABNF_EMAIL => $user[Contracts\ABNF_EMAIL] ?? null,
+        ]);
     }
 
     public function withOpenId(string $openId): self
