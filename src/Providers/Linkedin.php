@@ -32,7 +32,7 @@ class Linkedin extends Base
         Contracts\RFC6749_ABNF_REDIRECT_URI => 'null|string',
         Contracts\RFC6749_ABNF_GRANT_TYPE => 'string',
     ])]
-    protected function getTokenFields($code): array
+    protected function getTokenFields(string $code): array
     {
         return parent::getTokenFields($code) + [Contracts\RFC6749_ABNF_GRANT_TYPE => Contracts\RFC6749_ABNF_AUTHORATION_CODE];
     }
@@ -78,7 +78,7 @@ class Linkedin extends Base
 
     protected function mapUserToObject(array $user): Contracts\UserInterface
     {
-        $preferredLocale = ($user['firstName.preferredLocale.language'] ?? null).'_'.($user['firstName.preferredLocale.country']) ?? null;
+        $preferredLocale = ($user['firstName.preferredLocale.language'] ?? null).'_'.($user['firstName.preferredLocale.country'] ?? null);
         $firstName = $user['firstName.localized.'.$preferredLocale] ?? null;
         $lastName = $user['lastName.localized.'.$preferredLocale] ?? null;
         $name = $firstName.' '.$lastName;

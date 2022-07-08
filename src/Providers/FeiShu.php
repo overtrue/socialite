@@ -142,7 +142,7 @@ class FeiShu extends Base
      * @throws Exceptions\FeiShu\InvalidTicketException
      * @throws Exceptions\InvalidTokenException
      */
-    protected function configAppAccessToken()
+    protected function configAppAccessToken(): self
     {
         $url = $this->baseUrl . '/auth/v3/app_access_token/';
         $params = [
@@ -175,6 +175,8 @@ class FeiShu extends Base
         }
 
         $this->config->set('app_access_token', $response['app_access_token']);
+
+        return $this;
     }
 
     /**
@@ -185,7 +187,7 @@ class FeiShu extends Base
      * @throws Exceptions\BadRequestException
      * @throws Exceptions\AuthorizeFailedException
      */
-    protected function configTenantAccessToken()
+    protected function configTenantAccessToken(): self
     {
         $url = $this->baseUrl . '/auth/v3/tenant_access_token/';
         $params = [
@@ -217,5 +219,7 @@ class FeiShu extends Base
         }
 
         $this->config->set('tenant_access_token', $response['tenant_access_token']);
+
+        return $this;
     }
 }

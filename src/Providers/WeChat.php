@@ -107,7 +107,7 @@ class WeChat extends Base
         return \sprintf($this->baseUrl . '/oauth2%s/access_token', empty($this->component) ? '' : '/component');
     }
 
-    public function userFromCode(string $code): User
+    public function userFromCode(string $code): Contracts\UserInterface
     {
         if (\in_array('snsapi_base', $this->scopes)) {
             return $this->mapUserToObject($this->fromJsonBody($this->getTokenFromCode($code)));
@@ -178,7 +178,7 @@ class WeChat extends Base
     /**
      * @throws Exceptions\InvalidArgumentException
      */
-    protected function prepareForComponent(array $component)
+    protected function prepareForComponent(array $component): void
     {
         $config = [];
         foreach ($component as $key => $value) {

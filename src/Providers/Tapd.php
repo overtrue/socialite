@@ -119,7 +119,7 @@ class Tapd extends Base
     /**
      * @throws Exceptions\AuthorizeFailedException
      */
-    protected function normalizeAccessTokenResponse($response): array
+    protected function normalizeAccessTokenResponse(mixed $response): array
     {
         if ($response instanceof StreamInterface) {
             $response->rewind();

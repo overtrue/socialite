@@ -64,7 +64,7 @@ class QQ extends Base
             'query' => [
                 Contracts\RFC6749_ABNF_ACCESS_TOKEN => $token,
                 'fmt' => 'json',
-            ] + $this->withUnionId ? ['unionid' => 1] : []
+            ] + ($this->withUnionId ? ['unionid' => 1] : [])
         ]);
 
         $me = $this->fromJsonBody($response);
@@ -78,7 +78,7 @@ class QQ extends Base
             ]
         ]);
 
-        return ($this->fromJsonBody($response) ?? []) + [
+        return $this->fromJsonBody($response) + [
             'unionid' => $me['unionid'] ?? null,
             'openid' => $me['openid'] ?? null,
         ];

@@ -33,7 +33,7 @@ class WeWork extends Base
         }
     }
 
-    public function getBaseUrl()
+    public function getBaseUrl(): ?string
     {
         return $this->baseUrl;
     }
