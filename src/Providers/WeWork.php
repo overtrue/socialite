@@ -15,7 +15,9 @@ class WeWork extends Base
     public const NAME = 'wework';
 
     protected bool $detailed = false;
+    protected ?int $agentId = null;
     protected ?string $apiAccessToken;
+    protected bool $asQrcode = false;
     protected string $baseUrl = 'https://qyapi.weixin.qq.com';
 
     public function __construct(array $config)
@@ -24,6 +26,10 @@ class WeWork extends Base
 
         if ($this->getConfig()->has('base_url')) {
             $this->baseUrl = $this->getConfig()->get('base_url');
+        }
+
+        if ($this->getConfig()->has('agent_id')) {
+            $this->agentId = $this->getConfig()->get('agent_id');
         }
     }
 
@@ -51,6 +57,13 @@ class WeWork extends Base
         return $this;
     }
 
+    public function asQrcode(): self
+    {
+        $this->asQrcode = true;
+
+        return $this;
+    }
+
     public function withApiAccessToken(string $apiAccessToken): self
     {
         $this->apiAccessToken = $apiAccessToken;
@@ -60,13 +73,22 @@ class WeWork extends Base
 
     public function getAuthUrl(): string
     {
+        $scopes = $this->formatScopes($this->scopes, $this->scopeSeparator);
         $queries = [
             'appid' => $this->getClientId(),
             Contracts\RFC6749_ABNF_REDIRECT_URI => $this->redirectUrl,
             Contracts\RFC6749_ABNF_RESPONSE_TYPE => Contracts\RFC6749_ABNF_CODE,
-            Contracts\RFC6749_ABNF_SCOPE => $this->formatScopes($this->scopes, $this->scopeSeparator),
+            Contracts\RFC6749_ABNF_SCOPE => $scopes,
             Contracts\RFC6749_ABNF_STATE => $this->state,
         ];
+
+        if (!$this->agentId && (str_contains($scopes, 'snsapi_privateinfo') || $this->asQrcode)) {
+            throw new Exceptions\InvalidArgumentException("agent_id is require when qrcode mode or scopes is 'snsapi_privateinfo'");
+        }
+
+        if ($this->asQrcode) {
+            return \sprintf('https://open.weixin.qq.com/wwopen/sso/qrConnect?%s', http_build_query($queries));
+        }
 
         return \sprintf('https://open.weixin.qq.com/connect/oauth2/authorize?%s#wechat_redirect', \http_build_query($queries));
     }

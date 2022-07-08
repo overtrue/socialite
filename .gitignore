@@ -8,3 +8,4 @@ Thumbs.db
 sftp-config.json
 *.cache.phpunit.result.cache
 .phpunit.result.cache
+.php-cs-fixer.cache
