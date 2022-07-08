@@ -8,7 +8,7 @@ use Overtrue\Socialite\Exceptions;
 use Overtrue\Socialite\User;
 
 /**
- * @link https://open.work.weixin.qq.com/api/doc/90000/90135/91022
+ * @link https://developer.work.weixin.qq.com/document/path/91022
  */
 class WeWork extends Base
 {
@@ -81,20 +81,22 @@ class WeWork extends Base
     public function getAuthUrl(): string
     {
         $scopes = $this->formatScopes($this->scopes, $this->scopeSeparator);
-        $queries = [
+        $queries = array_filter([
             'appid' => $this->getClientId(),
+            'agentid' => $this->agentId,
             Contracts\RFC6749_ABNF_REDIRECT_URI => $this->redirectUrl,
             Contracts\RFC6749_ABNF_RESPONSE_TYPE => Contracts\RFC6749_ABNF_CODE,
             Contracts\RFC6749_ABNF_SCOPE => $scopes,
             Contracts\RFC6749_ABNF_STATE => $this->state,
-        ];
+        ]);
 
         if (!$this->agentId && (str_contains($scopes, 'snsapi_privateinfo') || $this->asQrcode)) {
             throw new Exceptions\InvalidArgumentException("agent_id is require when qrcode mode or scopes is 'snsapi_privateinfo'");
         }
 
         if ($this->asQrcode) {
-            return \sprintf('https://open.weixin.qq.com/wwopen/sso/qrConnect?%s', http_build_query($queries));
+            unset($queries[Contracts\RFC6749_ABNF_SCOPE]);
+            return \sprintf('https://open.work.weixin.qq.com/wwopen/sso/qrConnect?%s', http_build_query($queries));
         }
 
         return \sprintf('https://open.weixin.qq.com/connect/oauth2/authorize?%s#wechat_redirect', \http_build_query($queries));
