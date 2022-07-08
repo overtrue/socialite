@@ -50,6 +50,13 @@ class WeWork extends Base
         return $this->mapUserToObject($user)->setProvider($this)->setRaw($user);
     }
 
+    public function withAgentId(int $agentId): self
+    {
+        $this->agentId = $agentId;
+
+        return $this;
+    }
+
     public function detailed(): self
     {
         $this->detailed = true;
