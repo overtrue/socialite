@@ -2,9 +2,9 @@
 
 Socialite is an [OAuth2](https://oauth.net/2/)  Authentication tool. It is inspired by [laravel/socialite](https://github.com/laravel/socialite), You can easily use it in any PHP project.    [中文文档](/README_CN.md)
 
-![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/overtrue/laravel-socialite?style=flat-square)
-![GitHub License](https://img.shields.io/github/license/overtrue/laravel-socialite?style=flat-square)
-![Packagist Downloads](https://img.shields.io/packagist/dt/overtrue/laravel-socialite?style=flat-square)
+[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/overtrue/socialite?style=flat-square)](https://github.com/overtrue/socialite/releases)
+[![GitHub License](https://img.shields.io/github/license/overtrue/socialite?style=flat-square)](https://github.com/overtrue/socialite/blob/master/LICENSE)
+[![Packagist Downloads](https://img.shields.io/packagist/dt/overtrue/socialite?style=flat-square)](https://packagist.org/overtrue/socialite)
 
 [![Sponsor me](https://github.com/overtrue/overtrue/blob/master/sponsor-me-button-s.svg?raw=true)](https://github.com/sponsors/overtrue)
 
@@ -12,6 +12,7 @@ This tool now supports platforms such as Facebook, GitHub, Google, Figma, Linked
 
 如果你喜欢我的项目并想支持它，[点击这里 :heart:](https://github.com/sponsors/overtrue)
 
+- [Socialite](#socialite)
 - [Requirement](#requirement)
 - [Installation](#installation)
 - [Usage](#usage)
@@ -40,6 +41,7 @@ This tool now supports platforms such as Facebook, GitHub, Google, Figma, Linked
     - [Get user with access token](#get-user-with-access-token)
 - [Enjoy it! :heart:](#enjoy-it-heart)
 - [Reference](#reference)
+  - [Project supported by JetBrains](#project-supported-by-jetbrains)
 - [PHP 扩展包开发](#php-扩展包开发)
 - [License](#license)
 

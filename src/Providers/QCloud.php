@@ -132,7 +132,7 @@ class QCloud extends Base
         return $response['Response'] ?? [];
     }
 
-    protected function sign(string $requestMethod, string $host, array $query, string $payload, $headers, $credential, ?string $secretKey = null): bool|string
+    protected function sign(string $requestMethod, string $host, array $query, string $payload, array $headers, string $credential, ?string $secretKey = null): bool|string
     {
         $canonicalRequestString = \join(
             "\n",
@@ -167,13 +167,13 @@ class QCloud extends Base
     /**
      * @throws Exceptions\AuthorizeFailedException
      */
-    protected function parseAccessToken(array | string $body)
+    protected function parseAccessToken(array | string $body): array
     {
         if (!\is_array($body)) {
             $body = \json_decode($body, true);
         }
 
-        if (empty($body['UserOpenId'])) {
+        if (empty($body['UserOpenId'] ?? null)) {
             throw new Exceptions\AuthorizeFailedException('Authorize Failed: ' . \json_encode($body, JSON_UNESCAPED_UNICODE), $body);
         }
 
@@ -205,7 +205,7 @@ class QCloud extends Base
             ]
         );
 
-        if (empty($response['Credentials'])) {
+        if (empty($response['Credentials'] ?? null)) {
             throw new Exceptions\AuthorizeFailedException('Get Federation Token failed.', $response);
         }
 

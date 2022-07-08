@@ -35,7 +35,7 @@ class Config implements ArrayAccess, JsonSerializable
         return $config;
     }
 
-    public function set(string $key, $value): mixed
+    public function set(string $key, mixed $value): array
     {
         $keys = \explode('.', $key);
         $config = &$this->config;
@@ -60,21 +60,29 @@ class Config implements ArrayAccess, JsonSerializable
 
     public function offsetExists(mixed $offset): bool
     {
+        \is_string($offset) || throw new Exceptions\InvalidArgumentException('The $offset must be type of string here.');
+
         return \array_key_exists($offset, $this->config);
     }
 
     public function offsetGet(mixed $offset): mixed
     {
+        \is_string($offset) || throw new Exceptions\InvalidArgumentException('The $offset must be type of string here.');
+
         return $this->get($offset);
     }
 
-    public function offsetSet(mixed $offset, $value): void
+    public function offsetSet(mixed $offset, mixed $value): void
     {
+        \is_string($offset) || throw new Exceptions\InvalidArgumentException('The $offset must be type of string here.');
+
         $this->set($offset, $value);
     }
 
     public function offsetUnset(mixed $offset): void
     {
+        \is_string($offset) || throw new Exceptions\InvalidArgumentException('The $offset must be type of string here.');
+
         $this->set($offset, null);
     }
 
@@ -83,8 +91,8 @@ class Config implements ArrayAccess, JsonSerializable
         return $this->config;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
-        return \json_encode($this, \JSON_UNESCAPED_UNICODE);
+        return \json_encode($this, \JSON_UNESCAPED_UNICODE) ?: '';
     }
 }

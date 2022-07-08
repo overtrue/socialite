@@ -114,7 +114,7 @@ abstract class Base implements Contracts\ProviderInterface
     /**
      * @throws Exceptions\MethodDoesNotSupportException
      */
-    public function refreshToken(string $refreshToken)
+    public function refreshToken(string $refreshToken): void
     {
         throw new Exceptions\MethodDoesNotSupportException('refreshToken does not support.');
     }
@@ -236,7 +236,7 @@ abstract class Base implements Contracts\ProviderInterface
     /**
      * @throws Exceptions\AuthorizeFailedException
      */
-    protected function normalizeAccessTokenResponse($response): array
+    protected function normalizeAccessTokenResponse(mixed $response): array
     {
         if ($response instanceof StreamInterface) {
             $response->tell() && $response->rewind();
@@ -264,6 +264,10 @@ abstract class Base implements Contracts\ProviderInterface
 
     protected function fromJsonBody(MessageInterface $response): array
     {
-        return Utils::jsonDecode((string) $response->getBody(), true);
+        $result = Utils::jsonDecode((string) $response->getBody(), true);
+
+        \is_array($result) || throw new Exceptions\InvalidArgumentException('Decoded the given response payload failed.');
+
+        return $result;
     }
 }

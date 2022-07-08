@@ -86,7 +86,7 @@ class DingTalk extends Base
 
     protected function createSignature(int $time): string
     {
-        return \base64_encode(\hash_hmac('sha256', $time, $this->getClientSecret(), true));
+        return \base64_encode(\hash_hmac('sha256', (string)$time, (string)$this->getClientSecret(), true));
     }
 
     /**
@@ -108,7 +108,7 @@ class DingTalk extends Base
         ]);
         $response = $this->fromJsonBody($responseInstance);
 
-        if (0 != $response['errcode'] ?? 1) {
+        if (0 != ($response['errcode'] ?? 1)) {
             throw new Exceptions\BadRequestException((string)$responseInstance->getBody());
         }
 

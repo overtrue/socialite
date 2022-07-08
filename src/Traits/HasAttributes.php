@@ -3,6 +3,7 @@
 namespace Overtrue\Socialite\Traits;
 
 use JetBrains\PhpStorm\Pure;
+use Overtrue\Socialite\Exceptions;
 
 trait HasAttributes
 {
@@ -13,7 +14,7 @@ trait HasAttributes
         return $this->attributes;
     }
 
-    public function getAttribute(string $name, mixed $default = null)
+    public function getAttribute(string $name, mixed $default = null): mixed
     {
         return $this->attributes[$name] ?? $default;
     }
@@ -52,7 +53,7 @@ trait HasAttributes
         unset($this->attributes[$offset]);
     }
 
-    public function __get($property)
+    public function __get(string $property): mixed
     {
         return $this->getAttribute($property);
     }
@@ -65,6 +66,10 @@ trait HasAttributes
 
     public function toJSON(): string
     {
-        return \json_encode($this->getAttributes(), JSON_UNESCAPED_UNICODE);
+        $result = \json_encode($this->getAttributes(), JSON_UNESCAPED_UNICODE);
+
+        false === $result && throw new Exceptions\Exception('Cannot Processing this instance as JSON stringify.');
+
+        return $result;
     }
 }

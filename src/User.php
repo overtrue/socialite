@@ -94,7 +94,7 @@ class User implements ArrayAccess, Contracts\UserInterface, JsonSerializable
         return $this;
     }
 
-    public function getTokenResponse()
+    public function getTokenResponse(): mixed
     {
         return $this->getAttribute('token_response');
     }
@@ -109,14 +109,14 @@ class User implements ArrayAccess, Contracts\UserInterface, JsonSerializable
         return $this->attributes;
     }
 
-    public function __unserialize(array $serialized)
+    public function __unserialize(array $serialized): void
     {
         $this->attributes = $serialized ?: [];
     }
 
     public function getProvider(): Contracts\ProviderInterface
     {
-        return $this->provider;
+        return $this->provider ?? throw new Exceptions\Exception('The provider instance doesn\'t initialized correctly.');
     }
 
     public function setProvider(Contracts\ProviderInterface $provider): self

@@ -73,7 +73,11 @@ class SocialiteManager implements Contracts\FactoryInterface
 
     public function buildProvider(string $provider, array $config): Contracts\ProviderInterface
     {
-        return new $provider($config);
+        $instance = new $provider($config);
+
+        $instance instanceof Contracts\ProviderInterface || throw new Exceptions\InvalidArgumentException("The {$provider} must be instanceof ProviderInterface.");
+
+        return $instance;
     }
 
     /**

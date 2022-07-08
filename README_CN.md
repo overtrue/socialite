@@ -2,14 +2,15 @@
 
 Socialite 是一个 [OAuth2](https://oauth.net/2/) 认证工具。 它的灵感来源于 [laravel/socialite](https://github.com/laravel/socialite) ， 你可以很轻易的在任何 PHP 项目中使用它。
 
-![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/overtrue/laravel-socialite?style=flat-square)
-![GitHub License](https://img.shields.io/github/license/overtrue/laravel-socialite?style=flat-square)
-![Packagist Downloads](https://img.shields.io/packagist/dt/overtrue/laravel-socialite?style=flat-square)
+[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/overtrue/socialite?style=flat-square)](https://github.com/overtrue/socialite/releases)
+[![GitHub License](https://img.shields.io/github/license/overtrue/socialite?style=flat-square)](https://github.com/overtrue/socialite/blob/master/LICENSE)
+[![Packagist Downloads](https://img.shields.io/packagist/dt/overtrue/socialite?style=flat-square)](https://packagist.org/overtrue/socialite)
 
 [![Sponsor me](https://github.com/overtrue/overtrue/blob/master/sponsor-me-button-s.svg?raw=true)](https://github.com/sponsors/overtrue)
 
 该工具现已支持平台有：Facebook，Github，Google，Linkedin，Outlook，QQ，TAPD，支付宝，淘宝，百度，钉钉，微博，微信，抖音，飞书，豆瓣，企业微信，腾讯云，Line，Gitee。
 
+- [Socialite](#socialite)
 - [版本要求](#版本要求)
 - [安装](#安装)
 - [使用指南](#使用指南)

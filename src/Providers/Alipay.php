@@ -27,7 +27,7 @@ class Alipay extends Base
     public function __construct(array $config)
     {
         parent::__construct($config);
-        $this->sandbox = $this->config->get('sandbox', false);
+        $this->sandbox = (bool)$this->config->get('sandbox', false);
         if ($this->sandbox) {
             $this->baseUrl = 'https://openapi.alipaydev.com/gateway.do';
             $this->authUrl = 'https://openauth.alipaydev.com/oauth2/publicAppAuthorize.htm';
@@ -171,7 +171,7 @@ class Alipay extends Base
     /**
      * @see https://opendocs.alipay.com/open/289/105656
      */
-    protected function generateSign($params): string
+    protected function generateSign(array $params): string
     {
         \ksort($params);
 
