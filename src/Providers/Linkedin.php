@@ -84,7 +84,7 @@ class Linkedin extends Base
         $name = $firstName.' '.$lastName;
 
         $images = $user['profilePicture.displayImage~.elements'] ?? [];
-        $avatars = \array_filter($images, static fn ($image)  => ($image['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['storageSize']['width'] ?? 0) === 100);
+        $avatars = \array_filter($images, static fn ($image) => ($image['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['storageSize']['width'] ?? 0) === 100);
         $avatar = \array_shift($avatars);
         $originalAvatars = \array_filter($images, static fn ($image) => ($image['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['storageSize']['width'] ?? 0) === 800);
         $originalAvatar = \array_shift($originalAvatars);

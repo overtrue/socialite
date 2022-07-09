@@ -39,8 +39,8 @@
     }
   ],
   "scripts": {
-    "check-style": "@php vendor/bin/php-cs-fixer fix --using-cache=no --diff --dry-run --ansi",
-    "fix-style": "@php vendor/bin/php-cs-fixer fix --using-cache=no --ansi",
+    "check-style": "@php vendor/bin/php-cs-fixer fix --using-cache=no --diff --dry-run --ansi .",
+    "fix-style": "@php vendor/bin/php-cs-fixer fix --using-cache=no --ansi .",
     "test": "@php vendor/bin/phpunit --colors=always",
     "phpstan": "@php vendor/bin/phpstan analyse src"
   }
