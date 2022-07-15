@@ -45,9 +45,6 @@ class Linkedin extends Base
         return \array_merge($basicProfile, $emailAddress);
     }
 
-    /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
     protected function getBasicProfile(string $token): array
     {
         $url = 'https://api.linkedin.com/v2/me?projection=(id,firstName,lastName,profilePicture(displayImage~:playableStreams))';

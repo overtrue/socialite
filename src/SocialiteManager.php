@@ -41,7 +41,7 @@ class SocialiteManager implements Contracts\FactoryInterface
         $this->config = new Config($config);
     }
 
-    public function config(Config $config): static
+    public function config(Config $config): self
     {
         $this->config = $config;
 

@@ -27,10 +27,6 @@ class Figma extends Base
         return 'https://www.figma.com/api/oauth/token';
     }
 
-    /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
-     */
     public function tokenFromCode(string $code): array
     {
         $response = $this->getHttpClient()->post($this->getTokenUrl(), [
