@@ -34,7 +34,11 @@ interface UserInterface
 
     public function setTokenResponse(array $response): self;
 
+    public function getTokenResponse(): mixed;
+
     public function setProvider(ProviderInterface $provider): self;
+
+    public function getRaw(): array;
 
     public function setRaw(array $user): self;
 

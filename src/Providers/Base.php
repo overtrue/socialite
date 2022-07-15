@@ -108,7 +108,7 @@ abstract class Base implements Contracts\ProviderInterface
             ]
         );
 
-        return $this->normalizeAccessTokenResponse($response->getBody()->getContents());
+        return $this->normalizeAccessTokenResponse((string)$response->getBody());
     }
 
     /**
@@ -216,7 +216,7 @@ abstract class Base implements Contracts\ProviderInterface
 
     protected function getCodeFields(): array
     {
-        $fields = array_merge(
+        $fields = \array_merge(
             [
                 Contracts\RFC6749_ABNF_CLIENT_ID => $this->getClientId(),
                 Contracts\RFC6749_ABNF_REDIRECT_URI => $this->redirectUrl,
@@ -244,7 +244,7 @@ abstract class Base implements Contracts\ProviderInterface
         }
 
         if (\is_string($response)) {
-            $response = json_decode($response, true) ?? [];
+            $response = Utils::jsonDecode($response, true);
         }
 
         if (!\is_array($response)) {
@@ -252,7 +252,7 @@ abstract class Base implements Contracts\ProviderInterface
         }
 
         if (empty($response[$this->accessTokenKey])) {
-            throw new Exceptions\AuthorizeFailedException('Authorize Failed: ' . json_encode($response, JSON_UNESCAPED_UNICODE), $response);
+            throw new Exceptions\AuthorizeFailedException('Authorize Failed: ' . Utils::jsonEncode($response, \JSON_UNESCAPED_UNICODE), $response);
         }
 
         return $response + [

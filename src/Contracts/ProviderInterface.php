@@ -49,10 +49,20 @@ interface ProviderInterface
 
     public function userFromToken(string $token): UserInterface;
 
+    public function withRedirectUrl(string $redirectUrl): self;
+
     public function withState(string $state): self;
 
     /**
      * @param string[] $scopes
      */
     public function scopes(array $scopes): self;
+
+    public function with(array $parameters): self;
+
+    public function withScopeSeparator(string $scopeSeparator): self;
+
+    public function getClientId(): ?string;
+
+    public function getClientSecret(): ?string;
 }

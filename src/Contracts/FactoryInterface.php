@@ -9,5 +9,11 @@ const ABNF_TOKEN = 'token';
 
 interface FactoryInterface
 {
-    public function create(string $driver): ProviderInterface;
+    public function config(\Overtrue\Socialite\Config $config): self;
+
+    public function create(string $name): ProviderInterface;
+
+    public function getResolvedProviders(): array;
+
+    public function buildProvider(string $provider, array $config): ProviderInterface;
 }
