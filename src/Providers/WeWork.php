@@ -58,7 +58,11 @@ class WeWork extends Base
         $user = $this->getUser($token, $code);
 
         if ($this->detailed) {
+            $userTicket = $user['user_ticket'] ?? '';
             $user = $this->getUserById($user['UserId']);
+            if ($userTicket) {
+                $user += $this->getUserDetail($userTicket);
+            }
         }
 
         return $this->mapUserToObject($user)->setProvider($this)->setRaw($user);
@@ -149,6 +153,37 @@ class WeWork extends Base
             throw new AuthorizeFailedException('Failed to get user openid:' . $response['errmsg'] ?? 'Unknown.', $response);
         } elseif (empty($response['UserId'])) {
             $this->detailed = false;
+        }
+
+        return $response;
+    }
+
+    /**
+     * 获取访问用户敏感信息
+     * see:https://developer.work.weixin.qq.com/document/path/95833
+     * @param string $userTicket
+     *
+     * @return array
+     * @throws AuthorizeFailedException
+     */
+    protected function getUserDetail(string $userTicket): array
+    {
+        $response = $this->getHttpClient()->post(
+            $this->baseUrl.'/cgi-bin/user/getuserdetail',
+            [
+                'query'       => [
+                    'access_token' => $this->getApiAccessToken(),
+                ],
+                'json' => [
+                    'user_ticket' => $userTicket,
+                ]
+            ]
+        );
+
+        $response = \json_decode($response->getBody(), true) ?? [];
+
+        if (($response['errcode'] ?? 1) > 0 || empty($response['userid'])) {
+            throw new AuthorizeFailedException('Failed to get user detail:' . $response['errmsg'] ?? 'Unknown.', $response);
         }
 
         return $response;
