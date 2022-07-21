@@ -21,6 +21,8 @@ Socialite 是一个 [OAuth2](https://oauth.net/2/) 认证工具。 它的灵感�
     - [支付宝](#支付宝)
     - [钉钉](#钉钉)
     - [抖音](#抖音)
+    - [头条](#头条)
+    - [西瓜](#西瓜)
     - [百度](#百度)
     - [飞书](#飞书)
     - [淘宝](#淘宝)
@@ -322,6 +324,44 @@ $socialite = new SocialiteManager($config);
 $user = $socialite->create('douyin')->userFromCode('here is auth code');
 
 $user = $socialite->create('douyin')->withOpenId('openId')->userFromToken('here is the access token');
+```
+
+### [头条](https://open.douyin.com/platform/resource/docs/develop/permission/toutiao-or-xigua/OAuth2.0/)
+
+> 注意： 使用`头条`服务提供的时候，如果你想直接使用 access_token 获取用户信息时，请先设置 openid。 先调用 `withOpenId()` 再调用 `userFromToken()`
+
+```php
+$config = [
+  'toutiao' => [
+    'client_id' => 'your app id',
+    'client_secret' => 'your app secret',
+    'redirect' => 'redirect URL'
+  ]
+];
+
+$socialite = new SocialiteManager($config);
+
+$user = $socialite->create('toutiao')->userFromCode('here is auth code');
+$user = $socialite->create('toutiao')->withOpenId('openId')->userFromToken('here is the access token');
+```
+
+### [西瓜](https://open.douyin.com/platform/resource/docs/develop/permission/toutiao-or-xigua/OAuth2.0/)
+
+> 注意： 使用`西瓜`服务提供的时候，如果你想直接使用 access_token 获取用户信息时，请先设置 openid。 先调用 `withOpenId()` 再调用 `userFromToken()`
+
+```php
+$config = [
+  'xigua' => [
+    'client_id' => 'your app id',
+    'client_secret' => 'your app secret',
+    'redirect' => 'redirect URL'
+  ]
+];
+
+$socialite = new SocialiteManager($config);
+
+$user = $socialite->create('xigua')->userFromCode('here is auth code');
+$user = $socialite->create('xigua')->withOpenId('openId')->userFromToken('here is the access token');
 ```
 
 

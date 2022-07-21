@@ -30,9 +30,11 @@ class SocialiteManager implements Contracts\FactoryInterface
         Providers\QQ::NAME => Providers\QQ::class,
         Providers\Taobao::NAME => Providers\Taobao::class,
         Providers\Tapd::NAME => Providers\Tapd::class,
+        Providers\TouTiao::NAME => Providers\TouTiao::class,
         Providers\WeChat::NAME => Providers\WeChat::class,
         Providers\WeWork::NAME => Providers\WeWork::class,
         Providers\Weibo::NAME => Providers\Weibo::class,
+        Providers\XiGua::NAME => Providers\XiGua::class,
     ];
 
     #[Pure]
