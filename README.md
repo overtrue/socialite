@@ -23,6 +23,8 @@ This tool now supports platforms such as Facebook, GitHub, Google, Figma, Linked
     - [Alipay](#alipay)
     - [DingTalk](#dingtalk)
     - [Douyin](#douyin)
+    - [TouTiao](#toutiao)
+    - [XiGua](#xigua)
     - [Baidu](#baidu)
     - [Feishu](#feishu)
     - [Taobao](#taobao)
@@ -310,6 +312,44 @@ $socialite = new SocialiteManager($config);
 $user = $socialite->create('douyin')->userFromCode('here is auth code');
 
 $user = $socialite->create('douyin')->withOpenId('openId')->userFromToken('here is the access token');
+```
+
+### [TouTiao](https://open.douyin.com/platform/resource/docs/develop/permission/toutiao-or-xigua/OAuth2.0/)
+
+> Note： using the `toutiao` create that if you get user information directly using access token, set up the openid first. the openid can be obtained by code when access is obtained, so call `userFromCode()` automatically configured for you openid, if call `userFromToken()` first call `withOpenId()`
+
+```php
+$config = [
+  'toutiao' => [
+    'client_id' => 'your app id',
+    'client_secret' => 'your app secret',
+    'redirect' => 'redirect URL'
+  ]
+];
+
+$socialite = new SocialiteManager($config);
+
+$user = $socialite->create('toutiao')->userFromCode('here is auth code');
+$user = $socialite->create('toutiao')->withOpenId('openId')->userFromToken('here is the access token');
+```
+
+### [XiGua](https://open.douyin.com/platform/resource/docs/develop/permission/toutiao-or-xigua/OAuth2.0/)
+
+> Note： using the `xigua` create that if you get user information directly using access token, set up the openid first. the openid can be obtained by code when access is obtained, so call `userFromCode()` automatically configured for you openid, if call `userFromToken()` first call `withOpenId()`
+
+```php
+$config = [
+  'xigua' => [
+    'client_id' => 'your app id',
+    'client_secret' => 'your app secret',
+    'redirect' => 'redirect URL'
+  ]
+];
+
+$socialite = new SocialiteManager($config);
+
+$user = $socialite->create('xigua')->userFromCode('here is auth code');
+$user = $socialite->create('xigua')->withOpenId('openId')->userFromToken('here is the access token');
 ```
 
 
