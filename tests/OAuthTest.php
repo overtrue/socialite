@@ -92,6 +92,9 @@ class OAuthTest extends TestCase
                 'code' => 'fake_code',
                 'redirect_uri' => null,
             ],
+            'headers' => [
+                'Accept' => 'application/json',
+            ],
         ])->andReturn($response);
 
         $this->assertSame([
@@ -138,6 +141,9 @@ class OAuthTest extends TestCase
                 'client_secret' => 'fake_client_secret',
                 'code' => 'fake_code',
                 'redirect_uri' => null,
+            ],
+            'headers' => [
+                'Accept' => 'application/json',
             ],
         ])->andReturn($response);
 

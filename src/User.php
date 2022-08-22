@@ -8,7 +8,7 @@ use Overtrue\Socialite\Contracts\ProviderInterface;
 use Overtrue\Socialite\Contracts\UserInterface;
 use Overtrue\Socialite\Traits\HasAttributes;
 
-class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializable
+class User implements ArrayAccess, UserInterface, JsonSerializable
 {
     use HasAttributes;
 
@@ -113,14 +113,14 @@ class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializabl
         return $this->attributes;
     }
 
-    public function serialize()
+    public function __serialize(): array
     {
-        return serialize($this->attributes);
+        return $this->attributes;
     }
 
-    public function unserialize($serialized)
+    public function __unserialize(array $serialized): void
     {
-        $this->attributes = unserialize($serialized) ?: [];
+        $this->attributes = $serialized ?: [];
     }
 
     /**
