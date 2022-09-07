@@ -11,6 +11,9 @@ use Overtrue\Socialite\Config;
 use Overtrue\Socialite\Contracts;
 use Overtrue\Socialite\Exceptions;
 
+class_exists(Contracts\FactoryInterface::class);
+class_exists(Contracts\UserInterface::class);
+
 abstract class Base implements Contracts\ProviderInterface
 {
     public const NAME = null;
