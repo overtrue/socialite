@@ -15,17 +15,19 @@ class QQ extends Base
     public const NAME = 'qq';
 
     protected string $baseUrl = 'https://graph.qq.com';
+
     protected array $scopes = ['get_user_info'];
+
     protected bool $withUnionId = false;
 
     protected function getAuthUrl(): string
     {
-        return $this->buildAuthUrlFromBase($this->baseUrl . '/oauth2.0/authorize');
+        return $this->buildAuthUrlFromBase($this->baseUrl.'/oauth2.0/authorize');
     }
 
     protected function getTokenUrl(): string
     {
-        return $this->baseUrl . '/oauth2.0/token';
+        return $this->baseUrl.'/oauth2.0/token';
     }
 
     #[ArrayShape([
@@ -60,22 +62,22 @@ class QQ extends Base
 
     protected function getUserByToken(string $token): array
     {
-        $response = $this->getHttpClient()->get($this->baseUrl . '/oauth2.0/me', [
+        $response = $this->getHttpClient()->get($this->baseUrl.'/oauth2.0/me', [
             'query' => [
                 Contracts\RFC6749_ABNF_ACCESS_TOKEN => $token,
                 'fmt' => 'json',
-            ] + ($this->withUnionId ? ['unionid' => 1] : [])
+            ] + ($this->withUnionId ? ['unionid' => 1] : []),
         ]);
 
         $me = $this->fromJsonBody($response);
 
-        $response = $this->getHttpClient()->get($this->baseUrl . '/user/get_user_info', [
+        $response = $this->getHttpClient()->get($this->baseUrl.'/user/get_user_info', [
             'query' => [
                 Contracts\RFC6749_ABNF_ACCESS_TOKEN => $token,
                 'fmt' => 'json',
                 'openid' => $me['openid'],
                 'oauth_consumer_key' => $this->getClientId(),
-            ]
+            ],
         ]);
 
         return $this->fromJsonBody($response) + [

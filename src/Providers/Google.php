@@ -15,6 +15,7 @@ class Google extends Base
     public const NAME = 'google';
 
     protected string $scopeSeparator = ' ';
+
     protected array $scopes = [
         'https://www.googleapis.com/auth/userinfo.email',
         'https://www.googleapis.com/auth/userinfo.profile',

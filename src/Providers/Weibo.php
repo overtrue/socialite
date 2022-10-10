@@ -16,16 +16,17 @@ class Weibo extends Base
     public const NAME = 'weibo';
 
     protected string $baseUrl = 'https://api.weibo.com';
+
     protected array $scopes = [Contracts\ABNF_EMAIL];
 
     protected function getAuthUrl(): string
     {
-        return $this->buildAuthUrlFromBase($this->baseUrl . '/oauth2/authorize');
+        return $this->buildAuthUrlFromBase($this->baseUrl.'/oauth2/authorize');
     }
 
     protected function getTokenUrl(): string
     {
-        return $this->baseUrl . '/2/oauth2/access_token';
+        return $this->baseUrl.'/2/oauth2/access_token';
     }
 
     #[ArrayShape([
@@ -53,7 +54,7 @@ class Weibo extends Base
             throw new Exceptions\InvalidTokenException('Invalid token.', $token);
         }
 
-        $response = $this->getHttpClient()->get($this->baseUrl . '/2/users/show.json', [
+        $response = $this->getHttpClient()->get($this->baseUrl.'/2/users/show.json', [
             'query' => [
                 'uid' => $uid,
                 Contracts\RFC6749_ABNF_ACCESS_TOKEN => $token,
@@ -71,7 +72,7 @@ class Weibo extends Base
      */
     protected function getTokenPayload(string $token): array
     {
-        $response = $this->getHttpClient()->post($this->baseUrl . '/oauth2/get_token_info', [
+        $response = $this->getHttpClient()->post($this->baseUrl.'/oauth2/get_token_info', [
             'query' => [
                 Contracts\RFC6749_ABNF_ACCESS_TOKEN => $token,
             ],

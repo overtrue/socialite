@@ -170,7 +170,9 @@ class OAuthTest extends TestCase
 class OAuthTestProviderStub extends Base
 {
     public $http;
+
     protected array $scopes = ['info'];
+
     protected int $encodingType = PHP_QUERY_RFC3986;
 
     protected function getAuthUrl(): string
@@ -200,7 +202,7 @@ class OAuthTestProviderStub extends Base
      *
      * @return \GuzzleHttp\Client
      */
-    public function getHttpClient(): \GuzzleHttp\Client
+    public function getHttpClient(): GuzzleHttp\Client
     {
         if ($this->http) {
             return $this->http;

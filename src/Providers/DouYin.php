@@ -17,12 +17,14 @@ class DouYin extends Base
     public const NAME = 'douyin';
 
     protected string $baseUrl = 'https://open.douyin.com';
+
     protected array $scopes = ['user_info'];
+
     protected ?string $openId;
 
     protected function getAuthUrl(): string
     {
-        return $this->buildAuthUrlFromBase($this->baseUrl . '/platform/oauth/connect/');
+        return $this->buildAuthUrlFromBase($this->baseUrl.'/platform/oauth/connect/');
     }
 
     #[ArrayShape([
@@ -43,12 +45,11 @@ class DouYin extends Base
 
     protected function getTokenUrl(): string
     {
-        return $this->baseUrl . '/oauth/access_token/';
+        return $this->baseUrl.'/oauth/access_token/';
     }
 
     /**
      * @throws Exceptions\AuthorizeFailedException
-     *
      */
     public function tokenFromCode(string $code): array
     {
@@ -91,7 +92,7 @@ class DouYin extends Base
      */
     protected function getUserByToken(string $token): array
     {
-        $userUrl = $this->baseUrl . '/oauth/userinfo/';
+        $userUrl = $this->baseUrl.'/oauth/userinfo/';
 
         if (empty($this->openId)) {
             throw new Exceptions\InvalidArgumentException('please set the `open_id` before issue the API request.');

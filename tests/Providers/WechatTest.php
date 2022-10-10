@@ -1,7 +1,7 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
 use Overtrue\Socialite\Providers\WeChat;
+use PHPUnit\Framework\TestCase;
 
 // here we need loaded the symbols first.
 \class_exists(\Overtrue\Socialite\Contracts\FactoryInterface::class);
@@ -74,7 +74,6 @@ class WechatTest extends TestCase
 
         $getCodeFields = new ReflectionMethod(WeChat::class, 'getCodeFields');
         $getCodeFields->setAccessible(true);
-
 
         $this->assertSame([
             'appid' => 'client_id',

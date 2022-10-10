@@ -12,6 +12,7 @@ class Outlook extends Base
     public const NAME = 'outlook';
 
     protected array $scopes = ['User.Read'];
+
     protected string $scopeSeparator = ' ';
 
     protected function getAuthUrl(): string
@@ -30,7 +31,7 @@ class Outlook extends Base
             'https://graph.microsoft.com/v1.0/me',
             ['headers' => [
                 'Accept' => 'application/json',
-                'Authorization' => 'Bearer ' . $token,
+                'Authorization' => 'Bearer '.$token,
             ],
             ]
         );

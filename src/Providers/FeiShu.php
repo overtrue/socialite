@@ -14,10 +14,13 @@ use Overtrue\Socialite\User;
 class FeiShu extends Base
 {
     public const NAME = 'feishu';
+
     private const APP_TICKET = 'app_ticket';
 
     protected string $baseUrl = 'https://open.feishu.cn/open-apis';
+
     protected string $expiresInKey = 'refresh_expires_in';
+
     protected bool   $isInternalApp = false;
 
     public function __construct(array $config)
@@ -28,7 +31,7 @@ class FeiShu extends Base
 
     protected function getAuthUrl(): string
     {
-        return $this->buildAuthUrlFromBase($this->baseUrl . '/authen/v1/index');
+        return $this->buildAuthUrlFromBase($this->baseUrl.'/authen/v1/index');
     }
 
     #[ArrayShape([Contracts\RFC6749_ABNF_REDIRECT_URI => 'null|string', Contracts\ABNF_APP_ID => 'null|string'])]
@@ -42,7 +45,7 @@ class FeiShu extends Base
 
     protected function getTokenUrl(): string
     {
-        return $this->baseUrl . '/authen/v1/access_token';
+        return $this->baseUrl.'/authen/v1/access_token';
     }
 
     public function tokenFromCode(string $code): array
@@ -77,10 +80,10 @@ class FeiShu extends Base
      */
     protected function getUserByToken(string $token): array
     {
-        $responseInstance = $this->getHttpClient()->get($this->baseUrl . '/authen/v1/user_info', [
+        $responseInstance = $this->getHttpClient()->get($this->baseUrl.'/authen/v1/user_info', [
             'headers' => [
                 'Content-Type' => 'application/json',
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer '.$token,
             ],
             'query' => \array_filter(
                 [
@@ -92,7 +95,7 @@ class FeiShu extends Base
         $response = $this->fromJsonBody($responseInstance);
 
         if (empty($response['data'] ?? null)) {
-            throw new Exceptions\BadRequestException((string)$responseInstance->getBody());
+            throw new Exceptions\BadRequestException((string) $responseInstance->getBody());
         }
 
         return $response['data'];
@@ -144,7 +147,7 @@ class FeiShu extends Base
      */
     protected function configAppAccessToken(): self
     {
-        $url = $this->baseUrl . '/auth/v3/app_access_token/';
+        $url = $this->baseUrl.'/auth/v3/app_access_token/';
         $params = [
             'json' => [
                 Contracts\ABNF_APP_ID => $this->config->get(Contracts\RFC6749_ABNF_CLIENT_ID),
@@ -154,7 +157,7 @@ class FeiShu extends Base
         ];
 
         if ($this->isInternalApp) {
-            $url = $this->baseUrl . '/auth/v3/app_access_token/internal/';
+            $url = $this->baseUrl.'/auth/v3/app_access_token/internal/';
             $params = [
                 'json' => [
                     Contracts\ABNF_APP_ID => $this->config->get(Contracts\RFC6749_ABNF_CLIENT_ID),
@@ -163,7 +166,7 @@ class FeiShu extends Base
             ];
         }
 
-        if (!$this->isInternalApp && !$this->config->has(self::APP_TICKET)) {
+        if (! $this->isInternalApp && ! $this->config->has(self::APP_TICKET)) {
             throw new Exceptions\FeiShu\InvalidTicketException('You are using default mode, please config \'app_ticket\' first');
         }
 
@@ -189,7 +192,7 @@ class FeiShu extends Base
      */
     protected function configTenantAccessToken(): self
     {
-        $url = $this->baseUrl . '/auth/v3/tenant_access_token/';
+        $url = $this->baseUrl.'/auth/v3/tenant_access_token/';
         $params = [
             'json' => [
                 Contracts\ABNF_APP_ID => $this->config->get(Contracts\RFC6749_ABNF_CLIENT_ID),
@@ -199,7 +202,7 @@ class FeiShu extends Base
         ];
 
         if ($this->isInternalApp) {
-            $url = $this->baseUrl . '/auth/v3/tenant_access_token/internal/';
+            $url = $this->baseUrl.'/auth/v3/tenant_access_token/internal/';
             $params = [
                 'json' => [
                     Contracts\ABNF_APP_ID => $this->config->get(Contracts\RFC6749_ABNF_CLIENT_ID),
@@ -208,7 +211,7 @@ class FeiShu extends Base
             ];
         }
 
-        if (!$this->isInternalApp && !$this->config->has(self::APP_TICKET)) {
+        if (! $this->isInternalApp && ! $this->config->has(self::APP_TICKET)) {
             throw new Exceptions\BadRequestException('You are using default mode, please config \'app_ticket\' first');
         }
 

@@ -15,9 +15,13 @@ class OpenWeWork extends Base
     public const NAME = 'open-wework';
 
     protected bool $detailed = false;
+
     protected ?string $suiteTicket = null;
+
     protected ?int $agentId = null;
+
     protected ?string $suiteAccessToken = null;
+
     protected string $baseUrl = 'https://qyapi.weixin.qq.com';
 
     public function __construct(array $config)
@@ -101,7 +105,7 @@ class OpenWeWork extends Base
     protected function getUser(string $token, string $code): array
     {
         $responseInstance = $this->getHttpClient()->get(
-            $this->baseUrl . '/cgi-bin/service/getuserinfo3rd',
+            $this->baseUrl.'/cgi-bin/service/getuserinfo3rd',
             [
                 'query' => \array_filter(
                     [
@@ -115,7 +119,7 @@ class OpenWeWork extends Base
         $response = $this->fromJsonBody($responseInstance);
 
         if (($response['errcode'] ?? 1) > 0 || (empty($response['UserId']) && empty($response['open_userid']))) {
-            throw new Exceptions\AuthorizeFailedException((string)$responseInstance->getBody(), $response);
+            throw new Exceptions\AuthorizeFailedException((string) $responseInstance->getBody(), $response);
         }
 
         return $response;
@@ -127,7 +131,7 @@ class OpenWeWork extends Base
     protected function getUserByTicket(string $userTicket): array
     {
         $responseInstance = $this->getHttpClient()->post(
-            $this->baseUrl . '/cgi-bin/user/get',
+            $this->baseUrl.'/cgi-bin/user/get',
             [
                 'query' => [
                     'suite_access_token' => $this->getSuiteAccessToken(),
@@ -139,7 +143,7 @@ class OpenWeWork extends Base
         $response = $this->fromJsonBody($responseInstance);
 
         if (($response['errcode'] ?? 1) > 0 || empty($response['userid'])) {
-            throw new Exceptions\AuthorizeFailedException((string)$responseInstance->getBody(), $response);
+            throw new Exceptions\AuthorizeFailedException((string) $responseInstance->getBody(), $response);
         }
 
         return $response;
@@ -164,21 +168,20 @@ class OpenWeWork extends Base
     protected function requestSuiteAccessToken(): string
     {
         $responseInstance = $this->getHttpClient()->post(
-            $this->baseUrl . '/cgi-bin/service/get_suite_token',
+            $this->baseUrl.'/cgi-bin/service/get_suite_token',
             [
-                'json' =>
-                    [
-                        'suite_id' => $this->config->get('suite_id') ?? $this->config->get('client_id'),
-                        'suite_secret' => $this->config->get('suite_secret') ?? $this->config->get('client_secret'),
-                        'suite_ticket' => $this->suiteTicket,
-                    ]
+                'json' => [
+                    'suite_id' => $this->config->get('suite_id') ?? $this->config->get('client_id'),
+                    'suite_secret' => $this->config->get('suite_secret') ?? $this->config->get('client_secret'),
+                    'suite_ticket' => $this->suiteTicket,
+                ],
             ]
         );
 
         $response = $this->fromJsonBody($responseInstance);
 
         if (isset($response['errcode']) && $response['errcode'] > 0) {
-            throw new Exceptions\AuthorizeFailedException((string)$responseInstance->getBody(), $response);
+            throw new Exceptions\AuthorizeFailedException((string) $responseInstance->getBody(), $response);
         }
 
         return $response['suite_access_token'];

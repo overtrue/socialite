@@ -15,14 +15,16 @@ class Line extends Base
     public const NAME = 'line';
 
     protected string $baseUrl = 'https://api.line.me/oauth2/';
+
     protected string $version = 'v2.1';
+
     protected array $scopes = ['profile'];
 
     protected function getAuthUrl(): string
     {
         $this->state = $this->state ?: \md5(\uniqid(Contracts\RFC6749_ABNF_STATE, true));
 
-        return $this->buildAuthUrlFromBase('https://access.line.me/oauth2/' . $this->version . '/authorize');
+        return $this->buildAuthUrlFromBase('https://access.line.me/oauth2/'.$this->version.'/authorize');
     }
 
     protected function getTokenUrl(): string
@@ -49,7 +51,7 @@ class Line extends Base
             [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => 'Bearer ' . $token,
+                    'Authorization' => 'Bearer '.$token,
                 ],
             ]
         );

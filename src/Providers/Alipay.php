@@ -16,18 +16,25 @@ class Alipay extends Base
     public const NAME = 'alipay';
 
     protected string $baseUrl = 'https://openapi.alipay.com/gateway.do';
+
     protected string $authUrl = 'https://openauth.alipay.com/oauth2/publicAppAuthorize.htm';
+
     protected array $scopes = ['auth_user'];
+
     protected string $apiVersion = '1.0';
+
     protected string $signType = 'RSA2';
+
     protected string $postCharset = 'UTF-8';
+
     protected string $format = 'json';
+
     protected bool $sandbox = false;
 
     public function __construct(array $config)
     {
         parent::__construct($config);
-        $this->sandbox = (bool)$this->config->get('sandbox', false);
+        $this->sandbox = (bool) $this->config->get('sandbox', false);
         if ($this->sandbox) {
             $this->baseUrl = 'https://openapi.alipaydev.com/gateway.do';
             $this->authUrl = 'https://openauth.alipaydev.com/oauth2/publicAppAuthorize.htm';
@@ -65,7 +72,7 @@ class Alipay extends Base
 
         $response = $this->fromJsonBody($responseInstance);
 
-        if (!empty($response['error_response'] ?? null) || empty($response['alipay_user_info_share_response'] ?? [])) {
+        if (! empty($response['error_response'] ?? null) || empty($response['alipay_user_info_share_response'] ?? [])) {
             throw new Exceptions\BadRequestException((string) $responseInstance->getBody());
         }
 
@@ -99,8 +106,8 @@ class Alipay extends Base
         );
         $response = $this->fromJsonBody($responseInstance);
 
-        if (!empty($response['error_response'])) {
-            throw new Exceptions\BadRequestException((string)$responseInstance->getBody());
+        if (! empty($response['error_response'])) {
+            throw new Exceptions\BadRequestException((string) $responseInstance->getBody());
         }
 
         return $this->normalizeAccessTokenResponse($response['alipay_system_oauth_token_response']);
@@ -153,7 +160,7 @@ class Alipay extends Base
         'sign_type' => 'string',
         'method' => 'string',
         'timestamp' => 'string',
-        'version' => 'string'
+        'version' => 'string',
     ])]
     public function getPublicFields(string $method): array
     {
@@ -187,9 +194,9 @@ class Alipay extends Base
             throw new Exceptions\InvalidArgumentException('no RSA private key set.');
         }
 
-        $key = "-----BEGIN RSA PRIVATE KEY-----\n" .
-            \chunk_split($key, 64, "\n") .
-            "-----END RSA PRIVATE KEY-----";
+        $key = "-----BEGIN RSA PRIVATE KEY-----\n".
+            \chunk_split($key, 64, "\n").
+            '-----END RSA PRIVATE KEY-----';
 
         \openssl_sign($signContent, $signValue, $key, \OPENSSL_ALGO_SHA256);
 
@@ -203,7 +210,7 @@ class Alipay extends Base
             if (\in_array($k, $except)) {
                 continue;
             }
-            $param_str .= $k . '=';
+            $param_str .= $k.'=';
             $param_str .= $urlencode ? \rawurlencode($v) : $v;
             $param_str .= '&';
         }

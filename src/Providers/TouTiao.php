@@ -17,7 +17,7 @@ class TouTiao extends DouYin
 
     protected function getAuthUrl(): string
     {
-        return $this->buildAuthUrlFromBase($this->baseUrl . '/oauth/authorize/');
+        return $this->buildAuthUrlFromBase($this->baseUrl.'/oauth/authorize/');
     }
 
     #[Pure]

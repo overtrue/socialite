@@ -28,7 +28,7 @@ class Gitee extends Base
         $userUrl = 'https://gitee.com/api/v5/user';
         $response = $this->getHttpClient()->get($userUrl, [
             'query' => [
-                Contracts\RFC6749_ABNF_ACCESS_TOKEN => $token
+                Contracts\RFC6749_ABNF_ACCESS_TOKEN => $token,
             ],
         ]);
 

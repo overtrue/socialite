@@ -18,9 +18,13 @@ class WeChat extends Base
     public const NAME = 'wechat';
 
     protected string $baseUrl = 'https://api.weixin.qq.com/sns';
+
     protected array $scopes = ['snsapi_login'];
+
     protected bool $withCountryCode = false;
+
     protected ?array $component = null;
+
     protected ?string $openid = null;
 
     public function __construct(array $config)
@@ -54,7 +58,7 @@ class WeChat extends Base
     }
 
     /**
-     * @param array<string,string> $componentConfig  [Contracts\ABNF_ID => xxx, Contracts\ABNF_TOKEN => xxx]
+     * @param  array<string,string>  $componentConfig  [Contracts\ABNF_ID => xxx, Contracts\ABNF_TOKEN => xxx]
      */
     public function withComponent(array $componentConfig): self
     {
@@ -83,12 +87,12 @@ class WeChat extends Base
     {
         $query = \http_build_query($this->getCodeFields(), '', '&', $this->encodingType);
 
-        return $url . '?' . $query . '#wechat_redirect';
+        return $url.'?'.$query.'#wechat_redirect';
     }
 
     protected function getCodeFields(): array
     {
-        if (!empty($this->component)) {
+        if (! empty($this->component)) {
             $this->with(\array_merge($this->parameters, ['component_appid' => $this->component[Contracts\ABNF_ID]]));
         }
 
@@ -104,7 +108,7 @@ class WeChat extends Base
 
     protected function getTokenUrl(): string
     {
-        return \sprintf($this->baseUrl . '/oauth2%s/access_token', empty($this->component) ? '' : '/component');
+        return \sprintf($this->baseUrl.'/oauth2%s/access_token', empty($this->component) ? '' : '/component');
     }
 
     public function userFromCode(string $code): Contracts\UserInterface
@@ -128,7 +132,7 @@ class WeChat extends Base
     {
         $language = $this->withCountryCode ? null : (isset($this->parameters['lang']) ? $this->parameters['lang'] : 'zh_CN');
 
-        $response = $this->getHttpClient()->get($this->baseUrl . '/userinfo', [
+        $response = $this->getHttpClient()->get($this->baseUrl.'/userinfo', [
             'query' => \array_filter([
                 Contracts\RFC6749_ABNF_ACCESS_TOKEN => $token,
                 'openid' => $this->openid,

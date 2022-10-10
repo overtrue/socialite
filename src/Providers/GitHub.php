@@ -12,6 +12,7 @@ class GitHub extends Base
     public const     NAME = 'github';
 
     protected array  $scopes = ['read:user'];
+
     protected string $scopeSeparator = ' ';
 
     protected function getAuthUrl(): string
@@ -76,7 +77,7 @@ class GitHub extends Base
         ]);
     }
 
-    #[ArrayShape(['headers' => "array"])]
+    #[ArrayShape(['headers' => 'array'])]
     protected function createAuthorizationHeaders(string $token): array
     {
         return [
