@@ -7,6 +7,7 @@ use JetBrains\PhpStorm\Pure;
 use Overtrue\Socialite\Contracts;
 use Overtrue\Socialite\Exceptions\InvalidArgumentException;
 use Overtrue\Socialite\User;
+use Overtrue\Socialite\Exceptions;
 
 class Coding extends Base
 {
@@ -66,10 +67,11 @@ class Coding extends Base
 
     /**
      * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Overtrue\Socialite\Exceptions\BadRequestException
      */
     protected function getUserByToken(string $token): array
     {
-        $response = $this->getHttpClient()->get(
+        $responseInstance = $this->getHttpClient()->get(
             "$this->teamUrl/api/me",
             [
                 'query' => [
@@ -78,7 +80,13 @@ class Coding extends Base
             ]
         );
 
-        return $this->fromJsonBody($response);
+        $response = $this->fromJsonBody($responseInstance);
+
+        if (empty($response[Contracts\ABNF_ID])) {
+            throw new Exceptions\BadRequestException((string) $responseInstance->getBody());
+        }
+
+        return $response;
     }
 
     #[Pure]
