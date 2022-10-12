@@ -17,7 +17,7 @@ class XiGua extends DouYin
 
     protected function getAuthUrl(): string
     {
-        return $this->buildAuthUrlFromBase($this->baseUrl . '/oauth/connect');
+        return $this->buildAuthUrlFromBase($this->baseUrl.'/oauth/connect');
     }
 
     #[Pure]

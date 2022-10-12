@@ -54,7 +54,7 @@ interface ProviderInterface
     public function withState(string $state): self;
 
     /**
-     * @param string[] $scopes
+     * @param  string[]  $scopes
      */
     public function scopes(array $scopes): self;
 

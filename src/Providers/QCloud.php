@@ -12,10 +12,15 @@ class QCloud extends Base
     public const NAME = 'qcloud';
 
     protected array $scopes = ['login'];
+
     protected string $accessTokenKey = 'UserAccessToken';
+
     protected string $refreshTokenKey = 'UserRefreshToken';
+
     protected string $expiresInKey = 'ExpiresAt';
+
     protected ?string $openId;
+
     protected ?string $unionId;
 
     protected function getAuthUrl(): string
@@ -122,7 +127,7 @@ class QCloud extends Base
 
         $response = $this->fromJsonBody($response);
 
-        if (!empty($response['Response']['Error'])) {
+        if (! empty($response['Response']['Error'])) {
             throw new Exceptions\AuthorizeFailedException(
                 \sprintf('%s: %s', $response['Response']['Error']['Code'], $response['Response']['Error']['Message']),
                 $response
@@ -134,19 +139,19 @@ class QCloud extends Base
 
     protected function sign(string $requestMethod, string $host, array $query, string $payload, array $headers, string $credential, ?string $secretKey = null): bool|string
     {
-        $canonicalRequestString = \join(
+        $canonicalRequestString = \implode(
             "\n",
             [
                 $requestMethod,
                 '/',
                 \http_build_query($query),
                 "content-type:{$headers['Content-Type']}\nhost:{$host}\n",
-                "content-type;host",
+                'content-type;host',
                 \hash('SHA256', $payload),
             ]
         );
 
-        $signString = \join(
+        $signString = \implode(
             "\n",
             [
                 'TC3-HMAC-SHA256',
@@ -159,7 +164,7 @@ class QCloud extends Base
         $secretKey = $secretKey ?? $this->getSecretKey();
         $secretDate = \hash_hmac('SHA256', \gmdate('Y-m-d', $headers['X-TC-Timestamp']), "TC3{$secretKey}", true);
         $secretService = \hash_hmac('SHA256', $this->getServiceFromHost($host), $secretDate, true);
-        $secretSigning = \hash_hmac('SHA256', "tc3_request", $secretService, true);
+        $secretSigning = \hash_hmac('SHA256', 'tc3_request', $secretService, true);
 
         return \hash_hmac('SHA256', $signString, $secretSigning);
     }
@@ -169,12 +174,12 @@ class QCloud extends Base
      */
     protected function parseAccessToken(array | string $body): array
     {
-        if (!\is_array($body)) {
+        if (! \is_array($body)) {
             $body = \json_decode($body, true);
         }
 
         if (empty($body['UserOpenId'] ?? null)) {
-            throw new Exceptions\AuthorizeFailedException('Authorize Failed: ' . \json_encode($body, JSON_UNESCAPED_UNICODE), $body);
+            throw new Exceptions\AuthorizeFailedException('Authorize Failed: '.\json_encode($body, JSON_UNESCAPED_UNICODE), $body);
         }
 
         $this->openId = $body['UserOpenId'] ?? null;
@@ -201,7 +206,7 @@ class QCloud extends Base
                 ],
                 'headers' => [
                     'X-TC-Region' => 'ap-guangzhou', // 官方人员说写死
-                ]
+                ],
             ]
         );
 

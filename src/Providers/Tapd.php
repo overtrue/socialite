@@ -2,11 +2,11 @@
 
 namespace Overtrue\Socialite\Providers;
 
-use Psr\Http\Message\StreamInterface;
 use JetBrains\PhpStorm\ArrayShape;
 use Overtrue\Socialite\Contracts;
 use Overtrue\Socialite\Exceptions;
 use Overtrue\Socialite\User;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * @see https://www.tapd.cn/help/show#1120003271001000708
@@ -19,17 +19,17 @@ class Tapd extends Base
 
     protected function getAuthUrl(): string
     {
-        return $this->buildAuthUrlFromBase($this->baseUrl . '/quickstart/testauth');
+        return $this->buildAuthUrlFromBase($this->baseUrl.'/quickstart/testauth');
     }
 
     protected function getTokenUrl(): string
     {
-        return $this->baseUrl . '/tokens/request_token';
+        return $this->baseUrl.'/tokens/request_token';
     }
 
     protected function getRefreshTokenUrl(): string
     {
-        return $this->baseUrl . '/tokens/refresh_token';
+        return $this->baseUrl.'/tokens/refresh_token';
     }
 
     public function tokenFromCode(string $code): array
@@ -37,7 +37,7 @@ class Tapd extends Base
         $response = $this->getHttpClient()->post($this->getTokenUrl(), [
             'headers' => [
                 'Accept' => 'application/json',
-                'Authorization' => 'Basic ' . \base64_encode(\sprintf('%s:%s', $this->getClientId(), $this->getClientSecret()))
+                'Authorization' => 'Basic '.\base64_encode(\sprintf('%s:%s', $this->getClientId(), $this->getClientSecret())),
             ],
             'form_params' => $this->getTokenFields($code),
         ]);
@@ -48,7 +48,7 @@ class Tapd extends Base
     #[ArrayShape([
         Contracts\RFC6749_ABNF_GRANT_TYPE => 'string',
         Contracts\RFC6749_ABNF_REDIRECT_URI => 'null|string',
-        Contracts\RFC6749_ABNF_CODE => 'string'
+        Contracts\RFC6749_ABNF_CODE => 'string',
     ])]
     protected function getTokenFields(string $code): array
     {
@@ -62,7 +62,7 @@ class Tapd extends Base
     #[ArrayShape([
         Contracts\RFC6749_ABNF_GRANT_TYPE => 'string',
         Contracts\RFC6749_ABNF_REDIRECT_URI => 'null|string',
-        Contracts\RFC6749_ABNF_REFRESH_TOKEN => 'string'
+        Contracts\RFC6749_ABNF_REFRESH_TOKEN => 'string',
     ])]
     protected function getRefreshTokenFields(string $refreshToken): array
     {
@@ -78,20 +78,20 @@ class Tapd extends Base
         $response = $this->getHttpClient()->post($this->getRefreshTokenUrl(), [
             'headers' => [
                 'Accept' => 'application/json',
-                'Authorization' => 'Basic ' . \base64_encode(\sprintf('%s:%s', $this->getClientId(), $this->getClientSecret()))
+                'Authorization' => 'Basic '.\base64_encode(\sprintf('%s:%s', $this->getClientId(), $this->getClientSecret())),
             ],
             'form_params' => $this->getRefreshTokenFields($refreshToken),
         ]);
 
-        return $this->normalizeAccessTokenResponse((string)$response->getBody());
+        return $this->normalizeAccessTokenResponse((string) $response->getBody());
     }
 
     protected function getUserByToken(string $token): array
     {
-        $response = $this->getHttpClient()->get($this->baseUrl . '/users/info', [
+        $response = $this->getHttpClient()->get($this->baseUrl.'/users/info', [
             'headers' => [
                 'Accept' => 'application/json',
-                'Authorization' => 'Bearer ' . $token,
+                'Authorization' => 'Bearer '.$token,
             ],
         ]);
 
@@ -103,7 +103,7 @@ class Tapd extends Base
      */
     protected function mapUserToObject(array $user): Contracts\UserInterface
     {
-        if (!isset($user['status']) && $user['status'] != 1) {
+        if (! isset($user['status']) && $user['status'] != 1) {
             throw new Exceptions\BadRequestException('用户信息获取失败');
         }
 
@@ -123,19 +123,19 @@ class Tapd extends Base
     {
         if ($response instanceof StreamInterface) {
             $response->rewind();
-            $response = (string)$response;
+            $response = (string) $response;
         }
 
         if (\is_string($response)) {
             $response = \json_decode($response, true) ?? [];
         }
 
-        if (!\is_array($response)) {
+        if (! \is_array($response)) {
             throw new Exceptions\AuthorizeFailedException('Invalid token response', [$response]);
         }
 
         if (empty($response['data'][$this->accessTokenKey] ?? null)) {
-            throw new Exceptions\AuthorizeFailedException('Authorize Failed: ' . \json_encode($response, JSON_UNESCAPED_UNICODE), $response);
+            throw new Exceptions\AuthorizeFailedException('Authorize Failed: '.\json_encode($response, JSON_UNESCAPED_UNICODE), $response);
         }
 
         return $response + [

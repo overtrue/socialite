@@ -12,21 +12,22 @@ class Azure extends Base
     public const NAME = 'azure';
 
     protected array $scopes = ['User.Read'];
+
     protected string $scopeSeparator = ' ';
 
     protected function getAuthUrl(): string
     {
-        return $this->buildAuthUrlFromBase($this->getBaseUrl() . '/oauth2/v2.0/authorize');
+        return $this->buildAuthUrlFromBase($this->getBaseUrl().'/oauth2/v2.0/authorize');
     }
 
     protected function getBaseUrl(): string
     {
-        return 'https://login.microsoftonline.com/' . $this->config['tenant'];
+        return 'https://login.microsoftonline.com/'.$this->config['tenant'];
     }
 
     protected function getTokenUrl(): string
     {
-        return $this->getBaseUrl() . '/oauth2/v2.0/token';
+        return $this->getBaseUrl().'/oauth2/v2.0/token';
     }
 
     protected function getUserByToken(string $token, ?array $query = []): array
@@ -35,7 +36,7 @@ class Azure extends Base
             'https://graph.microsoft.com/v1.0/me',
             ['headers' => [
                 'Accept' => 'application/json',
-                'Authorization' => 'Bearer ' . $token,
+                'Authorization' => 'Bearer '.$token,
             ],
             ]
         );

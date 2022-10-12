@@ -20,7 +20,9 @@ class DingTalk extends Base
     public const NAME = 'dingtalk';
 
     protected string $getUserByCode = 'https://oapi.dingtalk.com/sns/getuserinfo_bycode';
+
     protected array $scopes = ['snsapi_login'];
+
     protected string $scopeSeparator = ' ';
 
     protected function getAuthUrl(): string
@@ -86,7 +88,7 @@ class DingTalk extends Base
 
     protected function createSignature(int $time): string
     {
-        return \base64_encode(\hash_hmac('sha256', (string)$time, (string)$this->getClientSecret(), true));
+        return \base64_encode(\hash_hmac('sha256', (string) $time, (string) $this->getClientSecret(), true));
     }
 
     /**
@@ -96,7 +98,7 @@ class DingTalk extends Base
      */
     public function userFromCode(string $code): Contracts\UserInterface
     {
-        $time = (int)\microtime(true) * 1000;
+        $time = (int) \microtime(true) * 1000;
 
         $responseInstance = $this->getHttpClient()->post($this->getUserByCode, [
             'query' => [
@@ -109,7 +111,7 @@ class DingTalk extends Base
         $response = $this->fromJsonBody($responseInstance);
 
         if (0 != ($response['errcode'] ?? 1)) {
-            throw new Exceptions\BadRequestException((string)$responseInstance->getBody());
+            throw new Exceptions\BadRequestException((string) $responseInstance->getBody());
         }
 
         return new User([

@@ -14,19 +14,23 @@ class Facebook extends Base
     public const NAME = 'facebook';
 
     protected string $graphUrl = 'https://graph.facebook.com';
+
     protected string $version = 'v3.3';
+
     protected array $fields = ['first_name', 'last_name', 'email', 'gender', 'verified'];
+
     protected array $scopes = ['email'];
+
     protected bool $popup = false;
 
     protected function getAuthUrl(): string
     {
-        return $this->buildAuthUrlFromBase('https://www.facebook.com/' . $this->version . '/dialog/oauth');
+        return $this->buildAuthUrlFromBase('https://www.facebook.com/'.$this->version.'/dialog/oauth');
     }
 
     protected function getTokenUrl(): string
     {
-        return $this->graphUrl . '/oauth/access_token';
+        return $this->graphUrl.'/oauth/access_token';
     }
 
     public function tokenFromCode(string $code): array
@@ -38,17 +42,15 @@ class Facebook extends Base
         return $this->normalizeAccessTokenResponse($response->getBody());
     }
 
-    /**
-     */
     protected function getUserByToken(string $token, ?array $query = []): array
     {
         $appSecretProof = \hash_hmac('sha256', $token, $this->getConfig()->get(Contracts\RFC6749_ABNF_CLIENT_SECRET));
 
-        $response = $this->getHttpClient()->get($this->graphUrl . '/' . $this->version . '/me', [
+        $response = $this->getHttpClient()->get($this->graphUrl.'/'.$this->version.'/me', [
             'query' => [
                 Contracts\RFC6749_ABNF_ACCESS_TOKEN => $token,
                 'appsecret_proof' => $appSecretProof,
-                'fields' => $this->formatScopes($this->fields, $this->scopeSeparator)
+                'fields' => $this->formatScopes($this->fields, $this->scopeSeparator),
             ],
             'headers' => [
                 'Accept' => 'application/json',
@@ -62,7 +64,7 @@ class Facebook extends Base
     protected function mapUserToObject(array $user): Contracts\UserInterface
     {
         $userId = $user[Contracts\ABNF_ID] ?? null;
-        $avatarUrl = $this->graphUrl . '/' . $this->version . '/' . $userId . '/picture';
+        $avatarUrl = $this->graphUrl.'/'.$this->version.'/'.$userId.'/picture';
 
         $firstName = $user['first_name'] ?? null;
         $lastName = $user['last_name'] ?? null;
@@ -70,10 +72,10 @@ class Facebook extends Base
         return new User([
             Contracts\ABNF_ID => $user[Contracts\ABNF_ID] ?? null,
             Contracts\ABNF_NICKNAME => null,
-            Contracts\ABNF_NAME => $firstName . ' ' . $lastName,
+            Contracts\ABNF_NAME => $firstName.' '.$lastName,
             Contracts\ABNF_EMAIL => $user[Contracts\ABNF_EMAIL] ?? null,
-            Contracts\ABNF_AVATAR => $userId ? $avatarUrl . '?type=normal' : null,
-            'avatar_original' => $userId ? $avatarUrl . '?width=1920' : null,
+            Contracts\ABNF_AVATAR => $userId ? $avatarUrl.'?type=normal' : null,
+            'avatar_original' => $userId ? $avatarUrl.'?width=1920' : null,
         ]);
     }
 

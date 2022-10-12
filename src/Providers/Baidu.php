@@ -15,8 +15,11 @@ class Baidu extends Base
     public const NAME = 'baidu';
 
     protected string $baseUrl = 'https://openapi.baidu.com';
+
     protected string $version = '2.0';
+
     protected array $scopes = ['basic'];
+
     protected string $display = 'popup';
 
     public function withDisplay(string $display): self
@@ -35,7 +38,7 @@ class Baidu extends Base
 
     protected function getAuthUrl(): string
     {
-        return $this->buildAuthUrlFromBase($this->baseUrl . '/oauth/' . $this->version . '/authorize');
+        return $this->buildAuthUrlFromBase($this->baseUrl.'/oauth/'.$this->version.'/authorize');
     }
 
     protected function getCodeFields(): array
@@ -51,7 +54,7 @@ class Baidu extends Base
 
     protected function getTokenUrl(): string
     {
-        return $this->baseUrl . '/oauth/' . $this->version . '/token';
+        return $this->baseUrl.'/oauth/'.$this->version.'/token';
     }
 
     #[ArrayShape([
@@ -71,7 +74,7 @@ class Baidu extends Base
     protected function getUserByToken(string $token): array
     {
         $response = $this->getHttpClient()->get(
-            $this->baseUrl . '/rest/' . $this->version . '/passport/users/getInfo',
+            $this->baseUrl.'/rest/'.$this->version.'/passport/users/getInfo',
             [
                 'query' => [
                     Contracts\RFC6749_ABNF_ACCESS_TOKEN => $token,
@@ -93,7 +96,7 @@ class Baidu extends Base
             Contracts\ABNF_NICKNAME => $user['realname'] ?? null,
             Contracts\ABNF_NAME => $user['username'] ?? null,
             Contracts\ABNF_EMAIL => '',
-            Contracts\ABNF_AVATAR => $user['portrait'] ? 'http://tb.himg.baidu.com/sys/portraitn/item/' . $user['portrait'] : null,
+            Contracts\ABNF_AVATAR => $user['portrait'] ? 'http://tb.himg.baidu.com/sys/portraitn/item/'.$user['portrait'] : null,
         ]);
     }
 }

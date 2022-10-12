@@ -25,14 +25,14 @@ class Douban extends Base
     }
 
     /**
-     * @param string $token
-     * @param ?array $query
+     * @param  string  $token
+     * @param  ?array  $query
      */
     protected function getUserByToken(string $token, ?array $query = []): array
     {
         $response = $this->getHttpClient()->get('https://api.douban.com/v2/user/~me', [
             'headers' => [
-                'Authorization' => 'Bearer ' . $token,
+                'Authorization' => 'Bearer '.$token,
             ],
         ]);
 

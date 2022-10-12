@@ -8,11 +8,15 @@ use JetBrains\PhpStorm\Pure;
 class SocialiteManager implements Contracts\FactoryInterface
 {
     protected Config $config;
+
     protected array $resolved = [];
+
     protected static array $customCreators = [];
+
     protected const PROVIDERS = [
         Providers\Alipay::NAME => Providers\Alipay::class,
         Providers\Azure::NAME => Providers\Azure::class,
+        Providers\Coding::NAME => Providers\Coding::class,
         Providers\DingTalk::NAME => Providers\DingTalk::class,
         Providers\DouYin::NAME => Providers\DouYin::class,
         Providers\Douban::NAME => Providers\Douban::class,
@@ -54,7 +58,7 @@ class SocialiteManager implements Contracts\FactoryInterface
     {
         $name = \strtolower($name);
 
-        if (!isset($this->resolved[$name])) {
+        if (! isset($this->resolved[$name])) {
             $this->resolved[$name] = $this->createProvider($name);
         }
 
@@ -94,7 +98,7 @@ class SocialiteManager implements Contracts\FactoryInterface
             return $this->callCustomCreator($provider, $config);
         }
 
-        if (!$this->isValidProvider($provider)) {
+        if (! $this->isValidProvider($provider)) {
             throw new Exceptions\InvalidArgumentException("Provider [{$name}] not supported.");
         }
 

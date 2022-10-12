@@ -15,6 +15,7 @@ class Figma extends Base
     public const NAME = 'figma';
 
     protected string $scopeSeparator = '';
+
     protected array $scopes = ['file_read'];
 
     protected function getAuthUrl(): string
@@ -37,11 +38,11 @@ class Figma extends Base
     }
 
     #[ArrayShape([
-        Contracts\RFC6749_ABNF_CLIENT_ID => "null|string",
-        Contracts\RFC6749_ABNF_CLIENT_SECRET => "null|string",
-        Contracts\RFC6749_ABNF_CODE => "string",
-        Contracts\RFC6749_ABNF_REDIRECT_URI => "null|string",
-        Contracts\RFC6749_ABNF_GRANT_TYPE => 'string'
+        Contracts\RFC6749_ABNF_CLIENT_ID => 'null|string',
+        Contracts\RFC6749_ABNF_CLIENT_SECRET => 'null|string',
+        Contracts\RFC6749_ABNF_CODE => 'string',
+        Contracts\RFC6749_ABNF_REDIRECT_URI => 'null|string',
+        Contracts\RFC6749_ABNF_GRANT_TYPE => 'string',
     ])]
     protected function getTokenFields(string $code): array
     {
@@ -58,7 +59,7 @@ class Figma extends Base
         $response = $this->getHttpClient()->get('https://api.figma.com/v1/me', [
             'headers' => [
                 'Accept' => 'application/json',
-                'Authorization' => 'Bearer ' . $token,
+                'Authorization' => 'Bearer '.$token,
             ],
         ]);
 

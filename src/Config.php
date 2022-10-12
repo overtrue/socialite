@@ -10,7 +10,7 @@ class Config implements ArrayAccess, JsonSerializable
     protected array $config;
 
     /**
-     * @param array $config
+     * @param  array  $config
      */
     public function __construct(array $config)
     {
@@ -26,7 +26,7 @@ class Config implements ArrayAccess, JsonSerializable
         }
 
         foreach (\explode('.', $key) as $segment) {
-            if (!\is_array($config) || !\array_key_exists($segment, $config)) {
+            if (! \is_array($config) || ! \array_key_exists($segment, $config)) {
                 return $default;
             }
             $config = $config[$segment];
@@ -42,7 +42,7 @@ class Config implements ArrayAccess, JsonSerializable
 
         while (\count($keys) > 1) {
             $key = \array_shift($keys);
-            if (!isset($config[$key]) || !\is_array($config[$key])) {
+            if (! isset($config[$key]) || ! \is_array($config[$key])) {
                 $config[$key] = [];
             }
             $config = &$config[$key];

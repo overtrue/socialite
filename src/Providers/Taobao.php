@@ -15,8 +15,11 @@ class Taobao extends Base
     public const NAME = 'taobao';
 
     protected string $baseUrl = 'https://oauth.taobao.com';
+
     protected string $gatewayUrl = 'https://eco.taobao.com/router/rest';
+
     protected string $view = 'web';
+
     protected array $scopes = ['user_info'];
 
     public function withView(string $view): self
@@ -28,14 +31,14 @@ class Taobao extends Base
 
     protected function getAuthUrl(): string
     {
-        return $this->buildAuthUrlFromBase($this->baseUrl . '/authorize');
+        return $this->buildAuthUrlFromBase($this->baseUrl.'/authorize');
     }
 
     #[ArrayShape([
         Contracts\RFC6749_ABNF_CLIENT_ID => 'null|string',
         Contracts\RFC6749_ABNF_REDIRECT_URI => 'null|string',
         'view' => 'string',
-        Contracts\RFC6749_ABNF_RESPONSE_TYPE => 'string'
+        Contracts\RFC6749_ABNF_RESPONSE_TYPE => 'string',
     ])]
     public function getCodeFields(): array
     {
@@ -49,7 +52,7 @@ class Taobao extends Base
 
     protected function getTokenUrl(): string
     {
-        return $this->baseUrl . '/token';
+        return $this->baseUrl.'/token';
     }
 
     #[ArrayShape([
@@ -63,8 +66,8 @@ class Taobao extends Base
     protected function getTokenFields(string $code): array
     {
         return parent::getTokenFields($code) + [
-            Contracts\RFC6749_ABNF_GRANT_TYPE =>Contracts\RFC6749_ABNF_AUTHORATION_CODE,
-            'view' => $this->view
+            Contracts\RFC6749_ABNF_GRANT_TYPE => Contracts\RFC6749_ABNF_AUTHORATION_CODE,
+            'view' => $this->view,
         ];
     }
 
@@ -103,7 +106,7 @@ class Taobao extends Base
         $stringToBeSigned = $this->getConfig()->get(Contracts\RFC6749_ABNF_CLIENT_SECRET);
 
         foreach ($params as $k => $v) {
-            if (!\is_array($v) && !\str_starts_with($v, '@')) {
+            if (! \is_array($v) && ! \str_starts_with($v, '@')) {
                 $stringToBeSigned .= "$k$v";
             }
         }
@@ -136,6 +139,6 @@ class Taobao extends Base
 
         $query = \http_build_query($this->getPublicFields($token, $apiFields), '', '&', $this->encodingType);
 
-        return $url . '?' . $query;
+        return $url.'?'.$query;
     }
 }

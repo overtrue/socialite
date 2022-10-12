@@ -15,9 +15,13 @@ class WeWork extends Base
     public const NAME = 'wework';
 
     protected bool $detailed = false;
+
     protected ?int $agentId = null;
+
     protected ?string $apiAccessToken;
+
     protected bool $asQrcode = false;
+
     protected string $baseUrl = 'https://qyapi.weixin.qq.com';
 
     public function __construct(array $config)
@@ -90,12 +94,13 @@ class WeWork extends Base
             Contracts\RFC6749_ABNF_STATE => $this->state,
         ]);
 
-        if (!$this->agentId && (str_contains($scopes, 'snsapi_privateinfo') || $this->asQrcode)) {
+        if (! $this->agentId && (str_contains($scopes, 'snsapi_privateinfo') || $this->asQrcode)) {
             throw new Exceptions\InvalidArgumentException("agent_id is require when qrcode mode or scopes is 'snsapi_privateinfo'");
         }
 
         if ($this->asQrcode) {
             unset($queries[Contracts\RFC6749_ABNF_SCOPE]);
+
             return \sprintf('https://open.work.weixin.qq.com/wwopen/sso/qrConnect?%s', http_build_query($queries));
         }
 
@@ -118,7 +123,7 @@ class WeWork extends Base
     protected function getUser(string $token, string $code): array
     {
         $responseInstance = $this->getHttpClient()->get(
-            $this->baseUrl . '/cgi-bin/user/getuserinfo',
+            $this->baseUrl.'/cgi-bin/user/getuserinfo',
             [
                 'query' => \array_filter(
                     [
@@ -132,7 +137,7 @@ class WeWork extends Base
         $response = $this->fromJsonBody($responseInstance);
 
         if (($response['errcode'] ?? 1) > 0 || (empty($response['UserId']) && empty($response['OpenId']))) {
-            throw new Exceptions\AuthorizeFailedException((string)$responseInstance->getBody(), $response);
+            throw new Exceptions\AuthorizeFailedException((string) $responseInstance->getBody(), $response);
         } elseif (empty($response['UserId'])) {
             $this->detailed = false;
         }
@@ -145,7 +150,7 @@ class WeWork extends Base
      */
     protected function getUserById(string $userId): array
     {
-        $responseInstance = $this->getHttpClient()->post($this->baseUrl . '/cgi-bin/user/get', [
+        $responseInstance = $this->getHttpClient()->post($this->baseUrl.'/cgi-bin/user/get', [
             'query' => [
                 Contracts\RFC6749_ABNF_ACCESS_TOKEN => $this->getApiAccessToken(),
                 'userid' => $userId,
@@ -155,7 +160,7 @@ class WeWork extends Base
         $response = $this->fromJsonBody($responseInstance);
 
         if (($response['errcode'] ?? 1) > 0 || empty($response['userid'])) {
-            throw new Exceptions\AuthorizeFailedException((string)$responseInstance->getBody(), $response);
+            throw new Exceptions\AuthorizeFailedException((string) $responseInstance->getBody(), $response);
         }
 
         return $response;
@@ -179,7 +184,7 @@ class WeWork extends Base
      */
     protected function requestApiAccessToken(): string
     {
-        $responseInstance = $this->getHttpClient()->get($this->baseUrl . '/cgi-bin/gettoken', [
+        $responseInstance = $this->getHttpClient()->get($this->baseUrl.'/cgi-bin/gettoken', [
             'query' => \array_filter(
                 [
                     'corpid' => $this->config->get('corp_id')
@@ -195,7 +200,7 @@ class WeWork extends Base
         $response = $this->fromJsonBody($responseInstance);
 
         if (($response['errcode'] ?? 1) > 0) {
-            throw new Exceptions\AuthorizeFailedException((string)$responseInstance->getBody(), $response);
+            throw new Exceptions\AuthorizeFailedException((string) $responseInstance->getBody(), $response);
         }
 
         return $response[Contracts\RFC6749_ABNF_ACCESS_TOKEN];

@@ -1,6 +1,6 @@
 # Socialite
 
-Socialite 是一个 [OAuth2](https://oauth.net/2/) 认证工具。 它的灵感来源于 [laravel/socialite](https://github.com/laravel/socialite) ， 你可以很轻易的在任何 PHP 项目中使用它。[英文文档](/README_EN.md)
+Socialite is an [OAuth2](https://oauth.net/2/)  Authentication tool. It is inspired by [laravel/socialite](https://github.com/laravel/socialite), You can easily use it in any PHP project.  [中文文档](/README.md)
 
 [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/overtrue/socialite?style=flat-square)](https://github.com/overtrue/socialite/releases)
 [![GitHub License](https://img.shields.io/github/license/overtrue/socialite?style=flat-square)](https://github.com/overtrue/socialite/blob/master/LICENSE)
@@ -8,36 +8,35 @@ Socialite 是一个 [OAuth2](https://oauth.net/2/) 认证工具。 它的灵感�
 
 [![Sponsor me](https://github.com/overtrue/overtrue/blob/master/sponsor-me-button-s.svg?raw=true)](https://github.com/sponsors/overtrue)
 
-该工具现已支持平台有：Facebook，Github，Google，Linkedin，Outlook，QQ，TAPD，支付宝，淘宝，百度，钉钉，微博，微信，抖音，飞书，豆瓣，企业微信，腾讯云，Line，Gitee，Coding。
+This tool now supports platforms such as Facebook, GitHub, Google, Figma, LinkedIn, Outlook, QQ, Tapd, Alipay, Taobao, Baidu, DingTalk, Weibo, WeChat, Douyin, Feishu, Douban, WeWork, Tencent Cloud, Line, Gitee and Coding.
 
 如果你喜欢我的项目并想支持我，[点击这里 :heart:](https://github.com/sponsors/overtrue)
 
-# 版本要求
+# Requirement
 
 ```
 PHP >= 8.0.2
 ```
-
-# 安装
+# Installation
 
 ```shell
 $ composer require "overtrue/socialite" -vvv
 ```
 
-# 使用指南
+# Usage
 
-用户只需要创建相应配置变量，然后通过工具为各个平台创建认证应用，并轻松获取该平台的 access_token 和用户相关信息。工具实现逻辑详见参照各大平台 OAuth2 文档。
+Users just need to create the corresponding configuration variables, then create the authentication application for each platform through the tool, and easily obtain the access_token and user  information for that platform. The implementation logic of the tool is referred to OAuth2 documents of major platforms for details.
 
-工具使用大致分为以下几步：
+The tool is used in the following steps:
 
-1. 配置平台设置
-2. 创建对应平台应用
-3. 让用户跳转至平台认证
-4. 服务器收到平台回调 Code，使用 Code 换取平台处用户信息（包括 access_token）
+1. Configurate platform config
+2. Use this tool to create a platform application
+3. Let the user redirect to platform authentication
+4. The server receives a Code callback from the platform, and uses the Code to exchange the user information on the platform (including access_token).
 
-为 Laravel 用户创建的更方便的整合的包： [overtrue/laravel-socialite](https://github.com/overtrue/laravel-socialite)
+Packages created for Laravel users are easier to integrate:  [overtrue/laravel-socialite](https://github.com/overtrue/laravel-socialite)
 
-`authorize.php`: 让用户跳转至平台认证
+`authorize.php`:
 
 ```php
 <?php
@@ -88,12 +87,11 @@ $user->getEmail();     // "anzhengchao@gmail.com"
 ...
 ```
 
-## 配置
+## Configuration
 
-为每个平台设置相同的键值对后就能开箱即用：`client_id`, `client_secret`, `redirect`.
+Each create uses the same configuration keys: `client_id`, `client_secret`, `redirect`.
 
-示例：
-
+Example:
 ```php
 $config = [
   'weibo' => [
@@ -109,49 +107,41 @@ $config = [
 ];
 ```
 
-### 自定义应用名
+### Custom app name
 
-你可以使用任意你喜欢的名字对每个平台进行命名，比如说 `foo`， 采用别名的方法后需要在配置中多设置一个 `provider` 键，这样才能告诉工具包如何正确找到你想要的程序：
+You can use any name you like as the name of the application, such as `foo`, and set provider using `provider` key：
 
 ```php
 $config = [
-  // 为 github 应用起别名为 foo
     'foo' => [
-        'provider' 			=> 'github',  // <-- provider name
-        'client_id' 		=> 'your-app-id',
+        'provider' => 'github',  // <-- provider name
+        'client_id' => 'your-app-id',
         'client_secret' => 'your-app-secret',
-        'redirect' 			=> 'http://localhost/socialite/callback.php',
+        'redirect' => 'http://localhost/socialite/callback.php',
     ],
        
-    // 另外一个名字叫做 bar 的 github 应用
+    // another github app
     'bar' => [
-        'provider' 			=> 'github',  // <-- provider name
-        'client_id' 		=> 'your-app-id',
+        'provider' => 'github',  // <-- provider name
+        'client_id' => 'your-app-id',
         'client_secret' => 'your-app-secret',
-        'redirect' 			=> 'http://localhost/socialite/callback.php',
+        'redirect' => 'http://localhost/socialite/callback.php',
     ],
-  
     //...
 ];
-
-$socialite = new SocialiteManager($config);
-
-$appFoo = $socialite->create('foo');
-$appBar = $socialite->create('bar');
 ```
 
-### 扩展自定义服务提供程序
+### Extends custom provider
 
-你可以很容易的从自定义的服务提供中创建应用，只需要遵循如下两点：
+You can create application from you custom provider easily，you have to ways to do this: 
 
-1. 使用自定义创建器
-
-   如下代码所示，为 foo 应用定义了服务提供名，但是工具本身还未支持，所以使用创建器 `extend()`，以闭包函数的形式为该服务提供创建一个实例。
+1. Using custom creator:
+   As shown in the following code, the service provider name is defined for the Foo application, but the tool itself does not support it, so use the creator `extend()` to create an instance of the service provider as a closure function.
 
 ```php
 $config = [
     'foo' => [
-        'provider' => 'myprovider',  // <-- 一个工具还未支持的服务提供程序
+        'provider' => 'myprovider',  // <-- provider name
         'client_id' => 'your-app-id',
         'client_secret' => 'your-app-secret',
         'redirect' => 'http://localhost/socialite/callback.php',
@@ -167,9 +157,9 @@ $socialite->extend('myprovider', function(array $config) {
 $app = $socialite->create('foo');
 ```
 
-2. 使用服务提供类
+2. Using provider:
 
->👋🏻 你的自定义服务提供类必须实现`Overtrue\Socialite\Contracts\ProviderInterface` 接口
+>👋🏻 Your custom provider class must be implements of `Overtrue\Socialite\Contracts\ProviderInterface`.
 
 ```php
 class MyCustomProvider implements \Overtrue\Socialite\Contracts\ProviderInterface 
@@ -178,15 +168,15 @@ class MyCustomProvider implements \Overtrue\Socialite\Contracts\ProviderInterfac
 }
 ```
 
-接下来为 `provider` 设置该类名让工具可以找到该类并实例化：
+then set `provider` with the class name:
 
 ```php
 $config = [
     'foo' => [
-        'provider' 			=> MyCustomProvider::class,  // <-- 类名
-        'client_id' 		=> 'your-app-id',
+        'provider' => MyCustomProvider::class,  // <-- class name
+        'client_id' => 'your-app-id',
         'client_secret' => 'your-app-secret',
-        'redirect'		 	=> 'http://localhost/socialite/callback.php',
+        'redirect' => 'http://localhost/socialite/callback.php',
     ],
 ];
 
@@ -196,32 +186,28 @@ $app = $socialite->create('foo');
 
 
 
-## 平台
+## Platform
 
-不同的平台有不同的配置方法，为了确保工具的正常运行，所以请确保你所使用的平台的配置都是如期设置的。
+Different platforms have different configuration methods, so please check the platform Settings you are using.
 
-### [支付宝](https://opendocs.alipay.com/open/200/105310#s2)
+### [Alipay](https://opendocs.alipay.com/open/200/105310#s2)
 
-请按如下方式配置
-
+You must have the following configuration.
 ```php
 $config = [
   'alipay' => [
-    // 这个键名还能像官方文档那样叫做 'app_id'
+    // This can also be named as 'app_id' like the official documentation.
     'client_id' => 'your-app-id', 
  
-    // 请根据官方文档，在官方管理后台配置 RSA2
-    // 注意： 这是你自己的私钥
-    // 注意： 不允许私钥内容有其他字符
-    // 建议： 为了保证安全，你可以将文本信息从磁盘文件中读取，而不是在这里明文
+    // Please refer to the official documentation, in the official management background configuration RSA2.
+    // Note: This is your own private key.
+    // Note: Do not allow the private key content to have extra characters.
+    // Recommendation: For security, you can read directly from the file. But here as long as the value, please remember to remove the head and tail of the decoration.
     'rsa_private_key' => 'your-rsa-private-key',
 
-    // 确保这里的值与你在服务后台绑定的地址值一致
-    // 这个键名还能像官方文档那样叫做 'redirect_url'
+    // Be sure to set this value and make sure that it is the same address value as set in the official admin system.
+    // This can also be named as 'redirect_url' like the official documentation.
     'redirect' => 'http://localhost/socialite/callback.php',
-    
-    // 沙箱模式接入地址见 https://opendocs.alipay.com/open/220/105337#%E5%85%B3%E4%BA%8E%E6%B2%99%E7%AE%B1
-    'sandbox' => false,
   ]
   ...
 ];
@@ -230,21 +216,20 @@ $socialite = new SocialiteManager($config);
 
 $user = $socialite->create('alipay')->userFromCode('here is auth code');
 
-// 详见文档后面 "User interface"
+// See this documents "User interface"
 $user->getId();        // 1472352
 $user->getNickname();  // "overtrue"
 $user->getUsername();  // "overtrue"
 $user->getName();      // "安正超"
 ...
 ```
+Only RSA2 personal private keys are supported, so stay tuned if you want to log in with a certificate.
 
-本工具暂时只支持 RSA2 个人私钥认证方式。
+### [DingTalk](https://ding-doc.dingtalk.com/doc#/serverapi3/mrugr3)
 
-### [钉钉](https://ding-doc.dingtalk.com/doc#/serverapi3/mrugr3)
+Follow the documentation and configure it like following.
 
-如文档所示
-
-> 注意：该工具仅支持 QR code 连接到第三方网站，用来获取用户信息（opeid， unionid 和 nickname）
+> Note: It only supported QR code access to third-part websites. i.e exchange for user information(opendid, unionid and nickname)
 
 ```php
 $config = [
@@ -264,7 +249,7 @@ $socialite = new SocialiteManager($config);
 
 $user = $socialite->create('dingtalk')->userFromCode('here is auth code');
 
-// 详见文档后面 "User interface"
+// See this documents "User interface"
 $user->getId();        // 1472352
 $user->getNickname();  // "overtrue"
 $user->getUsername();  // "overtrue"
@@ -272,9 +257,9 @@ $user->getName();      // "安正超"
 ...
 ```
 
-### [抖音](https://open.douyin.com/platform/doc/OpenAPI-oauth2)
+### [Douyin](https://open.douyin.com/platform/doc/OpenAPI-oauth2)
 
-> 注意： 使用抖音服务提供的时候，如果你想直接使用 access_token 获取用户信息时，请先设置 openid。 先调用 `withOpenId()` 再调用 `userFromToken()`
+> Note： using the Douyin create that if you get user information directly using access token, set up the openid first. the openid can be obtained by code when access is obtained, so call `userFromCode()` automatically configured for you openid, if call `userFromToken()` first call `withOpenId()`
 
 ```php
 $config = [
@@ -294,9 +279,9 @@ $user = $socialite->create('douyin')->userFromCode('here is auth code');
 $user = $socialite->create('douyin')->withOpenId('openId')->userFromToken('here is the access token');
 ```
 
-### [头条](https://open.douyin.com/platform/resource/docs/develop/permission/toutiao-or-xigua/OAuth2.0/)
+### [TouTiao](https://open.douyin.com/platform/resource/docs/develop/permission/toutiao-or-xigua/OAuth2.0/)
 
-> 注意： 使用`头条`服务提供的时候，如果你想直接使用 access_token 获取用户信息时，请先设置 openid。 先调用 `withOpenId()` 再调用 `userFromToken()`
+> Note： using the `toutiao` create that if you get user information directly using access token, set up the openid first. the openid can be obtained by code when access is obtained, so call `userFromCode()` automatically configured for you openid, if call `userFromToken()` first call `withOpenId()`
 
 ```php
 $config = [
@@ -313,9 +298,9 @@ $user = $socialite->create('toutiao')->userFromCode('here is auth code');
 $user = $socialite->create('toutiao')->withOpenId('openId')->userFromToken('here is the access token');
 ```
 
-### [西瓜](https://open.douyin.com/platform/resource/docs/develop/permission/toutiao-or-xigua/OAuth2.0/)
+### [XiGua](https://open.douyin.com/platform/resource/docs/develop/permission/toutiao-or-xigua/OAuth2.0/)
 
-> 注意： 使用`西瓜`服务提供的时候，如果你想直接使用 access_token 获取用户信息时，请先设置 openid。 先调用 `withOpenId()` 再调用 `userFromToken()`
+> Note： using the `xigua` create that if you get user information directly using access token, set up the openid first. the openid can be obtained by code when access is obtained, so call `userFromCode()` automatically configured for you openid, if call `userFromToken()` first call `withOpenId()`
 
 ```php
 $config = [
@@ -333,27 +318,26 @@ $user = $socialite->create('xigua')->withOpenId('openId')->userFromToken('here i
 ```
 
 
-### [百度](https://developer.baidu.com/wiki/index.php?title=docs/oauth)
+### [Baidu](https://developer.baidu.com/wiki/index.php?title=docs/oauth)
 
-其他配置没啥区别，在用法上，可以很轻易的选择重定向登录页面的模式，通过 `withDisplay()`
+You can choose the form you want display by using `withDisplay()`.
 
-- **page：**全屏形式的授权页面 (默认)，适用于 web 应用。
-- **popup:** 弹框形式的授权页面，适用于桌面软件应用和 web 应用。
-- **dialog:** 浮层形式的授权页面，只能用于站内 web 应用。
-- **mobile:** Iphone/Android 等智能移动终端上用的授权页面，适用于 Iphone/Android 等智能移动终端上的应用。
-- **tv:** 电视等超大显示屏使用的授权页面。
-- **pad:** IPad/Android 等智能平板电脑使用的授权页面。
+- **page**
+- **popup**
+- **dialog**
+- **mobile**
+- **tv**
+- **pad**
 
 ```php
 $authUrl = $socialite->create('baidu')->withDisplay('mobile')->redirect();
 
 ```
+`popup` mode is the default setting with display. `basic` is the default with scopes.
 
-`popup` 模式是工具内默认的使用模式。`basic` 是默认使用的 scopes 值。
+### [Feishu](https://open.feishu.cn/document/ukTMukTMukTM/uITNz4iM1MjLyUzM)
 
-### [飞书](https://open.feishu.cn/document/ukTMukTMukTM/uITNz4iM1MjLyUzM)
-
-通过一些简单的方法配置  app_ticket 就能使用内部应用模式
+Some simple way to use by internal app mode and config app_ticket.
 
 ```php
 $config = [
@@ -367,8 +351,8 @@ $config = [
         // or 'redirect_url'
         'redirect' => 'redirect URL',
 
-        // 如果你想使用使用内部应用的方式获取 app_access_token
-        // 对这个键设置了 'internal' 值那么你已经开启了内部应用模式
+        // if you want to use internal way to get app_access_token
+        // set this key by 'internal' then you already turn on the internal app mode 
         'app_mode' => 'internal'
     ]
 ];
@@ -381,52 +365,47 @@ $feishuDriver->withInternalAppMode()->userFromCode('here is code');
 $feishuDriver->withDefaultMode()->withAppTicket('app_ticket')->userFromCode('here is code');
 ```
 
-### [淘宝](https://open.taobao.com/doc.htm?docId=102635&docType=1&source=search)
+### [Taobao](https://open.taobao.com/doc.htm?docId=102635&docType=1&source=search)
 
-其他配置与其他平台的一样，你能选择你想要展示的重定向页面类型通过使用 `withView()` 
+You can choose the form you want display by using `withView()`.
 
 ```php
 $authUrl = $socialite->create('taobao')->withView('wap')->redirect();
 ```
+`web` mode is the default setting with display. `user_info` is the default with scopes.
 
-`web` 模式是工具默认使用的展示方式， `user_info` 是默认使用的 scopes 范围值。
+### [WeChat](https://developers.weixin.qq.com/doc/oplatform/Third-party_Platforms/Official_Accounts/official_account_website_authorization.html)
 
-### [微信](https://developers.weixin.qq.com/doc/oplatform/Third-party_Platforms/Official_Accounts/official_account_website_authorization.html)
+We support Open Platform Third-party Platform webpage authorizations on behalf of Official Account.
 
-我们支持开放平台代表公众号进行第三方平台网页授权。
-
-你只需要像下面这样输入你的配置。官方账号不需要授权。
-
+You just need input your config like below config. Official Accounts authorizations only doesn't need.
 ```php
 ...
 [
     'wechat' =>
         [
-            'client_id' 		=> 'client_id',
+            'client_id' => 'client_id',
             'client_secret' => 'client_secret',
-            'redirect' 			=> 'redirect-url',
+            'redirect' => 'redirect-url',
 
-            // 开放平台 - 第三方平台所需
+            // Open Platform - Third-party Platform Need
             'component' => [
-                // or 'app_id', 'component_app_id' as key
                 'id' => 'component-app-id',
-                // or 'app_token', 'access_token', 'component_access_token' as key
-                'token' => 'component-access-token',
+                'token' => 'component-access-token', // or Using a callable as value.
             ]
         ]
 ],
 ...
 ```
 
-
 ### [Coding](https://coding.net/help/openapi#oauth)
 
-您需要额外配置 `team_url` 为您的团队域名，例如：
+Please add the `team_url` parameter to the configuration file to specify the team domain name as follows:
 
 ```php
 $config = [
     'coding' => [
-        'team_url' => 'https://{your-team}.coding.net', 
+        'team_url' => 'https://{your-team}.coding.net',
         'client_id' => 'your app id',
         'client_secret' => 'your app secret',
         'redirect' => 'redirect URL',
@@ -434,11 +413,11 @@ $config = [
 ];
 ```
 
-## 其他一些技巧
+## Some Skill
 
 ### Scopes
 
-在重定向用户之前，您还可以使用 `scopes()` 方法在请求上设置 “范围”。此方法将覆盖所有现有的作用域：
+Before redirecting the user, you may also set "scopes" on the request using the `scopes()` method. This method will overwrite all existing scopes:
 
 ```php
 $response = $socialite->create('github')
@@ -447,7 +426,7 @@ $response = $socialite->create('github')
 
 ### Redirect URL
 
-你也可以动态设置' redirect_uri '，你可以使用以下方法来改变 `redirect_uri` URL:
+You may also want to dynamically set `redirect_uri`，you can use the following methods to change the `redirect_uri` URL:
 
 ```php
 $url = 'your callback url.';
@@ -459,12 +438,11 @@ $socialite->withRedirectUrl($url)->redirect();
 
 ### State
 
-你的应用程序可以使用一个状态参数来确保响应属于同一个用户发起的请求，从而防止跨站请求伪造 (CSFR) 攻击。当恶意攻击者欺骗用户执行不需要的操作 (只有用户有权在受信任的 web 应用程序上执行) 时，就会发生 CSFR 攻击，所有操作都将在不涉及或警告用户的情况下完成。
+Your app can use a state parameter for making sure the response belongs to a request initiated by the same user, therefore preventing cross-site request forgery (CSFR) attacks. A CSFR attack occurs when a malicious attacker tricks the user into performing unwanted actions that only the user is authorized to perform on a trusted web application, and all will be done without involving or alerting the user.
 
-这里有一个最简单的例子，说明了如何提供状态可以让你的应用程序更安全。在本例中，我们使用会话 ID 作为状态参数，但是您可以使用您想要为状态创建值的任何逻辑。
+Here's the simplest example of how providing the state can make your app more secure. in this example, we use the session ID as the state parameter, but you can use whatever logic you want to create value for the state.
 
-### 带着 `state` 参数的重定向
-
+### Redirect with `state` parameter 
 ```php
 <?php
 session_start();
@@ -483,9 +461,9 @@ $url = $socialite->create('github')->withState($state)->redirect();
 return redirect($url); 
 ```
 
-### 检验回调的 `state`
+### Validate the callback `state`
 
-一旦用户授权你的应用程序，用户将被重定向回你的应用程序的 redirect_uri。OAuth 服务器将不加修改地返回状态参数。检查 redirect_uri 中提供的状态是否与应用程序生成的状态相匹配：
+Once the user has authorized your app, the user will be redirected back to your app's redirect_uri. The OAuth server will return the state parameter unchanged. Check if the state provided in the redirect_uri matches the state generated by your app:
 
 ```php
 <?php
@@ -503,11 +481,11 @@ $user = $socialite->create('github')->userFromCode($code);
 // authorized
 ```
 
-[查看更多关于 `state` 参数的文档](https://auth0.com/docs/protocols/oauth2/oauth-state)
+[Read more about `state` parameter](https://auth0.com/docs/protocols/oauth2/oauth-state)
 
-### 其他的一些参数
+### Additional parameters
 
-要在请求中包含任何可选参数，调用 `with()` 方法传入一个你想要设置的关联数组：
+To include any optional parameters in the request, call the `with()` method with an associative array:
 
 ```php
 $response = $socialite->create('google')
@@ -517,7 +495,7 @@ $response = $socialite->create('google')
 
 ## User interface
 
-### 标准的 user api：
+### Standard user api:
 
 ```php
 $user = $socialite->create('github')->userFromCode($code);
@@ -547,7 +525,7 @@ $user = $socialite->create('github')->userFromCode($code);
 }
 ```
 
-你可以像这样以数组键的形式获取 user 属性：
+You can fetch the user attribute as a array keys like these:
 
 ```php
 $user['id'];        // 1472352
@@ -557,7 +535,7 @@ $user['email'];     // "anzhengchao@gmail.com"
 ...
 ```
 
-或者使用该 `User` 对象的方法：
+Or using the method:
 
 ```php
 mixed   $user->getId();
@@ -574,17 +552,17 @@ mixed   $user->getId();
 
 ```
 
-###  从 OAuth API 响应中取得原始数据
+### Get raw response from OAuth API
 
-`$user->getRaw()` 方法会返回一个 **array**。
+The `$user->getRaw()` method will return an **array** of the API raw response.
 
-### 当你使用 userFromCode() 想要获取 token 响应的原始数据
+### Get the token response when you use userFromCode()
 
-`$user->getTokenResponse()` 方法会返回一个 **array** 里面是响应从获取 token 时候 API 返回的响应。
+The `$user->getTokenResponse()` method will return an **array** of the get token(access token) API response.
 
-> 注意：当你使用 `userFromCode()` 时，这个方法只返回一个 **有效的数组**，否则将返回 **null**，因为 `userFromToken() ` 没有 token 的 HTTP 响应。
+> Note: This method only return a **valid array** when you use `userFromCode()`, else will return **null** because use `userFromToken()` have no token response. 
 
-### 通过 access token 获取用户信息
+### Get user with access token
 
 ```php
 $accessToken = 'xxxxxxxxxxx';
@@ -595,12 +573,13 @@ $user = $socialite->userFromToken($accessToken);
 
 # Enjoy it! :heart:
 
-# 参照
+# Reference
 
 - [Alipay - 用户信息授权](https://opendocs.alipay.com/open/289/105656)
 - [DingTalk - 扫码登录第三方网站](https://ding-doc.dingtalk.com/doc#/serverapi3/mrugr3)
 - [Google - OpenID Connect](https://developers.google.com/identity/protocols/OpenIDConnect)
-- [Github - Authorizing OAuth Apps](https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/)
+- [GitHub - Authorizing OAuth Apps](https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/)
+- [Figma - OAuth 2](https://www.figma.com/developers/api#auth-oauth2)
 - [Facebook - Graph API](https://developers.facebook.com/docs/graph-api)
 - [Linkedin - Authenticating with OAuth 2.0](https://developer.linkedin.com/docs/oauth2)
 - [微博 - OAuth 2.0 授权机制说明](http://open.weibo.com/wiki/%E6%8E%88%E6%9D%83%E6%9C%BA%E5%88%B6%E8%AF%B4%E6%98%8E)
@@ -618,6 +597,13 @@ $user = $socialite->userFromToken($accessToken);
 - [Line - OAuth 2.0](https://developers.line.biz/en/docs/line-login/integrate-line-login/)
 - [Gitee - OAuth文档](https://gitee.com/api/v5/oauth_doc#/)
 
+[![Sponsor me](https://github.com/overtrue/overtrue/blob/master/sponsor-me.svg?raw=true)](https://github.com/sponsors/overtrue)
+
+## Project supported by JetBrains
+
+Many thanks to Jetbrains for kindly providing a license for me to work on this and other open-source projects.
+
+[![](https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg)](https://www.jetbrains.com/?from=https://github.com/overtrue)
 
 
 # PHP 扩展包开发
