@@ -203,16 +203,16 @@ class OpenWeWork extends Base
     protected function mapUserToObject(array $user): Contracts\UserInterface
     {
         return new User($this->detailed ? [
-            Contracts\ABNF_ID => $user['userid'] ?? null,
+            Contracts\ABNF_ID => $user['userid'] ?? $user['UserId'] ?? null,
             Contracts\ABNF_NAME => $user[Contracts\ABNF_NAME] ?? null,
             Contracts\ABNF_AVATAR => $user[Contracts\ABNF_AVATAR] ?? null,
             'gender' => $user['gender'] ?? null,
-            'corpid' => $user['corpid'] ?? null,
+            'corpid' => $user['corpid'] ?? $user['CorpId'] ?? null,
             'open_userid' => $user['open_userid'] ?? null,
             'qr_code' => $user['qr_code'] ?? null,
         ] : [
-            Contracts\ABNF_ID => $user['userid'] ?? $user['UserId'] ?? $user['OpenId'] ?? null,
-            'corpid' => $user['corpid'] ?? null,
+            Contracts\ABNF_ID => $user['userid'] ?? $user['UserId'] ?? $user['OpenId'] ?? $user['openid'] ?? null,
+            'corpid' => $user['CorpId'] ?? null,
             'open_userid' => $user['open_userid'] ?? null,
         ]);
     }
