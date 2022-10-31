@@ -13,7 +13,7 @@ jobs:
     - uses: actions/cache@v3
       with:
         path: ${{ steps.composer-cache.outputs.dir }}
-        key: php-${{ hashFiles('**/composer.lock') }}
+        key: dependencies-caches-php-${{ hashFiles('**/composer.lock') }}
         restore-keys: dependencies-caches-php-
     - run: composer install --no-progress
     - run: composer phpstan
@@ -28,7 +28,7 @@ jobs:
     - uses: actions/cache@v3
       with:
         path: ${{ steps.composer-cache.outputs.dir }}
-        key: php-${{ hashFiles('**/composer.lock') }}
+        key: dependencies-caches-php-${{ hashFiles('**/composer.lock') }}
         restore-keys: dependencies-caches-php-
     - run: composer install --no-progress
     - run: composer check-style

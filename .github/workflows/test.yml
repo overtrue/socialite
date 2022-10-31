@@ -22,7 +22,7 @@ jobs:
     - uses: actions/cache@v3
       with:
         path: ${{ steps.composer-cache.outputs.dir }}
-        key: php-${{ hashFiles('**/composer.lock') }}
+        key: dependencies-caches-php-${{ hashFiles('**/composer.lock') }}
         restore-keys: dependencies-caches-php-
     - run: composer update --prefer-dist --no-interaction --no-suggest --prefer-${{ matrix.perfer }}
     - run: ./vendor/bin/phpunit
