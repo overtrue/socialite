@@ -5,9 +5,9 @@ namespace Overtrue\Socialite\Providers;
 use JetBrains\PhpStorm\ArrayShape;
 use JetBrains\PhpStorm\Pure;
 use Overtrue\Socialite\Contracts;
+use Overtrue\Socialite\Exceptions;
 use Overtrue\Socialite\Exceptions\InvalidArgumentException;
 use Overtrue\Socialite\User;
-use Overtrue\Socialite\Exceptions;
 
 class Coding extends Base
 {

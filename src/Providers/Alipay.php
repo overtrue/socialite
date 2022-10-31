@@ -76,7 +76,7 @@ class Alipay extends Base
             throw new Exceptions\BadRequestException((string) $responseInstance->getBody());
         }
 
-        return $response['alipay_user_info_share_response'] ?? [];
+        return $response['alipay_user_info_share_response'];
     }
 
     #[Pure]
