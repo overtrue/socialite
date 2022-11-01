@@ -17,9 +17,13 @@ class OpenWeWork extends Base
     public const NAME = 'open-wework';
 
     protected bool $detailed = false;
+
     protected bool $asQrcode = false;
+
     protected string $userType = 'member';
+
     protected string $lang = 'zh';
+
     protected ?string $suiteTicket = null;
 
     protected ?int $agentId = null;
@@ -127,7 +131,6 @@ class OpenWeWork extends Base
             return \sprintf('https://open.work.weixin.qq.com/wwopen/sso/3rd_qrConnect?%s', http_build_query($queries));
         }
 
-
         return \sprintf('https://open.weixin.qq.com/connect/oauth2/authorize?%s#wechat_redirect', \http_build_query($queries));
     }
 
@@ -164,7 +167,7 @@ class OpenWeWork extends Base
         $response = $this->fromJsonBody($responseInstance);
 
         if (($response['errcode'] ?? 1) > 0 || (empty($response['UserId']) && empty($response['openid']))) {
-            throw new Exceptions\AuthorizeFailedException((string)$responseInstance->getBody(), $response);
+            throw new Exceptions\AuthorizeFailedException((string) $responseInstance->getBody(), $response);
         } elseif (empty($response['user_ticket'])) {
             $this->detailed = false;
         }
@@ -179,7 +182,7 @@ class OpenWeWork extends Base
     protected function getUserByTicket(string $userTicket): array
     {
         $responseInstance = $this->getHttpClient()->post(
-            $this->baseUrl . '/cgi-bin/service/auth/getuserdetail3rd',
+            $this->baseUrl.'/cgi-bin/service/auth/getuserdetail3rd',
             [
                 'query' => [
                     'suite_access_token' => $this->getSuiteAccessToken(),
