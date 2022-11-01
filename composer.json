@@ -12,6 +12,11 @@
     "qcloud"
   ],
   "autoload": {
+    "files": [
+      "src/Contracts/FactoryInterface.php",
+      "src/Contracts/UserInterface.php",
+      "src/Contracts/ProviderInterface.php"
+    ],
     "psr-4": {
       "Overtrue\\Socialite\\": "src/"
     }
