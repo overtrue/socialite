@@ -5,6 +5,9 @@ namespace Overtrue\Socialite;
 use ArrayAccess;
 use JsonSerializable;
 
+class_exists(Contracts\FactoryInterface::class);
+class_exists(Contracts\UserInterface::class);
+
 class User implements ArrayAccess, Contracts\UserInterface, JsonSerializable
 {
     use Traits\HasAttributes;
