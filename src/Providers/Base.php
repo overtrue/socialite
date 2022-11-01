@@ -11,9 +11,6 @@ use Overtrue\Socialite\Exceptions;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\StreamInterface;
 
-class_exists(Contracts\FactoryInterface::class);
-class_exists(Contracts\UserInterface::class);
-
 abstract class Base implements Contracts\ProviderInterface
 {
     public const NAME = null;
