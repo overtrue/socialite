@@ -14,8 +14,8 @@ class WeWork extends Base
 {
     public const NAME = 'wework';
     protected bool $detailed = false;
-    protected ?int $agentId;
-    protected ?string $apiAccessToken;
+    protected ?int $agentId = null;
+    protected ?string $apiAccessToken = null;
     protected string $baseUrl = 'https://qyapi.weixin.qq.com';
 
     public function __construct(array $config)
