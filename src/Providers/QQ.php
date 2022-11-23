@@ -88,7 +88,7 @@ class QQ extends Base
 
         $user = $this->fromJsonBody($response);
 
-        if (!array_key_exists('ret', $user) || $user['ret'] !== 0) {
+        if (! array_key_exists('ret', $user) || $user['ret'] !== 0) {
             throw new AuthorizeFailedException('Authorize Failed: '.Utils::jsonEncode($user, \JSON_UNESCAPED_UNICODE), $user);
         }
 
