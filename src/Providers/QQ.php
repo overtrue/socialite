@@ -2,9 +2,11 @@
 
 namespace Overtrue\Socialite\Providers;
 
+use GuzzleHttp\Utils;
 use JetBrains\PhpStorm\ArrayShape;
 use JetBrains\PhpStorm\Pure;
 use Overtrue\Socialite\Contracts;
+use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
 use Overtrue\Socialite\User;
 
 /**
@@ -60,6 +62,10 @@ class QQ extends Base
         return $this;
     }
 
+    /**
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     */
     protected function getUserByToken(string $token): array
     {
         $response = $this->getHttpClient()->get($this->baseUrl.'/oauth2.0/me', [
@@ -80,7 +86,13 @@ class QQ extends Base
             ],
         ]);
 
-        return $this->fromJsonBody($response) + [
+        $user = $this->fromJsonBody($response);
+
+        if (!array_key_exists('ret', $user) || $user['ret'] !== 0) {
+            throw new AuthorizeFailedException('Authorize Failed: '.Utils::jsonEncode($user, \JSON_UNESCAPED_UNICODE), $user);
+        }
+
+        return $user + [
             'unionid' => $me['unionid'] ?? null,
             'openid' => $me['openid'] ?? null,
         ];
