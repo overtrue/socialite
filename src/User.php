@@ -84,7 +84,7 @@ class User implements ArrayAccess, Contracts\UserInterface, JsonSerializable
 
     public function getRaw(): array
     {
-        return $this->getAttribute('raw');
+        return $this->getAttribute('raw', []);
     }
 
     public function setTokenResponse(array $response): self
