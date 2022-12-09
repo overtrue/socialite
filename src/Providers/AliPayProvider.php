@@ -3,7 +3,9 @@
 namespace Overtrue\Socialite\Providers;
 
 use InvalidArgumentException;
+use Overtrue\Socialite\AccessToken;
 use Overtrue\Socialite\AccessTokenInterface;
+use Overtrue\Socialite\AuthorizeFailedException;
 use Overtrue\Socialite\ProviderInterface;
 use Overtrue\Socialite\User;
 
@@ -63,8 +65,11 @@ class AliPayProvider extends AbstractProvider implements ProviderInterface
      * @param \Symfony\Component\HttpFoundation\Request $request
      * @param $config
      */
-    public function __construct(Request $request, $config)
+    public function __construct($request, $config)
     {
+        if($request->get('code') == "") {
+            $request->query->set("code",$request->get("auth_code"));
+        }
         parent::__construct($request,$config);
         $this->sandbox = $this->getConfig()->get('sandbox', false);
         if ($this->sandbox) {
@@ -92,7 +97,7 @@ class AliPayProvider extends AbstractProvider implements ProviderInterface
     {
         return array_merge([
             'response_type' => 'code',
-            'client_id' => $this->getConfig()->get('client_id'),
+            'app_id' => $this->getConfig()->get('client_id'),
             'redirect_uri' => $this->redirectUrl,
             'scope' => $this->formatScopes($this->scopes, $this->scopeSeparator),
         ], $this->parameters);
@@ -226,5 +231,35 @@ class AliPayProvider extends AbstractProvider implements ProviderInterface
 
         return \rtrim($param_str, '&');
 
+    }
+
+    /**
+     * Determine if the provider is operating as stateless.
+     *
+     * @return bool
+     */
+    protected function isStateless()
+    {
+        return true;
+    }
+
+    /**
+     * Get the access token from the token response body.
+     *
+     * @param \Psr\Http\Message\StreamInterface|array $body
+     *
+     * @return \Overtrue\Socialite\AccessTokenInterface
+     */
+    protected function parseAccessToken($body)
+    {
+        if (!is_array($body)) {
+            $body = json_decode($body, true);
+        }
+
+        if (empty($body['alipay_system_oauth_token_response']['access_token'])) {
+            throw new AuthorizeFailedException('Authorize Failed: '.json_encode($body, JSON_UNESCAPED_UNICODE), $body);
+        }
+
+        return new AccessToken($body['alipay_system_oauth_token_response']);
     }
 }
