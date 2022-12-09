@@ -26,7 +26,7 @@ class GitHubProvider extends AbstractProvider implements ProviderInterface
      *
      * @var array
      */
-    protected $scopes = ['user:email'];
+    protected $scopes = ['read:user'];
 
     /**
      * {@inheritdoc}
@@ -119,7 +119,7 @@ class GitHubProvider extends AbstractProvider implements ProviderInterface
         return [
             'headers' => [
                 'Accept' => 'application/vnd.github.v3+json',
-                'Authorization' => sprintf('token %s', $token),
+                'Authorization' => \sprintf('token %s', $token),
             ],
         ];
     }
