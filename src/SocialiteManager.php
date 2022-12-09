@@ -48,6 +48,7 @@ class SocialiteManager implements FactoryInterface
      * @var array
      */
     protected $initialDrivers = [
+        'alipay' => 'AliPay',
         'facebook' => 'Facebook',
         'github' => 'GitHub',
         'google' => 'Google',
