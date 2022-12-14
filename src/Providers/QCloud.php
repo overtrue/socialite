@@ -172,7 +172,7 @@ class QCloud extends Base
     /**
      * @throws Exceptions\AuthorizeFailedException
      */
-    protected function parseAccessToken(array | string $body): array
+    protected function parseAccessToken(array|string $body): array
     {
         if (! \is_array($body)) {
             $body = \json_decode($body, true);
