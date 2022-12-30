@@ -26,6 +26,7 @@ class SocialiteManager implements Contracts\FactoryInterface
         Providers\GitHub::NAME => Providers\GitHub::class,
         Providers\Gitee::NAME => Providers\Gitee::class,
         Providers\Google::NAME => Providers\Google::class,
+        Providers\Lark::NAME => Providers\Lark::class,
         Providers\Line::NAME => Providers\Line::class,
         Providers\Linkedin::NAME => Providers\Linkedin::class,
         Providers\OpenWeWork::NAME => Providers\OpenWeWork::class,

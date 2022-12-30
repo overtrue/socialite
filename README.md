@@ -8,7 +8,7 @@ Socialite 是一个 [OAuth2](https://oauth.net/2/) 认证工具。 它的灵感�
 
 [![Sponsor me](https://github.com/overtrue/overtrue/blob/master/sponsor-me-button-s.svg?raw=true)](https://github.com/sponsors/overtrue)
 
-该工具现已支持平台有：Facebook，Github，Google，Linkedin，Outlook，QQ，TAPD，支付宝，淘宝，百度，钉钉，微博，微信，抖音，飞书，豆瓣，企业微信，腾讯云，Line，Gitee，Coding。
+该工具现已支持平台有：Facebook，Github，Google，Linkedin，Outlook，QQ，TAPD，支付宝，淘宝，百度，钉钉，微博，微信，抖音，飞书，Lark，豆瓣，企业微信，腾讯云，Line，Gitee，Coding。
 
 如果你喜欢我的项目并想支持我，[点击这里 :heart:](https://github.com/sponsors/overtrue)
 
@@ -381,6 +381,36 @@ $feishuDriver->withInternalAppMode()->userFromCode('here is code');
 $feishuDriver->withDefaultMode()->withAppTicket('app_ticket')->userFromCode('here is code');
 ```
 
+### [Lark](https://open.larksuite.com/document/ukTMukTMukTM/uITNz4iM1MjLyUzM)
+
+通过一些简单的方法配置  app_ticket 就能使用内部应用模式
+
+```php
+$config = [
+    'lark' => [
+        // or 'app_id'
+        'client_id' => 'your app id',
+
+        // or 'app_secret' 
+        'client_secret' => 'your app secret',
+
+        // or 'redirect_url'
+        'redirect' => 'redirect URL',
+
+        // 如果你想使用使用内部应用的方式获取 app_access_token
+        // 对这个键设置了 'internal' 值那么你已经开启了内部应用模式
+        'app_mode' => 'internal'
+    ]
+];
+
+$socialite = new SocialiteManager($config);
+
+$larkDriver = $socialite->create('lark');
+
+$larkDriver->withInternalAppMode()->userFromCode('here is code');
+$larkDriver->withDefaultMode()->withAppTicket('app_ticket')->userFromCode('here is code');
+```
+
 ### [淘宝](https://open.taobao.com/doc.htm?docId=102635&docType=1&source=search)
 
 其他配置与其他平台的一样，你能选择你想要展示的重定向页面类型通过使用 `withView()` 
@@ -614,6 +644,7 @@ $user = $socialite->userFromToken($accessToken);
 - [豆瓣 - OAuth 2.0 授权机制说明](http://developers.douban.com/wiki/?title=oauth2)
 - [抖音 - 网站应用开发指南](http://open.douyin.com/platform/doc)
 - [飞书 - 授权说明](https://open.feishu.cn/document/ukTMukTMukTM/uMTNz4yM1MjLzUzM)
+- [Lark - 授权说明](https://open.larksuite.com/document/ukTMukTMukTM/uMTNz4yM1MjLzUzM)
 - [Tapd - 用户授权说明](https://www.tapd.cn/help/show#1120003271001000093)
 - [Line - OAuth 2.0](https://developers.line.biz/en/docs/line-login/integrate-line-login/)
 - [Gitee - OAuth文档](https://gitee.com/api/v5/oauth_doc#/)
