@@ -8,7 +8,7 @@ Socialite is an [OAuth2](https://oauth.net/2/)  Authentication tool. It is inspi
 
 [![Sponsor me](https://github.com/overtrue/overtrue/blob/master/sponsor-me-button-s.svg?raw=true)](https://github.com/sponsors/overtrue)
 
-This tool now supports platforms such as Facebook, GitHub, Google, Figma, LinkedIn, Outlook, QQ, Tapd, Alipay, Taobao, Baidu, DingTalk, Weibo, WeChat, Douyin, Feishu, Douban, WeWork, Tencent Cloud, Line, Gitee and Coding.
+This tool now supports platforms such as Facebook, GitHub, Google, Figma, LinkedIn, Outlook, QQ, Tapd, Alipay, Taobao, Baidu, DingTalk, Weibo, WeChat, Douyin, Feishu, Lark, Douban, WeWork, Tencent Cloud, Line, Gitee and Coding.
 
 如果你喜欢我的项目并想支持我，[点击这里 :heart:](https://github.com/sponsors/overtrue)
 
@@ -365,6 +365,36 @@ $feishuDriver->withInternalAppMode()->userFromCode('here is code');
 $feishuDriver->withDefaultMode()->withAppTicket('app_ticket')->userFromCode('here is code');
 ```
 
+### [Lark](https://open.larksuite.com/document/ukTMukTMukTM/uITNz4iM1MjLyUzM)
+
+Some simple way to use by internal app mode and config app_ticket.
+
+```php
+$config = [
+    'lark' => [
+        // or 'app_id'
+        'client_id' => 'your app id',
+
+        // or 'app_secret' 
+        'client_secret' => 'your app secret',
+
+        // or 'redirect_url'
+        'redirect' => 'redirect URL',
+
+        // if you want to use internal way to get app_access_token
+        // set this key by 'internal' then you already turn on the internal app mode 
+        'app_mode' => 'internal'
+    ]
+];
+
+$socialite = new SocialiteManager($config);
+
+$larkDriver = $socialite->create('lark');
+
+$larkDriver->withInternalAppMode()->userFromCode('here is code');
+$larkDriver->withDefaultMode()->withAppTicket('app_ticket')->userFromCode('here is code');
+```
+
 ### [Taobao](https://open.taobao.com/doc.htm?docId=102635&docType=1&source=search)
 
 You can choose the form you want display by using `withView()`.
@@ -593,6 +623,7 @@ $user = $socialite->userFromToken($accessToken);
 - [豆瓣 - OAuth 2.0 授权机制说明](http://developers.douban.com/wiki/?title=oauth2)
 - [抖音 - 网站应用开发指南](http://open.douyin.com/platform/doc)
 - [飞书 - 授权说明](https://open.feishu.cn/document/ukTMukTMukTM/uMTNz4yM1MjLzUzM)
+- [Lark - 授权说明](https://open.larksuite.com/document/ukTMukTMukTM/uMTNz4yM1MjLzUzM)
 - [Tapd - 用户授权说明](https://www.tapd.cn/help/show#1120003271001000093)
 - [Line - OAuth 2.0](https://developers.line.biz/en/docs/line-login/integrate-line-login/)
 - [Gitee - OAuth文档](https://gitee.com/api/v5/oauth_doc#/)
