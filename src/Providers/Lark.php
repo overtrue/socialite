@@ -8,5 +8,6 @@ namespace Overtrue\Socialite\Providers;
 class Lark extends FeiShu
 {
     public const NAME = 'lark';
+
     protected string $baseUrl = 'https://open.larksuite.com/open-apis';
 }
