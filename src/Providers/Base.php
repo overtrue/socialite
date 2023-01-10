@@ -125,7 +125,7 @@ abstract class Base implements Contracts\ProviderInterface
     /**
      * @throws Exceptions\MethodDoesNotSupportException
      */
-    public function refreshToken(string $refreshToken): void
+    public function refreshToken(string $refreshToken): mixed
     {
         throw new Exceptions\MethodDoesNotSupportException('refreshToken does not support.');
     }

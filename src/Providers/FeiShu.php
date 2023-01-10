@@ -75,6 +75,33 @@ class FeiShu extends Base
         return $this->normalizeAccessTokenResponse($response['data']);
     }
 
+    protected function getRefreshTokenUrl(): string
+    {
+        return $this->baseUrl.'/authen/v1/refresh_access_token';
+    }
+
+    /**
+     * @see https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/reference/authen-v1/authen/refresh_access_token
+     */
+    public function refreshToken(string $refreshToken): array
+    {
+        $this->configAppAccessToken();
+        $responseInstance = $this->getHttpClient()->post($this->getRefreshTokenUrl(), [
+            'json' => [
+                'app_access_token' => $this->config->get('app_access_token'),
+                Contracts\RFC6749_ABNF_REFRESH_TOKEN => $refreshToken,
+                Contracts\RFC6749_ABNF_GRANT_TYPE => Contracts\RFC6749_ABNF_REFRESH_TOKEN,
+            ],
+        ]);
+        $response = $this->fromJsonBody($responseInstance);
+
+        if (empty($response['data'] ?? null)) {
+            throw new Exceptions\AuthorizeFailedException('Invalid token response', $response);
+        }
+
+        return $this->normalizeAccessTokenResponse($response['data']);
+    }
+
     /**
      * @throws Exceptions\BadRequestException
      */
