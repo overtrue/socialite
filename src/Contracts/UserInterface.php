@@ -40,8 +40,6 @@ interface UserInterface
 
     public function getRaw(): array;
 
-    public function getAttributes(): array;
-
     public function setRaw(array $user): self;
 
     public function setAccessToken(string $token): self;
