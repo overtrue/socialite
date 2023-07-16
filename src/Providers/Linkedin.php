@@ -70,7 +70,7 @@ class Linkedin extends Base
             ],
         ]);
 
-        return $this->fromJsonBody($response)['elements.0.handle~'] ?? [];
+        return $this->fromJsonBody($response)['elements'][0]['handle~'] ?? [];
     }
 
     protected function mapUserToObject(array $user): Contracts\UserInterface
