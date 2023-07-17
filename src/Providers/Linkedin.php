@@ -51,7 +51,7 @@ class Linkedin extends Base
 
         $response = $this->getHttpClient()->get($url, [
             'headers' => [
-                'Authorization' => 'Bearer '.$token,
+                'Authorization' => 'Bearer ' . $token,
                 'X-RestLi-Protocol-Version' => '2.0.0',
             ],
         ]);
@@ -65,7 +65,7 @@ class Linkedin extends Base
 
         $response = $this->getHttpClient()->get($url, [
             'headers' => [
-                'Authorization' => 'Bearer '.$token,
+                'Authorization' => 'Bearer ' . $token,
                 'X-RestLi-Protocol-Version' => '2.0.0',
             ],
         ]);
@@ -75,12 +75,13 @@ class Linkedin extends Base
 
     protected function mapUserToObject(array $user): Contracts\UserInterface
     {
-        $preferredLocale = ($user['firstName.preferredLocale.language'] ?? null).'_'.($user['firstName.preferredLocale.country'] ?? null);
-        $firstName = $user['firstName.localized.'.$preferredLocale] ?? null;
-        $lastName = $user['lastName.localized.'.$preferredLocale] ?? null;
-        $name = $firstName.' '.$lastName;
+        $preferredLocale = ($user['firstName']['preferredLocale']['language'] ?? null) . '_' .
+            ($user['firstName']['preferredLocale']['country'] ?? null);
+        $firstName = $user['firstName']['localized'][$preferredLocale] ?? null;
+        $lastName = $user['lastName']['localized'][$preferredLocale] ?? null;
+        $name = $firstName . ' ' . $lastName;
 
-        $images = $user['profilePicture.displayImage~.elements'] ?? [];
+        $images = $user['profilePicture']['displayImage~']['elements'] ?? [];
         $avatars = \array_filter($images, static fn ($image) => ($image['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['storageSize']['width'] ?? 0) === 100);
         $avatar = \array_shift($avatars);
         $originalAvatars = \array_filter($images, static fn ($image) => ($image['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['storageSize']['width'] ?? 0) === 800);
@@ -91,8 +92,8 @@ class Linkedin extends Base
             Contracts\ABNF_NICKNAME => $name,
             Contracts\ABNF_NAME => $name,
             Contracts\ABNF_EMAIL => $user['emailAddress'] ?? null,
-            Contracts\ABNF_AVATAR => $avatar['identifiers.0.identifier'] ?? null,
-            'avatar_original' => $originalAvatar['identifiers.0.identifier'] ?? null,
+            Contracts\ABNF_AVATAR => $avatar['identifiers']['0']['identifier'] ?? null,
+            'avatar_original' => $originalAvatar['identifiers']['0']['identifier'] ?? null,
         ]);
     }
 }
