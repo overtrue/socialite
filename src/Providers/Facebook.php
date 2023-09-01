@@ -19,7 +19,7 @@ class Facebook extends Base
 
     protected array $fields = ['first_name', 'last_name', 'email', 'gender', 'verified'];
 
-    protected array $scopes = ['email'];
+    protected array $scopes = [];
 
     protected bool $popup = false;
 
