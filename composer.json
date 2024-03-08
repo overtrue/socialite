@@ -26,7 +26,6 @@
     "ext-json": "*",
     "ext-openssl": "*",
     "guzzlehttp/guzzle": "^7.0",
-    "symfony/http-foundation": "^6.0",
     "symfony/psr-http-message-bridge": "^2.1|^6.0"
   },
   "require-dev": {
