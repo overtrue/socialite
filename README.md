@@ -56,7 +56,7 @@ $socialite = new SocialiteManager($config);
 
 $url = $socialite->create('github')->redirect();
 
-return redirect($url); 
+return redirect($url);
 ```
 
 `callback.php`:
@@ -122,7 +122,7 @@ $config = [
         'client_secret' => 'your-app-secret',
         'redirect' 			=> 'http://localhost/socialite/callback.php',
     ],
-       
+
     // 另外一个名字叫做 bar 的 github 应用
     'bar' => [
         'provider' 			=> 'github',  // <-- provider name
@@ -130,7 +130,7 @@ $config = [
         'client_secret' => 'your-app-secret',
         'redirect' 			=> 'http://localhost/socialite/callback.php',
     ],
-  
+
     //...
 ];
 
@@ -159,7 +159,7 @@ $config = [
 ];
 
 $socialite = new SocialiteManager($config);
-   
+
 $socialite->extend('myprovider', function(array $config) {
     return new MyCustomProvider($config);
 });
@@ -172,7 +172,7 @@ $app = $socialite->create('foo');
 >👋🏻 你的自定义服务提供类必须实现`Overtrue\Socialite\Contracts\ProviderInterface` 接口
 
 ```php
-class MyCustomProvider implements \Overtrue\Socialite\Contracts\ProviderInterface 
+class MyCustomProvider implements \Overtrue\Socialite\Contracts\ProviderInterface
 {
     //...
 }
@@ -208,8 +208,8 @@ $app = $socialite->create('foo');
 $config = [
   'alipay' => [
     // 这个键名还能像官方文档那样叫做 'app_id'
-    'client_id' => 'your-app-id', 
- 
+    'client_id' => 'your-app-id',
+
     // 请根据官方文档，在官方管理后台配置 RSA2
     // 注意： 这是你自己的私钥
     // 注意： 不允许私钥内容有其他字符
@@ -219,7 +219,7 @@ $config = [
     // 确保这里的值与你在服务后台绑定的地址值一致
     // 这个键名还能像官方文档那样叫做 'redirect_url'
     'redirect' => 'http://localhost/socialite/callback.php',
-    
+
     // 沙箱模式接入地址见 https://opendocs.alipay.com/open/220/105337#%E5%85%B3%E4%BA%8E%E6%B2%99%E7%AE%B1
     'sandbox' => false,
   ]
@@ -252,7 +252,7 @@ $config = [
       // or 'app_id'
       'client_id' => 'your app id',
 
-      // or 'app_secret' 
+      // or 'app_secret'
       'client_secret' => 'your app secret',
 
       // or 'redirect_url'
@@ -361,7 +361,7 @@ $config = [
         // or 'app_id'
         'client_id' => 'your app id',
 
-        // or 'app_secret' 
+        // or 'app_secret'
         'client_secret' => 'your app secret',
 
         // or 'redirect_url'
@@ -391,7 +391,7 @@ $config = [
         // or 'app_id'
         'client_id' => 'your app id',
 
-        // or 'app_secret' 
+        // or 'app_secret'
         'client_secret' => 'your app secret',
 
         // or 'redirect_url'
@@ -413,7 +413,7 @@ $larkDriver->withDefaultMode()->withAppTicket('app_ticket')->userFromCode('here 
 
 ### [淘宝](https://open.taobao.com/doc.htm?docId=102635&docType=1&source=search)
 
-其他配置与其他平台的一样，你能选择你想要展示的重定向页面类型通过使用 `withView()` 
+其他配置与其他平台的一样，你能选择你想要展示的重定向页面类型通过使用 `withView()`
 
 ```php
 $authUrl = $socialite->create('taobao')->withView('wap')->redirect();
@@ -456,11 +456,26 @@ $authUrl = $socialite->create('taobao')->withView('wap')->redirect();
 ```php
 $config = [
     'coding' => [
-        'team_url' => 'https://{your-team}.coding.net', 
+        'team_url' => 'https://{your-team}.coding.net',
         'client_id' => 'your app id',
         'client_secret' => 'your app secret',
         'redirect' => 'redirect URL',
     ]
+];
+```
+
+### [PayPal](https://developer.paypal.com/docs/log-in-with-paypal/)
+
+您需要额外配置 `team_url` 为您的团队域名，例如：
+
+```php
+$config = [
+    'paypal' => [
+        'client_id'     => 'AT******************',
+        'client_secret' => 'EK**************',
+        'sandbox'      => false,
+        'redirect_url'=>"nativexo://paypalpay",
+    ],
 ];
 ```
 
@@ -498,7 +513,7 @@ $socialite->withRedirectUrl($url)->redirect();
 ```php
 <?php
 session_start();
- 
+
 $config = [
     //...
 ];
@@ -510,7 +525,7 @@ $socialite = new SocialiteManager($config);
 
 $url = $socialite->create('github')->withState($state)->redirect();
 
-return redirect($url); 
+return redirect($url);
 ```
 
 ### 检验回调的 `state`
@@ -520,10 +535,10 @@ return redirect($url);
 ```php
 <?php
 session_start();
- 
+
 $state = request()->query('state');
 $code = request()->query('code');
- 
+
 // Check the state received with current session id
 if ($state != hash('sha256', session_id())) {
     exit('State does not match!');
@@ -596,7 +611,7 @@ mixed   $user->getId();
 ?string $user->getEmail();
 ?string $user->getAvatar();
 ?string $user->getRaw();
-?string $user->getAccessToken(); 
+?string $user->getAccessToken();
 ?string $user->getRefreshToken();
 ?int    $user->getExpiresIn();
 ?array  $user->getTokenResponse();
@@ -648,6 +663,7 @@ $user = $socialite->userFromToken($accessToken);
 - [Tapd - 用户授权说明](https://www.tapd.cn/help/show#1120003271001000093)
 - [Line - OAuth 2.0](https://developers.line.biz/en/docs/line-login/integrate-line-login/)
 - [Gitee - OAuth文档](https://gitee.com/api/v5/oauth_doc#/)
+- [PayPal - OAuth文档](https://developer.paypal.com/docs/log-in-with-paypal/)
 
 
 

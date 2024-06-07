@@ -1,0 +1,170 @@
+<?php
+
+namespace Overtrue\Socialite\Providers;
+
+use JetBrains\PhpStorm\Pure;
+use Overtrue\Socialite\Contracts;
+use Overtrue\Socialite\User;
+
+/**
+ * Class PayPal
+ * @author zhiqiang
+ * @package Overtrue\Socialite\Providers
+ * @see https://developer.paypal.com/docs/log-in-with-paypal/
+ */
+class PayPal extends Base
+{
+    public const NAME = 'paypal';
+
+    protected string $scopeSeparator = ' ';
+    /**
+     * @var string|null
+     * code or id_token
+     */
+    protected ?string $response_type = Contracts\RFC6749_ABNF_CODE;
+    protected string  $flow_entry    = 'static';
+
+    protected string $authUrl     = 'https://www.paypal.com/signin/authorize';
+    protected string $tokenURL    = "https://api.sandbox.paypal.com/v1/oauth2/token";
+    protected string $userinfoURL = "https://api.paypal.com/v1/identity/openidconnect/userinfo";
+
+    protected array $scopes = [
+        'openid', 'profile', 'email', 'address'
+    ];
+
+    protected bool $sandbox = true;
+
+    public function __construct(array $config)
+    {
+        parent::__construct($config);
+        $this->sandbox = (bool)$this->config->get('sandbox', false);
+        if ($this->sandbox) {
+            $this->authUrl     = 'https://www.sandbox.paypal.com/signin/authorize';
+            $this->tokenURL    = 'https://api-m.sandbox.paypal.com/v1/oauth2/token';
+            $this->userinfoURL = 'https://api-m.sandbox.paypal.com/v1/identity/openidconnect/userinfo';
+        }
+    }
+
+    /**
+     * @param string|null $response_type
+     * @return $this
+     */
+    public function withResponseType(?string $response_type)
+    {
+        $this->response_type = $response_type;
+        return $this;
+    }
+
+    protected function getAuthUrl(): string
+    {
+        return $this->buildAuthUrlFromBase($this->authUrl);
+    }
+
+    protected function getCodeFields(): array
+    {
+        $fields = \array_merge(
+            [
+                'flowEntry'                          => $this->flow_entry,
+                Contracts\RFC6749_ABNF_CLIENT_ID     => $this->getClientId(),
+                Contracts\RFC6749_ABNF_RESPONSE_TYPE => $this->response_type,
+                Contracts\RFC6749_ABNF_SCOPE         => $this->formatScopes($this->scopes, $this->scopeSeparator),
+                Contracts\RFC6749_ABNF_REDIRECT_URI  => $this->redirectUrl,
+            ],
+            $this->parameters
+        );
+
+        if ($this->state) {
+            $fields[Contracts\RFC6749_ABNF_STATE] = $this->state;
+        }
+        return $fields;
+    }
+
+
+    protected function getTokenUrl(): string
+    {
+        return $this->tokenURL;
+    }
+
+    /**
+     * @param string $code
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     * @see https://developer.paypal.com/docs/log-in-with-paypal/integrate/#link-getaccesstoken
+     */
+    public function tokenFromCode(string $code): array
+    {
+        $form_params = [
+            Contracts\RFC6749_ABNF_GRANT_TYPE => Contracts\RFC6749_ABNF_AUTHORATION_CODE,
+            Contracts\RFC6749_ABNF_CODE       => $code,
+        ];
+        $response    = $this->getHttpClient()->post(
+            $this->getTokenUrl(),
+            [
+                'form_params' => $form_params,
+                'headers'     => [
+                    'Accept'        => 'application/json',
+                    'Authorization' => 'Basic ' . \base64_encode(\sprintf('%s:%s', $this->getClientId(), $this->getClientSecret())),
+                ],
+            ]
+        );
+        return $this->normalizeAccessTokenResponse((string)$response->getBody());
+    }
+
+    /**
+     * @param string $refreshToken
+     * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     * @see https://developer.paypal.com/docs/log-in-with-paypal/integrate/#link-exchangerefreshtokenforaccesstoken
+     */
+    public function refreshToken(string $refreshToken): mixed
+    {
+        $form_params = [
+            Contracts\RFC6749_ABNF_GRANT_TYPE    => Contracts\RFC6749_ABNF_REFRESH_TOKEN,
+            Contracts\RFC6749_ABNF_REFRESH_TOKEN => $refreshToken,
+        ];
+        $response    = $this->getHttpClient()->post(
+            $this->getTokenUrl(),
+            [
+                'form_params' => $form_params,
+                'headers'     => [
+                    'Accept'        => 'application/json',
+                    'Authorization' => 'Basic ' . \base64_encode(\sprintf('%s:%s', $this->getClientId(), $this->getClientSecret())),
+                ],
+            ]
+        );
+        return $this->normalizeAccessTokenResponse((string)$response->getBody());
+    }
+
+    /**
+     * @param string $token
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @see https://developer.paypal.com/docs/api/identity/v1/#userinfo_get
+     */
+    protected function getUserByToken(string $token): array
+    {
+        $response = $this->getHttpClient()->get(
+            $this->userinfoURL,
+            [
+                'headers' => [
+                    'Content-Type'  => 'application/x-www-form-urlencoded',
+                    'Authorization' => 'Bearer ' . $token,
+                ],
+            ]
+        );
+        return $this->fromJsonBody($response);
+    }
+
+    #[Pure]
+    protected function mapUserToObject(array $user): Contracts\UserInterface
+    {
+        $user[Contracts\ABNF_ID]       = $user['user_id'] ?? null;
+        $user[Contracts\ABNF_NICKNAME] = $user['given_name'] ?? $user['family_name'] ?? $user['middle_name'] ?? null;
+        $user[Contracts\ABNF_NAME]     = $user['name'] ?? '';
+        $user[Contracts\ABNF_EMAIL]    = $user[Contracts\ABNF_EMAIL] ?? null;
+        $user[Contracts\ABNF_AVATAR]   = $user['picture'] ?? null;
+        return new User($user);
+    }
+}
