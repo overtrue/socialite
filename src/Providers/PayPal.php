@@ -46,8 +46,9 @@ class PayPal extends Base
     }
 
     /**
-     * @param string|null $response_type
+     * @param string|null $responseType
      * @return $this
+     * @see https://developer.paypal.com/docs/log-in-with-paypal/integrate/generate-button/
      */
     public function withResponseType(?string $responseType)
     {

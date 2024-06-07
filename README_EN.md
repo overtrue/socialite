@@ -443,6 +443,26 @@ $config = [
 ];
 ```
 
+### [PayPal](https://developer.paypal.com/docs/log-in-with-paypal/)
+
+You may need to set the responseType, which can be set using the `withResponseType` function. The default is `code` and can also be set to `id_token` or `code` & `id_token`
+
+> https://developer.paypal.com/docs/log-in-with-paypal/integrate/generate-button/
+
+
+```php
+$config = [
+    'paypal' => [
+        'client_id'     => 'AT******************',
+        'client_secret' => 'EK**************',
+        'sandbox'      => false,
+        'redirect_url'=>"nativexo://paypalpay",
+    ],
+];
+```
+
+
+
 ## Some Skill
 
 ### Scopes
@@ -627,6 +647,7 @@ $user = $socialite->userFromToken($accessToken);
 - [Tapd - 用户授权说明](https://www.tapd.cn/help/show#1120003271001000093)
 - [Line - OAuth 2.0](https://developers.line.biz/en/docs/line-login/integrate-line-login/)
 - [Gitee - OAuth文档](https://gitee.com/api/v5/oauth_doc#/)
+- [PayPal - OAuth文档](https://developer.paypal.com/docs/log-in-with-paypal/)
 
 [![Sponsor me](https://github.com/overtrue/overtrue/blob/master/sponsor-me.svg?raw=true)](https://github.com/sponsors/overtrue)
 

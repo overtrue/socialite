@@ -466,7 +466,10 @@ $config = [
 
 ### [PayPal](https://developer.paypal.com/docs/log-in-with-paypal/)
 
-您需要额外配置 `team_url` 为您的团队域名，例如：
+您可能需要设置responseType，可以使用`withResponseType`函数进行设置，默认是`code` 还可以设置为`id_token` 或`code` & `id_token`
+
+> https://developer.paypal.com/docs/log-in-with-paypal/integrate/generate-button/
+
 
 ```php
 $config = [
