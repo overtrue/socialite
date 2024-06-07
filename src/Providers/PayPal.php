@@ -21,8 +21,8 @@ class PayPal extends Base
      * @var string|null
      * code or id_token
      */
-    protected ?string $response_type = Contracts\RFC6749_ABNF_CODE;
-    protected string  $flow_entry    = 'static';
+    protected ?string $responseType = Contracts\RFC6749_ABNF_CODE;
+    protected string  $flowEntry    = 'static';
 
     protected string $authUrl     = 'https://www.paypal.com/signin/authorize';
     protected string $tokenURL    = "https://api.sandbox.paypal.com/v1/oauth2/token";
@@ -49,9 +49,9 @@ class PayPal extends Base
      * @param string|null $response_type
      * @return $this
      */
-    public function withResponseType(?string $response_type)
+    public function withResponseType(?string $responseType)
     {
-        $this->response_type = $response_type;
+        $this->responseType = $responseType;
         return $this;
     }
 
@@ -64,9 +64,9 @@ class PayPal extends Base
     {
         $fields = \array_merge(
             [
-                'flowEntry'                          => $this->flow_entry,
+                'flowEntry'                          => $this->flowEntry,
                 Contracts\RFC6749_ABNF_CLIENT_ID     => $this->getClientId(),
-                Contracts\RFC6749_ABNF_RESPONSE_TYPE => $this->response_type,
+                Contracts\RFC6749_ABNF_RESPONSE_TYPE => $this->responseType,
                 Contracts\RFC6749_ABNF_SCOPE         => $this->formatScopes($this->scopes, $this->scopeSeparator),
                 Contracts\RFC6749_ABNF_REDIRECT_URI  => $this->redirectUrl,
             ],
@@ -94,14 +94,13 @@ class PayPal extends Base
      */
     public function tokenFromCode(string $code): array
     {
-        $form_params = [
-            Contracts\RFC6749_ABNF_GRANT_TYPE => Contracts\RFC6749_ABNF_AUTHORATION_CODE,
-            Contracts\RFC6749_ABNF_CODE       => $code,
-        ];
-        $response    = $this->getHttpClient()->post(
+        $response = $this->getHttpClient()->post(
             $this->getTokenUrl(),
             [
-                'form_params' => $form_params,
+                'form_params' => [
+                    Contracts\RFC6749_ABNF_GRANT_TYPE => Contracts\RFC6749_ABNF_AUTHORATION_CODE,
+                    Contracts\RFC6749_ABNF_CODE       => $code,
+                ],
                 'headers'     => [
                     'Accept'        => 'application/json',
                     'Authorization' => 'Basic ' . \base64_encode(\sprintf('%s:%s', $this->getClientId(), $this->getClientSecret())),
@@ -120,14 +119,13 @@ class PayPal extends Base
      */
     public function refreshToken(string $refreshToken): mixed
     {
-        $form_params = [
-            Contracts\RFC6749_ABNF_GRANT_TYPE    => Contracts\RFC6749_ABNF_REFRESH_TOKEN,
-            Contracts\RFC6749_ABNF_REFRESH_TOKEN => $refreshToken,
-        ];
         $response    = $this->getHttpClient()->post(
             $this->getTokenUrl(),
             [
-                'form_params' => $form_params,
+                'form_params' => [
+                    Contracts\RFC6749_ABNF_GRANT_TYPE    => Contracts\RFC6749_ABNF_REFRESH_TOKEN,
+                    Contracts\RFC6749_ABNF_REFRESH_TOKEN => $refreshToken,
+                ],
                 'headers'     => [
                     'Accept'        => 'application/json',
                     'Authorization' => 'Basic ' . \base64_encode(\sprintf('%s:%s', $this->getClientId(), $this->getClientSecret())),
