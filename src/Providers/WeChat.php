@@ -113,11 +113,10 @@ class WeChat extends Base
 
     public function userFromCode(string $code): Contracts\UserInterface
     {
-        if (\in_array('snsapi_base', $this->scopes)) {
-            return $this->getSnsapiBaseUserFromCode($code);
-        }
-
         $token = $this->tokenFromCode($code);
+        if (\in_array('snsapi_base', $this->scopes)) {
+            return $this->getSnsapiBaseUserFromCode($token);
+        }
 
         $this->withOpenid($token['openid']);
 
@@ -128,9 +127,8 @@ class WeChat extends Base
             ->setTokenResponse($token);
     }
 
-    protected function getSnsapiBaseUserFromCode(string $code): Contracts\UserInterface
+    protected function getSnsapiBaseUserFromCode(array $token): Contracts\UserInterface
     {
-        $token = $this->fromJsonBody($this->getTokenFromCode($code));
         $user = [
             'openid' => $token['openid'],
         ];
