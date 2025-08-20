@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Providers;
+namespace Providers;
 
 use Mockery as m;
 use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
@@ -118,7 +118,7 @@ class DingTalkTest extends TestCase
 
         $mockResponse->shouldReceive('getBody')
             ->once()
-            ->andReturn('{"errcode": 0, "user_info": {"nick": "Test User", "openid": "test_openid"}}');
+            ->andReturn('{"errcode": 0, "user_info": {"nick": "Test User", "open_id": "test_openid"}}');
 
         $mockProvider->method('getHttpClient')->willReturn($mockHttpClient);
 
@@ -233,7 +233,7 @@ class DingTalkTest extends TestCase
 
         $user = [
             'nick' => 'Test User',
-            'openid' => 'test_openid',
+            'open_id' => 'test_openid',
         ];
 
         $result = $mapUserToObject->invoke($provider, $user);

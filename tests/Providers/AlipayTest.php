@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Providers;
+namespace Providers;
 
 use Mockery as m;
 use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
