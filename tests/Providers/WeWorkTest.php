@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 
 class WeWorkTest extends TestCase
 {
-    public function testWeWorkProviderOAuthUrl()
+    public function test_we_work_provider_o_auth_url()
     {
         $response = (new WeWork([
             'client_id' => 'CORPID',
@@ -25,7 +25,7 @@ class WeWorkTest extends TestCase
         $this->assertSame('https://open.weixin.qq.com/connect/oauth2/authorize?appid=CORPID&redirect_uri=REDIRECT_URI&response_type=code&scope=snsapi_base#wechat_redirect', $response);
     }
 
-    public function testWeWorkProviderQrcodeUrl()
+    public function test_we_work_provider_qrcode_url()
     {
         $provider = new WeWork([
             'client_id' => 'CORPID',
@@ -41,7 +41,7 @@ class WeWorkTest extends TestCase
         $this->assertStringContainsString('agentid=1000', $response);
     }
 
-    public function testWeWorkProviderConfiguration()
+    public function test_we_work_provider_configuration()
     {
         $provider = new WeWork([
             'client_id' => 'CORPID',
@@ -54,7 +54,7 @@ class WeWorkTest extends TestCase
         $this->assertSame('https://custom.base.url', $provider->getBaseUrl());
     }
 
-    public function testWithAgentIdMethod()
+    public function test_with_agent_id_method()
     {
         $provider = new WeWork([
             'client_id' => 'CORPID',
@@ -67,7 +67,7 @@ class WeWorkTest extends TestCase
         $this->assertSame($provider, $result);
     }
 
-    public function testDetailedMethod()
+    public function test_detailed_method()
     {
         $provider = new WeWork([
             'client_id' => 'CORPID',
@@ -80,7 +80,7 @@ class WeWorkTest extends TestCase
         $this->assertSame($provider, $result);
     }
 
-    public function testAsQrcodeMethod()
+    public function test_as_qrcode_method()
     {
         $provider = new WeWork([
             'client_id' => 'CORPID',
@@ -93,7 +93,7 @@ class WeWorkTest extends TestCase
         $this->assertSame($provider, $result);
     }
 
-    public function testWithApiAccessTokenMethod()
+    public function test_with_api_access_token_method()
     {
         $provider = new WeWork([
             'client_id' => 'CORPID',
@@ -106,7 +106,7 @@ class WeWorkTest extends TestCase
         $this->assertSame($provider, $result);
     }
 
-    public function testThrowsExceptionWhenAgentIdRequiredForQrcode()
+    public function test_throws_exception_when_agent_id_required_for_qrcode()
     {
         $provider = new WeWork([
             'client_id' => 'CORPID',
@@ -120,7 +120,7 @@ class WeWorkTest extends TestCase
         $provider->asQrcode()->getAuthUrl();
     }
 
-    public function testThrowsExceptionWhenAgentIdRequiredForPrivateInfo()
+    public function test_throws_exception_when_agent_id_required_for_private_info()
     {
         $provider = new WeWork([
             'client_id' => 'CORPID',
@@ -134,7 +134,7 @@ class WeWorkTest extends TestCase
         $provider->scopes(['snsapi_privateinfo'])->getAuthUrl();
     }
 
-    public function testUserFromCodeSuccess()
+    public function test_user_from_code_success()
     {
         $mockProvider = $this->getMockBuilder(WeWork::class)
             ->setConstructorArgs([[
@@ -156,7 +156,7 @@ class WeWorkTest extends TestCase
         $this->assertSame('user123', $user->getId());
     }
 
-    public function testUserFromCodeWithDetailedSuccess()
+    public function test_user_from_code_with_detailed_success()
     {
         $mockProvider = $this->getMockBuilder(WeWork::class)
             ->setConstructorArgs([[
@@ -182,7 +182,7 @@ class WeWorkTest extends TestCase
         $this->assertSame('user123', $user->getId());
     }
 
-    public function testThrowsExceptionWhenUserIdMissing()
+    public function test_throws_exception_when_user_id_missing()
     {
         // Mock the methods
         $mockProvider = $this->getMockBuilder(WeWork::class)
@@ -213,7 +213,7 @@ class WeWorkTest extends TestCase
         $mockProvider->userFromCode('test_code');
     }
 
-    public function testThrowsExceptionWhenAccessTokenMissing()
+    public function test_throws_exception_when_access_token_missing()
     {
         $provider = new WeWork([
             'client_id' => 'client_id',
@@ -227,14 +227,14 @@ class WeWorkTest extends TestCase
         $mock = new MockHandler([
             new Response(200, [], json_encode([
                 'errcode' => 0,  // Success error code
-                'some_other_field' => 'value'
+                'some_other_field' => 'value',
                 // Missing access_token
-            ]))
+            ])),
         ]);
 
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
-        
+
         // Use reflection to set the HTTP client
         $reflection = new \ReflectionObject($provider);
         $httpClientProperty = $reflection->getProperty('httpClient');
@@ -250,7 +250,7 @@ class WeWorkTest extends TestCase
         $requestApiAccessToken->invoke($provider);
     }
 
-    public function testGetUserByTokenThrowsException()
+    public function test_get_user_by_token_throws_exception()
     {
         $provider = new WeWork([
             'client_id' => 'CORPID',
@@ -266,7 +266,7 @@ class WeWorkTest extends TestCase
         $getUserByToken->invoke($provider, 'test_token');
     }
 
-    public function testMapUserToObjectDetailed()
+    public function test_map_user_to_object_detailed()
     {
         $provider = new WeWork([
             'client_id' => 'CORPID',
@@ -297,7 +297,7 @@ class WeWorkTest extends TestCase
         $this->assertSame('test@example.com', $result->getEmail());
     }
 
-    public function testMapUserToObjectSimple()
+    public function test_map_user_to_object_simple()
     {
         $provider = new WeWork([
             'client_id' => 'CORPID',

@@ -2,10 +2,6 @@
 
 namespace Providers;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Psr7\Response;
 use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
 use Overtrue\Socialite\Exceptions\MethodDoesNotSupportException;
 use Overtrue\Socialite\Providers\OpenWeWork;
@@ -13,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class OpenWeWorkTest extends TestCase
 {
-    public function testOpenWeWorkProviderHasCorrectRedirectResponse()
+    public function test_open_we_work_provider_has_correct_redirect_response()
     {
         $provider = new OpenWeWork([
             'client_id' => 'client_id',
@@ -29,7 +25,7 @@ class OpenWeWorkTest extends TestCase
         $this->assertStringContainsString('response_type=code', $response);
     }
 
-    public function testOpenWeWorkProviderQrcodeRedirect()
+    public function test_open_we_work_provider_qrcode_redirect()
     {
         $provider = new OpenWeWork([
             'client_id' => 'client_id',
@@ -45,7 +41,7 @@ class OpenWeWorkTest extends TestCase
         $this->assertStringContainsString('lang=en', $response);
     }
 
-    public function testOpenWeWorkProviderConfiguration()
+    public function test_open_we_work_provider_configuration()
     {
         $provider = new OpenWeWork([
             'client_id' => 'client_id',
@@ -60,7 +56,7 @@ class OpenWeWorkTest extends TestCase
         $this->assertSame('https://custom.base.url', $baseUrlProperty->getValue($provider));
     }
 
-    public function testWithAgentIdMethod()
+    public function test_with_agent_id_method()
     {
         $provider = new OpenWeWork([
             'client_id' => 'client_id',
@@ -73,7 +69,7 @@ class OpenWeWorkTest extends TestCase
         $this->assertSame($provider, $result);
     }
 
-    public function testDetailedMethod()
+    public function test_detailed_method()
     {
         $provider = new OpenWeWork([
             'client_id' => 'client_id',
@@ -86,7 +82,7 @@ class OpenWeWorkTest extends TestCase
         $this->assertSame($provider, $result);
     }
 
-    public function testAsQrcodeMethod()
+    public function test_as_qrcode_method()
     {
         $provider = new OpenWeWork([
             'client_id' => 'client_id',
@@ -99,7 +95,7 @@ class OpenWeWorkTest extends TestCase
         $this->assertSame($provider, $result);
     }
 
-    public function testWithUserTypeMethod()
+    public function test_with_user_type_method()
     {
         $provider = new OpenWeWork([
             'client_id' => 'client_id',
@@ -112,7 +108,7 @@ class OpenWeWorkTest extends TestCase
         $this->assertSame($provider, $result);
     }
 
-    public function testWithLangMethod()
+    public function test_with_lang_method()
     {
         $provider = new OpenWeWork([
             'client_id' => 'client_id',
@@ -125,7 +121,7 @@ class OpenWeWorkTest extends TestCase
         $this->assertSame($provider, $result);
     }
 
-    public function testWithSuiteTicketMethod()
+    public function test_with_suite_ticket_method()
     {
         $provider = new OpenWeWork([
             'client_id' => 'client_id',
@@ -138,7 +134,7 @@ class OpenWeWorkTest extends TestCase
         $this->assertSame($provider, $result);
     }
 
-    public function testWithSuiteAccessTokenMethod()
+    public function test_with_suite_access_token_method()
     {
         $provider = new OpenWeWork([
             'client_id' => 'client_id',
@@ -151,7 +147,7 @@ class OpenWeWorkTest extends TestCase
         $this->assertSame($provider, $result);
     }
 
-    public function testUserFromCodeSuccess()
+    public function test_user_from_code_success()
     {
         $mockProvider = $this->getMockBuilder(OpenWeWork::class)
             ->setConstructorArgs([[
@@ -173,7 +169,7 @@ class OpenWeWorkTest extends TestCase
         $this->assertSame('user123', $user->getId());
     }
 
-    public function testUserFromCodeWithDetailedSuccess()
+    public function test_user_from_code_with_detailed_success()
     {
         $mockProvider = $this->getMockBuilder(OpenWeWork::class)
             ->setConstructorArgs([[
@@ -199,7 +195,7 @@ class OpenWeWorkTest extends TestCase
         $this->assertSame('user123', $user->getId());
     }
 
-    public function testThrowsExceptionWhenUserTicketMissing()
+    public function test_throws_exception_when_user_ticket_missing()
     {
         // Mock the methods
         $mockProvider = $this->getMockBuilder(OpenWeWork::class)
@@ -230,7 +226,7 @@ class OpenWeWorkTest extends TestCase
         $mockProvider->userFromCode('test_code');
     }
 
-    public function testGetUserByTokenThrowsException()
+    public function test_get_user_by_token_throws_exception()
     {
         $provider = new OpenWeWork([
             'client_id' => 'client_id',
@@ -246,7 +242,7 @@ class OpenWeWorkTest extends TestCase
         $getUserByToken->invoke($provider, 'test_token');
     }
 
-    public function testMapUserToObjectDetailed()
+    public function test_map_user_to_object_detailed()
     {
         $provider = new OpenWeWork([
             'client_id' => 'client_id',
@@ -279,7 +275,7 @@ class OpenWeWorkTest extends TestCase
         $this->assertSame('http://avatar.url', $result->getAvatar());
     }
 
-    public function testMapUserToObjectSimple()
+    public function test_map_user_to_object_simple()
     {
         $provider = new OpenWeWork([
             'client_id' => 'client_id',

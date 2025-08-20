@@ -14,7 +14,7 @@ use ReflectionMethod;
 
 class DouYinTest extends TestCase
 {
-    public function testDouYinProviderHasCorrectRedirectResponse()
+    public function test_dou_yin_provider_has_correct_redirect_response()
     {
         $provider = new DouYin([
             'client_id' => 'client_id',
@@ -31,7 +31,7 @@ class DouYinTest extends TestCase
         $this->assertStringContainsString('scope=user_info', $response);
     }
 
-    public function testDouYinProviderUrlsAndFields()
+    public function test_dou_yin_provider_urls_and_fields()
     {
         $provider = new DouYin([
             'client_id' => 'client_id',
@@ -46,7 +46,7 @@ class DouYinTest extends TestCase
         $getTokenFields->setAccessible(true);
 
         $this->assertSame('https://open.douyin.com/oauth/access_token/', $getTokenUrl->invoke($provider));
-        
+
         $this->assertSame([
             'client_key' => 'client_id',
             'client_secret' => 'client_secret',
@@ -62,7 +62,7 @@ class DouYinTest extends TestCase
         ], $provider->getCodeFields());
     }
 
-    public function testWithOpenIdMethod()
+    public function test_with_open_id_method()
     {
         $provider = new DouYin([
             'client_id' => 'client_id',
@@ -75,7 +75,7 @@ class DouYinTest extends TestCase
         $this->assertSame($provider, $result);
     }
 
-    public function testTokenFromCodeSuccess()
+    public function test_token_from_code_success()
     {
         $provider = new DouYin([
             'client_id' => 'client_id',
@@ -89,19 +89,19 @@ class DouYinTest extends TestCase
 
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
-        
+
         $reflection = new \ReflectionObject($provider);
         $httpClientProperty = $reflection->getProperty('httpClient');
         $httpClientProperty->setAccessible(true);
         $httpClientProperty->setValue($provider, $client);
 
         $token = $provider->tokenFromCode('test_code');
-        
+
         $this->assertArrayHasKey('access_token', $token);
         $this->assertSame('token123', $token['access_token']);
     }
 
-    public function testThrowsExceptionWhenOpenIdMissing()
+    public function test_throws_exception_when_open_id_missing()
     {
         $provider = new DouYin([
             'client_id' => 'client_id',
@@ -115,7 +115,7 @@ class DouYinTest extends TestCase
 
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
-        
+
         $reflection = new \ReflectionObject($provider);
         $httpClientProperty = $reflection->getProperty('httpClient');
         $httpClientProperty->setAccessible(true);
@@ -127,7 +127,7 @@ class DouYinTest extends TestCase
         $provider->tokenFromCode('test_code');
     }
 
-    public function testThrowsExceptionWhenDataMissing()
+    public function test_throws_exception_when_data_missing()
     {
         $provider = new DouYin([
             'client_id' => 'client_id',
@@ -141,7 +141,7 @@ class DouYinTest extends TestCase
 
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
-        
+
         $reflection = new \ReflectionObject($provider);
         $httpClientProperty = $reflection->getProperty('httpClient');
         $httpClientProperty->setAccessible(true);
@@ -153,7 +153,7 @@ class DouYinTest extends TestCase
         $provider->tokenFromCode('test_code');
     }
 
-    public function testThrowsExceptionWhenErrorCodeNonZero()
+    public function test_throws_exception_when_error_code_non_zero()
     {
         $provider = new DouYin([
             'client_id' => 'client_id',
@@ -167,7 +167,7 @@ class DouYinTest extends TestCase
 
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
-        
+
         $reflection = new \ReflectionObject($provider);
         $httpClientProperty = $reflection->getProperty('httpClient');
         $httpClientProperty->setAccessible(true);
@@ -179,7 +179,7 @@ class DouYinTest extends TestCase
         $provider->tokenFromCode('test_code');
     }
 
-    public function testGetUserByTokenSuccess()
+    public function test_get_user_by_token_success()
     {
         $provider = new DouYin([
             'client_id' => 'client_id',
@@ -193,7 +193,7 @@ class DouYinTest extends TestCase
 
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
-        
+
         $reflection = new \ReflectionObject($provider);
         $httpClientProperty = $reflection->getProperty('httpClient');
         $httpClientProperty->setAccessible(true);
@@ -212,7 +212,7 @@ class DouYinTest extends TestCase
         $this->assertSame('Test User', $result['nickname']);
     }
 
-    public function testGetUserByTokenThrowsExceptionWhenOpenIdEmpty()
+    public function test_get_user_by_token_throws_exception_when_open_id_empty()
     {
         $provider = new DouYin([
             'client_id' => 'client_id',
@@ -228,7 +228,7 @@ class DouYinTest extends TestCase
         $getUserByToken->invoke($provider, 'test_token');
     }
 
-    public function testMapUserToObject()
+    public function test_map_user_to_object()
     {
         $provider = new DouYin([
             'client_id' => 'client_id',

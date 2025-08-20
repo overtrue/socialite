@@ -14,7 +14,7 @@ use ReflectionMethod;
 
 class DingTalkTest extends TestCase
 {
-    public function testDingTalkProviderHasCorrectRedirectResponse()
+    public function test_ding_talk_provider_has_correct_redirect_response()
     {
         $provider = new DingTalk([
             'client_id' => 'client_id',
@@ -29,7 +29,7 @@ class DingTalkTest extends TestCase
         $this->assertStringContainsString('appid=client_id', $response);
     }
 
-    public function testDingTalkProviderConfiguration()
+    public function test_ding_talk_provider_configuration()
     {
         // Test with app_id configuration
         $provider = new DingTalk([
@@ -62,7 +62,7 @@ class DingTalkTest extends TestCase
         $this->assertSame('test_client_secret', $provider->getClientSecret());
     }
 
-    public function testGetCodeFields()
+    public function test_get_code_fields()
     {
         $provider = new DingTalk([
             'client_id' => 'client_id',
@@ -83,7 +83,7 @@ class DingTalkTest extends TestCase
         ], $fields);
     }
 
-    public function testCreateSignature()
+    public function test_create_signature()
     {
         $provider = new DingTalk([
             'client_id' => 'client_id',
@@ -101,7 +101,7 @@ class DingTalkTest extends TestCase
         $this->assertNotEmpty($signature);
     }
 
-    public function testUserFromCodeSuccess()
+    public function test_user_from_code_success()
     {
         $provider = new DingTalk([
             'client_id' => 'client_id',
@@ -115,7 +115,7 @@ class DingTalkTest extends TestCase
 
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
-        
+
         $reflection = new \ReflectionObject($provider);
         $httpClientProperty = $reflection->getProperty('httpClient');
         $httpClientProperty->setAccessible(true);
@@ -128,7 +128,7 @@ class DingTalkTest extends TestCase
         $this->assertSame('test_openid', $user->getId());
     }
 
-    public function testThrowsExceptionWhenUserInfoMissing()
+    public function test_throws_exception_when_user_info_missing()
     {
         $provider = new DingTalk([
             'client_id' => 'client_id',
@@ -142,7 +142,7 @@ class DingTalkTest extends TestCase
 
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
-        
+
         $reflection = new \ReflectionObject($provider);
         $httpClientProperty = $reflection->getProperty('httpClient');
         $httpClientProperty->setAccessible(true);
@@ -154,7 +154,7 @@ class DingTalkTest extends TestCase
         $provider->userFromCode('test_code');
     }
 
-    public function testThrowsExceptionWhenErrorCodeNonZero()
+    public function test_throws_exception_when_error_code_non_zero()
     {
         $provider = new DingTalk([
             'client_id' => 'client_id',
@@ -168,7 +168,7 @@ class DingTalkTest extends TestCase
 
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
-        
+
         $reflection = new \ReflectionObject($provider);
         $httpClientProperty = $reflection->getProperty('httpClient');
         $httpClientProperty->setAccessible(true);
@@ -179,7 +179,7 @@ class DingTalkTest extends TestCase
         $provider->userFromCode('test_code');
     }
 
-    public function testGetTokenUrlThrowsException()
+    public function test_get_token_url_throws_exception()
     {
         $provider = new DingTalk([
             'client_id' => 'client_id',
@@ -195,7 +195,7 @@ class DingTalkTest extends TestCase
         $getTokenUrl->invoke($provider);
     }
 
-    public function testGetUserByTokenThrowsException()
+    public function test_get_user_by_token_throws_exception()
     {
         $provider = new DingTalk([
             'client_id' => 'client_id',
@@ -211,7 +211,7 @@ class DingTalkTest extends TestCase
         $getUserByToken->invoke($provider, 'test_token');
     }
 
-    public function testMapUserToObject()
+    public function test_map_user_to_object()
     {
         $provider = new DingTalk([
             'client_id' => 'client_id',

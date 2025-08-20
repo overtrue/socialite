@@ -5,7 +5,7 @@ use PHPUnit\Framework\TestCase;
 
 class UserTest extends TestCase
 {
-    public function testJsonserialize()
+    public function test_jsonserialize()
     {
         $this->assertSame('[]', json_encode(new User([])));
         $this->assertSame('{"access_token":"mock-token"}', json_encode(new User(['access_token' => 'mock-token'])));

@@ -44,6 +44,7 @@
   "scripts": {
     "check-style": "@php vendor/bin/pint --test",
     "fix-style": "@php vendor/bin/pint",
+    "fix": "@php vendor/bin/pint",
     "test": "@php vendor/bin/phpunit --colors=always",
     "phpstan": "@php vendor/bin/phpstan analyse src"
   }

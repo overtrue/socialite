@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class OAuthTest extends TestCase
 {
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         m::close();
     }
@@ -130,7 +130,7 @@ class OAuthTest extends TestCase
 
         $response = m::mock(\Psr\Http\Message\ResponseInterface::class);
         $stream = m::mock(\Psr\Http\Message\StreamInterface::class);
-        
+
         $stream->shouldReceive('__toString')->andReturn(\json_encode([
             'access_token' => 'fake_access_token',
             'refresh_token' => 'fake_refresh_token',

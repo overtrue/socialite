@@ -13,7 +13,7 @@ use ReflectionMethod;
 
 class QQTest extends TestCase
 {
-    public function testQQProviderHasCorrectRedirectResponse()
+    public function test_qq_provider_has_correct_redirect_response()
     {
         $provider = new QQ([
             'client_id' => 'client_id',
@@ -30,7 +30,7 @@ class QQTest extends TestCase
         $this->assertStringContainsString('scope=get_user_info', $response);
     }
 
-    public function testQQProviderTokenUrlAndRequestFields()
+    public function test_qq_provider_token_url_and_request_fields()
     {
         $provider = new QQ([
             'client_id' => 'client_id',
@@ -48,7 +48,7 @@ class QQTest extends TestCase
         $getCodeFields->setAccessible(true);
 
         $this->assertSame('https://graph.qq.com/oauth2.0/token', $getTokenUrl->invoke($provider));
-        
+
         $this->assertSame([
             'client_id' => 'client_id',
             'client_secret' => 'client_secret',
@@ -66,7 +66,7 @@ class QQTest extends TestCase
         ], $getCodeFields->invoke($provider->withState('qq-state')));
     }
 
-    public function testWithUnionIdMethod()
+    public function test_with_union_id_method()
     {
         $provider = new QQ([
             'client_id' => 'client_id',
@@ -79,7 +79,7 @@ class QQTest extends TestCase
         $this->assertSame($provider, $result);
     }
 
-    public function testTokenFromCodeMethod()
+    public function test_token_from_code_method()
     {
         $provider = new QQ([
             'client_id' => 'client_id',
@@ -93,19 +93,19 @@ class QQTest extends TestCase
 
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
-        
+
         $reflection = new \ReflectionObject($provider);
         $httpClientProperty = $reflection->getProperty('httpClient');
         $httpClientProperty->setAccessible(true);
         $httpClientProperty->setValue($provider, $client);
 
         $token = $provider->tokenFromCode('test_code');
-        
+
         $this->assertArrayHasKey('access_token', $token);
         $this->assertSame('test_token', $token['access_token']);
     }
 
-    public function testGetUserByTokenSuccess()
+    public function test_get_user_by_token_success()
     {
         $provider = new QQ([
             'client_id' => 'client_id',
@@ -122,7 +122,7 @@ class QQTest extends TestCase
 
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
-        
+
         $reflection = new \ReflectionObject($provider);
         $httpClientProperty = $reflection->getProperty('httpClient');
         $httpClientProperty->setAccessible(true);
@@ -139,7 +139,7 @@ class QQTest extends TestCase
         $this->assertSame('test_unionid', $result['unionid']);
     }
 
-    public function testThrowsExceptionWhenOpenidMissing()
+    public function test_throws_exception_when_openid_missing()
     {
         $provider = new QQ([
             'client_id' => 'client_id',
@@ -154,7 +154,7 @@ class QQTest extends TestCase
 
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
-        
+
         $reflection = new \ReflectionObject($provider);
         $httpClientProperty = $reflection->getProperty('httpClient');
         $httpClientProperty->setAccessible(true);
@@ -169,7 +169,7 @@ class QQTest extends TestCase
         $getUserByToken->invoke($provider, 'test_token');
     }
 
-    public function testThrowsExceptionWhenUserInfoReturnsFails()
+    public function test_throws_exception_when_user_info_returns_fails()
     {
         $provider = new QQ([
             'client_id' => 'client_id',
@@ -186,7 +186,7 @@ class QQTest extends TestCase
 
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
-        
+
         $reflection = new \ReflectionObject($provider);
         $httpClientProperty = $reflection->getProperty('httpClient');
         $httpClientProperty->setAccessible(true);
@@ -200,7 +200,7 @@ class QQTest extends TestCase
         $getUserByToken->invoke($provider, 'test_token');
     }
 
-    public function testMapUserToObject()
+    public function test_map_user_to_object()
     {
         $provider = new QQ([
             'client_id' => 'client_id',

@@ -15,7 +15,7 @@ use ReflectionMethod;
 
 class AlipayTest extends TestCase
 {
-    public function testAlipayProviderHasCorrectRedirectResponse()
+    public function test_alipay_provider_has_correct_redirect_response()
     {
         $provider = new Alipay([
             'client_id' => 'client_id',
@@ -31,7 +31,7 @@ class AlipayTest extends TestCase
         $this->assertStringContainsString('scope=auth_user', $response);
     }
 
-    public function testAlipayProviderSandboxMode()
+    public function test_alipay_provider_sandbox_mode()
     {
         $provider = new Alipay([
             'client_id' => 'client_id',
@@ -45,7 +45,7 @@ class AlipayTest extends TestCase
         $this->assertStringStartsWith('https://openauth.alipaydev.com/oauth2/publicAppAuthorize.htm', $response);
     }
 
-    public function testAlipayProviderUrlsAndFields()
+    public function test_alipay_provider_urls_and_fields()
     {
         $provider = new Alipay([
             'client_id' => 'client_id',
@@ -59,7 +59,7 @@ class AlipayTest extends TestCase
         $this->assertSame('https://openapi.alipay.com/gateway.do', $getTokenUrl->invoke($provider));
     }
 
-    public function testGetPublicFields()
+    public function test_get_public_fields()
     {
         $provider = new Alipay([
             'client_id' => 'test_app_id',
@@ -84,7 +84,7 @@ class AlipayTest extends TestCase
         $this->assertSame('1.0', $fields['version']);
     }
 
-    public function testGetCodeFieldsThrowsExceptionWhenNoRedirectUrl()
+    public function test_get_code_fields_throws_exception_when_no_redirect_url()
     {
         $provider = new Alipay([
             'client_id' => 'client_id',
@@ -99,7 +99,7 @@ class AlipayTest extends TestCase
         $getCodeFields->invoke($provider);
     }
 
-    public function testGetCodeFields()
+    public function test_get_code_fields()
     {
         $provider = new Alipay([
             'app_id' => 'test_app_id',
@@ -119,7 +119,7 @@ class AlipayTest extends TestCase
         $this->assertSame('http://localhost/callback', $fields['redirect_uri']);
     }
 
-    public function testSignWithSHA256RSAThrowsExceptionWhenNoPrivateKey()
+    public function test_sign_with_sh_a256_rsa_throws_exception_when_no_private_key()
     {
         $provider = new Alipay([
             'client_id' => 'client_id',
@@ -134,7 +134,7 @@ class AlipayTest extends TestCase
         $signWithSHA256RSA->invoke($provider, 'test_content', '');
     }
 
-    public function testBuildParams()
+    public function test_build_params()
     {
         $params = [
             'app_id' => 'test_app_id',
@@ -150,7 +150,7 @@ class AlipayTest extends TestCase
         $this->assertStringContainsString('timestamp=2024-01-01%2012%3A00%3A00', $resultWithUrlencode);
     }
 
-    public function testTokenFromCodeSuccess()
+    public function test_token_from_code_success()
     {
         $provider = new Alipay([
             'client_id' => 'client_id',
@@ -163,14 +163,14 @@ class AlipayTest extends TestCase
             new Response(200, [], json_encode([
                 'alipay_system_oauth_token_response' => [
                     'access_token' => 'token123',
-                    'user_id' => 'user123'
-                ]
-            ]))
+                    'user_id' => 'user123',
+                ],
+            ])),
         ]);
 
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
-        
+
         // Use reflection to set the HTTP client
         $reflection = new \ReflectionObject($provider);
         $httpClientProperty = $reflection->getProperty('httpClient');
@@ -178,12 +178,12 @@ class AlipayTest extends TestCase
         $httpClientProperty->setValue($provider, $client);
 
         $token = $provider->tokenFromCode('test_code');
-        
+
         $this->assertArrayHasKey('access_token', $token);
         $this->assertSame('token123', $token['access_token']);
     }
 
-    public function testThrowsExceptionWhenTokenResponseMissing()
+    public function test_throws_exception_when_token_response_missing()
     {
         $provider = new Alipay([
             'client_id' => 'client_id',
@@ -194,13 +194,13 @@ class AlipayTest extends TestCase
         // Mock HTTP response without alipay_system_oauth_token_response
         $mock = new MockHandler([
             new Response(200, [], json_encode([
-                'some_other_field' => 'value'
-            ]))
+                'some_other_field' => 'value',
+            ])),
         ]);
 
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
-        
+
         // Use reflection to set the HTTP client
         $reflection = new \ReflectionObject($provider);
         $httpClientProperty = $reflection->getProperty('httpClient');
@@ -209,11 +209,11 @@ class AlipayTest extends TestCase
 
         $this->expectException(AuthorizeFailedException::class);
         $this->expectExceptionMessage('Authorization failed: missing alipay_system_oauth_token_response in response');
-        
+
         $provider->tokenFromCode('test_code');
     }
 
-    public function testThrowsExceptionWhenErrorResponse()
+    public function test_throws_exception_when_error_response()
     {
         $provider = new Alipay([
             'client_id' => 'client_id',
@@ -226,14 +226,14 @@ class AlipayTest extends TestCase
             new Response(200, [], json_encode([
                 'error_response' => [
                     'code' => '20001',
-                    'msg' => 'Invalid parameters'
-                ]
-            ]))
+                    'msg' => 'Invalid parameters',
+                ],
+            ])),
         ]);
 
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
-        
+
         // Use reflection to set the HTTP client
         $reflection = new \ReflectionObject($provider);
         $httpClientProperty = $reflection->getProperty('httpClient');
@@ -245,7 +245,7 @@ class AlipayTest extends TestCase
         $provider->tokenFromCode('test_code');
     }
 
-    public function testGetUserByTokenSuccess()
+    public function test_get_user_by_token_success()
     {
         $provider = new Alipay([
             'client_id' => 'client_id',
@@ -258,14 +258,14 @@ class AlipayTest extends TestCase
             new Response(200, [], json_encode([
                 'alipay_user_info_share_response' => [
                     'user_id' => 'user123',
-                    'nick_name' => 'Test User'
-                ]
-            ]))
+                    'nick_name' => 'Test User',
+                ],
+            ])),
         ]);
 
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
-        
+
         // Use reflection to set the HTTP client
         $reflection = new \ReflectionObject($provider);
         $httpClientProperty = $reflection->getProperty('httpClient');
@@ -282,7 +282,7 @@ class AlipayTest extends TestCase
         $this->assertSame('Test User', $result['nick_name']);
     }
 
-    public function testGetUserByTokenThrowsExceptionWhenErrorResponse()
+    public function test_get_user_by_token_throws_exception_when_error_response()
     {
         $provider = new Alipay([
             'client_id' => 'client_id',
@@ -295,14 +295,14 @@ class AlipayTest extends TestCase
             new Response(200, [], json_encode([
                 'error_response' => [
                     'code' => '20001',
-                    'msg' => 'Invalid token'
-                ]
-            ]))
+                    'msg' => 'Invalid token',
+                ],
+            ])),
         ]);
 
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
-        
+
         // Use reflection to set the HTTP client
         $reflection = new \ReflectionObject($provider);
         $httpClientProperty = $reflection->getProperty('httpClient');
@@ -316,7 +316,7 @@ class AlipayTest extends TestCase
         $getUserByToken->invoke($provider, 'test_token');
     }
 
-    public function testMapUserToObject()
+    public function test_map_user_to_object()
     {
         $provider = new Alipay([
             'client_id' => 'client_id',
