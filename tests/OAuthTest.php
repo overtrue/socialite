@@ -77,13 +77,14 @@ class OAuthTest extends TestCase
         ];
         $provider = new OAuthTestProviderStub($config);
         $response = m::mock(\Psr\Http\Message\ResponseInterface::class);
+        $stream = m::mock(\Psr\Http\Message\StreamInterface::class);
 
-        $response->shouldReceive('getBody')->andReturn($response);
-        $response->shouldReceive('__toString')->andReturn(\json_encode([
+        $stream->shouldReceive('__toString')->andReturn(\json_encode([
             'access_token' => 'fake_access_token',
             'refresh_token' => 'fake_refresh_token',
             'expires_in' => 123456,
         ]));
+        $response->shouldReceive('getBody')->andReturn($stream);
 
         $provider->getHttpClient()->shouldReceive('post')->with('http://token.url', [
             'form_params' => [
@@ -128,12 +129,14 @@ class OAuthTest extends TestCase
         $provider = new OAuthTestProviderStub($config);
 
         $response = m::mock(\Psr\Http\Message\ResponseInterface::class);
-        $response->shouldReceive('getBody')->andReturn($response);
-        $response->shouldReceive('__toString')->andReturn(\json_encode([
+        $stream = m::mock(\Psr\Http\Message\StreamInterface::class);
+        
+        $stream->shouldReceive('__toString')->andReturn(\json_encode([
             'access_token' => 'fake_access_token',
             'refresh_token' => 'fake_refresh_token',
             'expires_in' => 123456,
         ]));
+        $response->shouldReceive('getBody')->andReturn($stream);
 
         $provider->getHttpClient()->shouldReceive('post')->with('http://token.url', [
             'form_params' => [
