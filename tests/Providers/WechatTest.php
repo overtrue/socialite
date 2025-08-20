@@ -1,6 +1,7 @@
 <?php
 
 use Overtrue\Socialite\Providers\WeChat;
+use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
 use PHPUnit\Framework\TestCase;
 
 // here we need loaded the symbols first.
@@ -142,13 +143,13 @@ class WechatTest extends TestCase
 
         $mockResponse = $this->createMock(\Psr\Http\Message\ResponseInterface::class);
         $mockProvider->method('getTokenFromCode')->willReturn($mockResponse);
-        
+
         // Test missing openid
         $mockProvider->method('fromJsonBody')->willReturn(['access_token' => 'token123']);
-        
-        $this->expectException(\Overtrue\Socialite\Exceptions\AuthorizeFailedException::class);
+
+        $this->expectException(AuthorizeFailedException::class);
         $this->expectExceptionMessage('Authorization failed: missing openid in token response');
-        
+
         $getSnsapiBaseUserFromCode->invoke($mockProvider, 'test_code');
     }
 
@@ -176,13 +177,13 @@ class WechatTest extends TestCase
 
         $mockResponse = $this->createMock(\Psr\Http\Message\ResponseInterface::class);
         $mockProvider->method('getTokenFromCode')->willReturn($mockResponse);
-        
+
         // Test missing access_token
         $mockProvider->method('fromJsonBody')->willReturn(['openid' => 'openid123']);
-        
-        $this->expectException(\Overtrue\Socialite\Exceptions\AuthorizeFailedException::class);
+
+        $this->expectException(AuthorizeFailedException::class);
         $this->expectExceptionMessage('Authorization failed: missing access_token in token response');
-        
+
         $getSnsapiBaseUserFromCode->invoke($mockProvider, 'test_code');
     }
 }
