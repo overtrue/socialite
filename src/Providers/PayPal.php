@@ -42,7 +42,7 @@ class PayPal extends Base
     public function __construct(array $config)
     {
         parent::__construct($config);
-        $this->sandbox = (bool)$this->config->get('sandbox', false);
+        $this->sandbox = (bool) $this->config->get('sandbox', false);
         if ($this->sandbox) {
             $this->authUrl = 'https://www.sandbox.paypal.com/signin/authorize';
             $this->tokenURL = 'https://api-m.sandbox.paypal.com/v1/oauth2/token';
@@ -97,7 +97,6 @@ class PayPal extends Base
      * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
      *
      * @see https://developer.paypal.com/docs/log-in-with-paypal/integrate/#link-getaccesstoken
-     *
      */
     public function tokenFromCode(string $code): array
     {
@@ -110,11 +109,12 @@ class PayPal extends Base
                 ],
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => 'Basic ' . \base64_encode(\sprintf('%s:%s', $this->getClientId(), $this->getClientSecret())),
+                    'Authorization' => 'Basic '.\base64_encode(\sprintf('%s:%s', $this->getClientId(), $this->getClientSecret())),
                 ],
             ]
         );
-        return $this->normalizeAccessTokenResponse((string)$response->getBody());
+
+        return $this->normalizeAccessTokenResponse((string) $response->getBody());
     }
 
     /**
@@ -129,10 +129,11 @@ class PayPal extends Base
             [
                 'headers' => [
                     'Content-Type' => 'application/x-www-form-urlencoded',
-                    'Authorization' => 'Bearer ' . $token,
+                    'Authorization' => 'Bearer '.$token,
                 ],
             ]
         );
+
         return $this->fromJsonBody($response);
     }
 

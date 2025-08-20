@@ -24,9 +24,6 @@ class Douban extends Base
         return 'https://www.douban.com/service/auth2/token';
     }
 
-    /**
-     * @param  ?array  $query
-     */
     protected function getUserByToken(string $token, ?array $query = []): array
     {
         $response = $this->getHttpClient()->get('https://api.douban.com/v2/user/~me', [

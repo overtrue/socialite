@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 
 class FeiShuTest extends TestCase
 {
-    public function testProviderCanCreateCorrect()
+    public function test_provider_can_create_correct()
     {
         // one way
         $config = [
@@ -63,7 +63,7 @@ class FeiShuTest extends TestCase
         $this->assertEquals(false, $rfProperty->getValue($f));
     }
 
-    public function testProviderWithInternalAppModeWork()
+    public function test_provider_with_internal_app_mode_work()
     {
         $config = [
             'client_id' => 'xxxxx',
@@ -83,7 +83,7 @@ class FeiShuTest extends TestCase
         $this->assertEquals(false, $rfProperty->getValue($f));
     }
 
-    public function testProviderWithAppTicketWork()
+    public function test_provider_with_app_ticket_work()
     {
         $config = [
             'client_id' => 'xxxxx',
@@ -95,7 +95,7 @@ class FeiShuTest extends TestCase
         $this->assertEquals('app_ticket', $f->getConfig()->get('app_ticket'));
     }
 
-    public function testConfigAppAccessTokenWithDefaultModeNoAppTicketWork()
+    public function test_config_app_access_token_with_default_mode_no_app_ticket_work()
     {
         $config = [
             'client_id' => 'xxxxx',
@@ -132,7 +132,7 @@ class FeiShuTest extends TestCase
         $ff->invoke($f);
     }
 
-    public function testConfigAppAccessTokenWithDefaultModeAndAppTicketWorkInBadResponse()
+    public function test_config_app_access_token_with_default_mode_and_app_ticket_work_in_bad_response()
     {
         $config = [
             'client_id' => 'xxxxx',
@@ -158,7 +158,7 @@ class FeiShuTest extends TestCase
         $ff->invoke($f->withAppTicket('app_ticket'));
     }
 
-    public function testConfigAppAccessTokenWithDefaultModeAndAppTicketWorkInGoodResponse()
+    public function test_config_app_access_token_with_default_mode_and_app_ticket_work_in_good_response()
     {
         $config = [
             'client_id' => 'xxxxx',
@@ -187,7 +187,7 @@ class FeiShuTest extends TestCase
         $this->assertEquals('app_access_token', $f->getConfig()->get('app_access_token'));
     }
 
-    public function testConfigAppAccessTokenWithInternalInBadResponse()
+    public function test_config_app_access_token_with_internal_in_bad_response()
     {
         $config = [
             'client_id' => 'xxxxx',
@@ -214,7 +214,7 @@ class FeiShuTest extends TestCase
         $ff->invoke($f);
     }
 
-    public function testConfigAppAccessTokenWithInternalInGoodResponse()
+    public function test_config_app_access_token_with_internal_in_good_response()
     {
         $config = [
             'client_id' => 'xxxxx',
