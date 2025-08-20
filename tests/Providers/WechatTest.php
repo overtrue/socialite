@@ -118,7 +118,7 @@ class WechatTest extends TestCase
         $this->assertSame('bar', $fields['foo']);
     }
 
-    public function testSnsapiBaseUserFromCodeHandlesMissingOpenid()
+    public function testThrowsExceptionWhenOpenidMissing()
     {
         $provider = new WeChat([
             'client_id' => 'client_id',
@@ -126,20 +126,63 @@ class WechatTest extends TestCase
             'redirect_url' => 'http://localhost/socialite/callback.php',
         ]);
 
-        // Test the mapUserToObject method handles missing openid gracefully
-        $mapUserToObject = new ReflectionMethod(WeChat::class, 'mapUserToObject');
-        $mapUserToObject->setAccessible(true);
+        // Test that getSnsapiBaseUserFromCode throws exception when openid is missing
+        $getSnsapiBaseUserFromCode = new ReflectionMethod(WeChat::class, 'getSnsapiBaseUserFromCode');
+        $getSnsapiBaseUserFromCode->setAccessible(true);
 
-        // Test with empty array (missing openid)
-        $user1 = $mapUserToObject->invoke($provider, []);
-        $this->assertNull($user1->getId());
+        // Mock the getTokenFromCode method to return response without openid
+        $mockProvider = $this->getMockBuilder(WeChat::class)
+            ->setConstructorArgs([[
+                'client_id' => 'client_id',
+                'client_secret' => 'client_secret',
+                'redirect_url' => 'http://localhost/socialite/callback.php',
+            ]])
+            ->onlyMethods(['getTokenFromCode', 'fromJsonBody'])
+            ->getMock();
 
-        // Test with null openid
-        $user2 = $mapUserToObject->invoke($provider, ['openid' => null]);
-        $this->assertNull($user2->getId());
+        $mockResponse = $this->createMock(\Psr\Http\Message\ResponseInterface::class);
+        $mockProvider->method('getTokenFromCode')->willReturn($mockResponse);
+        
+        // Test missing openid
+        $mockProvider->method('fromJsonBody')->willReturn(['access_token' => 'token123']);
+        
+        $this->expectException(\Overtrue\Socialite\Exceptions\AuthorizeFailedException::class);
+        $this->expectExceptionMessage('Authorization failed: missing openid in token response');
+        
+        $getSnsapiBaseUserFromCode->invoke($mockProvider, 'test_code');
+    }
 
-        // Test with valid openid
-        $user3 = $mapUserToObject->invoke($provider, ['openid' => 'test_openid_123']);
-        $this->assertSame('test_openid_123', $user3->getId());
+    public function testThrowsExceptionWhenAccessTokenMissing()
+    {
+        $provider = new WeChat([
+            'client_id' => 'client_id',
+            'client_secret' => 'client_secret',
+            'redirect_url' => 'http://localhost/socialite/callback.php',
+        ]);
+
+        // Test that getSnsapiBaseUserFromCode throws exception when access_token is missing
+        $getSnsapiBaseUserFromCode = new ReflectionMethod(WeChat::class, 'getSnsapiBaseUserFromCode');
+        $getSnsapiBaseUserFromCode->setAccessible(true);
+
+        // Mock the getTokenFromCode method to return response without access_token
+        $mockProvider = $this->getMockBuilder(WeChat::class)
+            ->setConstructorArgs([[
+                'client_id' => 'client_id',
+                'client_secret' => 'client_secret',
+                'redirect_url' => 'http://localhost/socialite/callback.php',
+            ]])
+            ->onlyMethods(['getTokenFromCode', 'fromJsonBody'])
+            ->getMock();
+
+        $mockResponse = $this->createMock(\Psr\Http\Message\ResponseInterface::class);
+        $mockProvider->method('getTokenFromCode')->willReturn($mockResponse);
+        
+        // Test missing access_token
+        $mockProvider->method('fromJsonBody')->willReturn(['openid' => 'openid123']);
+        
+        $this->expectException(\Overtrue\Socialite\Exceptions\AuthorizeFailedException::class);
+        $this->expectExceptionMessage('Authorization failed: missing access_token in token response');
+        
+        $getSnsapiBaseUserFromCode->invoke($mockProvider, 'test_code');
     }
 }
