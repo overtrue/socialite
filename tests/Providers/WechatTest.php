@@ -117,4 +117,29 @@ class WechatTest extends TestCase
         $this->assertArrayHasKey('foo', $fields);
         $this->assertSame('bar', $fields['foo']);
     }
+
+    public function testSnsapiBaseUserFromCodeHandlesMissingOpenid()
+    {
+        $provider = new WeChat([
+            'client_id' => 'client_id',
+            'client_secret' => 'client_secret',
+            'redirect_url' => 'http://localhost/socialite/callback.php',
+        ]);
+
+        // Test the mapUserToObject method handles missing openid gracefully
+        $mapUserToObject = new ReflectionMethod(WeChat::class, 'mapUserToObject');
+        $mapUserToObject->setAccessible(true);
+
+        // Test with empty array (missing openid)
+        $user1 = $mapUserToObject->invoke($provider, []);
+        $this->assertNull($user1->getId());
+
+        // Test with null openid
+        $user2 = $mapUserToObject->invoke($provider, ['openid' => null]);
+        $this->assertNull($user2->getId());
+
+        // Test with valid openid
+        $user3 = $mapUserToObject->invoke($provider, ['openid' => 'test_openid_123']);
+        $this->assertSame('test_openid_123', $user3->getId());
+    }
 }

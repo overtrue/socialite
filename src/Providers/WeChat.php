@@ -119,7 +119,7 @@ class WeChat extends Base
 
         $token = $this->tokenFromCode($code);
 
-        $this->withOpenid($token['openid']);
+        $this->withOpenid($token['openid'] ?? '');
 
         $user = $this->userFromToken($token[$this->accessTokenKey]);
 
@@ -132,13 +132,13 @@ class WeChat extends Base
     {
         $token = $this->fromJsonBody($this->getTokenFromCode($code));
         $user = [
-            'openid' => $token['openid'],
+            'openid' => $token['openid'] ?? null,
         ];
         if (isset($token['unionid'])) {
             $user['unionid'] = $token['unionid'];
         }
 
-        return $this->mapUserToObject($token)->setProvider($this)->setRaw($user)->setAccessToken($token[$this->accessTokenKey]);
+        return $this->mapUserToObject($token)->setProvider($this)->setRaw($user)->setAccessToken($token[$this->accessTokenKey] ?? null);
     }
 
     protected function getUserByToken(string $token): array
