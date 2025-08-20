@@ -2,7 +2,10 @@
 
 namespace Providers;
 
-use Mockery as m;
+use GuzzleHttp\Client;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
 use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
 use Overtrue\Socialite\Exceptions\MethodDoesNotSupportException;
 use Overtrue\Socialite\Providers\OpenWeWork;
@@ -21,9 +24,9 @@ class OpenWeWorkTest extends TestCase
         $response = $provider->redirect();
 
         $this->assertStringStartsWith('https://open.weixin.qq.com/connect/oauth2/authorize', $response);
-        $this->assertStringContains('redirect_uri=http%3A%2F%2Flocalhost%2Fcallback', $response);
-        $this->assertStringContains('appid=client_id', $response);
-        $this->assertStringContains('response_type=code', $response);
+        $this->assertStringContainsString('redirect_uri=http%3A%2F%2Flocalhost%2Fcallback', $response);
+        $this->assertStringContainsString('appid=client_id', $response);
+        $this->assertStringContainsString('response_type=code', $response);
     }
 
     public function testOpenWeWorkProviderQrcodeRedirect()
@@ -37,9 +40,9 @@ class OpenWeWorkTest extends TestCase
         $response = $provider->asQrcode()->withUserType('admin')->withLang('en')->redirect();
 
         $this->assertStringStartsWith('https://open.work.weixin.qq.com/wwopen/sso/3rd_qrConnect', $response);
-        $this->assertStringContains('appid=client_id', $response);
-        $this->assertStringContains('usertype=admin', $response);
-        $this->assertStringContains('lang=en', $response);
+        $this->assertStringContainsString('appid=client_id', $response);
+        $this->assertStringContainsString('usertype=admin', $response);
+        $this->assertStringContainsString('lang=en', $response);
     }
 
     public function testOpenWeWorkProviderConfiguration()
@@ -308,10 +311,5 @@ class OpenWeWorkTest extends TestCase
         $result = $mapUserToObject->invoke($provider, $user);
 
         $this->assertSame('user123', $result->getId());
-    }
-
-    protected function tearDown(): void
-    {
-        m::close();
     }
 }

@@ -2,7 +2,10 @@
 
 namespace Providers;
 
-use Mockery as m;
+use GuzzleHttp\Client;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
 use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
 use Overtrue\Socialite\Providers\QQ;
 use PHPUnit\Framework\TestCase;
@@ -21,10 +24,10 @@ class QQTest extends TestCase
         $response = $provider->redirect();
 
         $this->assertStringStartsWith('https://graph.qq.com/oauth2.0/authorize', $response);
-        $this->assertStringContains('redirect_uri=http%3A%2F%2Flocalhost%2Fcallback', $response);
-        $this->assertStringContains('client_id=client_id', $response);
-        $this->assertStringContains('response_type=code', $response);
-        $this->assertStringContains('scope=get_user_info', $response);
+        $this->assertStringContainsString('redirect_uri=http%3A%2F%2Flocalhost%2Fcallback', $response);
+        $this->assertStringContainsString('client_id=client_id', $response);
+        $this->assertStringContainsString('response_type=code', $response);
+        $this->assertStringContainsString('scope=get_user_info', $response);
     }
 
     public function testQQProviderTokenUrlAndRequestFields()
@@ -78,29 +81,25 @@ class QQTest extends TestCase
 
     public function testTokenFromCodeMethod()
     {
-        $mockProvider = $this->getMockBuilder(QQ::class)
-            ->setConstructorArgs([[
-                'client_id' => 'client_id',
-                'client_secret' => 'client_secret',
-                'redirect_url' => 'http://localhost/callback',
-            ]])
-            ->onlyMethods(['getHttpClient'])
-            ->getMock();
+        $provider = new QQ([
+            'client_id' => 'client_id',
+            'client_secret' => 'client_secret',
+            'redirect_url' => 'http://localhost/callback',
+        ]);
 
-        $mockHttpClient = m::mock();
-        $mockResponse = m::mock();
+        $mock = new MockHandler([
+            new Response(200, [], 'access_token=test_token&refresh_token=refresh_token&expires_in=7200'),
+        ]);
+
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
         
-        $mockHttpClient->shouldReceive('get')
-            ->once()
-            ->andReturn($mockResponse);
+        $reflection = new \ReflectionObject($provider);
+        $httpClientProperty = $reflection->getProperty('httpClient');
+        $httpClientProperty->setAccessible(true);
+        $httpClientProperty->setValue($provider, $client);
 
-        $mockResponse->shouldReceive('getBody')
-            ->once()
-            ->andReturn('access_token=test_token&refresh_token=refresh_token&expires_in=7200');
-
-        $mockProvider->method('getHttpClient')->willReturn($mockHttpClient);
-
-        $token = $mockProvider->tokenFromCode('test_code');
+        $token = $provider->tokenFromCode('test_code');
         
         $this->assertArrayHasKey('access_token', $token);
         $this->assertSame('test_token', $token['access_token']);
@@ -108,45 +107,31 @@ class QQTest extends TestCase
 
     public function testGetUserByTokenSuccess()
     {
-        $mockProvider = $this->getMockBuilder(QQ::class)
-            ->setConstructorArgs([[
-                'client_id' => 'client_id',
-                'client_secret' => 'client_secret',
-                'redirect_url' => 'http://localhost/callback',
-            ]])
-            ->onlyMethods(['getHttpClient'])
-            ->getMock();
+        $provider = new QQ([
+            'client_id' => 'client_id',
+            'client_secret' => 'client_secret',
+            'redirect_url' => 'http://localhost/callback',
+        ]);
 
-        $mockHttpClient = m::mock();
-        $mockResponse1 = m::mock();
-        $mockResponse2 = m::mock();
+        $mock = new MockHandler([
+            // First call to get openid
+            new Response(200, [], '{"openid": "test_openid", "unionid": "test_unionid"}'),
+            // Second call to get user info
+            new Response(200, [], '{"ret": 0, "nickname": "Test User", "figureurl_qq_2": "http://avatar.url"}'),
+        ]);
+
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
         
-        // First call to get openid
-        $mockHttpClient->shouldReceive('get')
-            ->once()
-            ->with('https://graph.qq.com/oauth2.0/me', m::any())
-            ->andReturn($mockResponse1);
-
-        $mockResponse1->shouldReceive('getBody')
-            ->once()
-            ->andReturn('{"openid": "test_openid", "unionid": "test_unionid"}');
-
-        // Second call to get user info
-        $mockHttpClient->shouldReceive('get')
-            ->once()
-            ->with('https://graph.qq.com/user/get_user_info', m::any())
-            ->andReturn($mockResponse2);
-
-        $mockResponse2->shouldReceive('getBody')
-            ->once()
-            ->andReturn('{"ret": 0, "nickname": "Test User", "figureurl_qq_2": "http://avatar.url"}');
-
-        $mockProvider->method('getHttpClient')->willReturn($mockHttpClient);
+        $reflection = new \ReflectionObject($provider);
+        $httpClientProperty = $reflection->getProperty('httpClient');
+        $httpClientProperty->setAccessible(true);
+        $httpClientProperty->setValue($provider, $client);
 
         // Use reflection to test protected method
         $getUserByToken = new ReflectionMethod(QQ::class, 'getUserByToken');
         $getUserByToken->setAccessible(true);
-        $result = $getUserByToken->invoke($mockProvider, 'test_token');
+        $result = $getUserByToken->invoke($provider, 'test_token');
 
         $this->assertArrayHasKey('openid', $result);
         $this->assertSame('test_openid', $result['openid']);
@@ -156,29 +141,24 @@ class QQTest extends TestCase
 
     public function testThrowsExceptionWhenOpenidMissing()
     {
-        $mockProvider = $this->getMockBuilder(QQ::class)
-            ->setConstructorArgs([[
-                'client_id' => 'client_id',
-                'client_secret' => 'client_secret',
-                'redirect_url' => 'http://localhost/callback',
-            ]])
-            ->onlyMethods(['getHttpClient'])
-            ->getMock();
+        $provider = new QQ([
+            'client_id' => 'client_id',
+            'client_secret' => 'client_secret',
+            'redirect_url' => 'http://localhost/callback',
+        ]);
 
-        $mockHttpClient = m::mock();
-        $mockResponse = m::mock();
+        $mock = new MockHandler([
+            // First call to get openid - return response missing openid
+            new Response(200, [], '{"error": "invalid_request"}'),
+        ]);
+
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
         
-        // First call to get openid - return response missing openid
-        $mockHttpClient->shouldReceive('get')
-            ->once()
-            ->with('https://graph.qq.com/oauth2.0/me', m::any())
-            ->andReturn($mockResponse);
-
-        $mockResponse->shouldReceive('getBody')
-            ->once()
-            ->andReturn('{"error": "invalid_request"}');
-
-        $mockProvider->method('getHttpClient')->willReturn($mockHttpClient);
+        $reflection = new \ReflectionObject($provider);
+        $httpClientProperty = $reflection->getProperty('httpClient');
+        $httpClientProperty->setAccessible(true);
+        $httpClientProperty->setValue($provider, $client);
 
         $this->expectException(AuthorizeFailedException::class);
         $this->expectExceptionMessage('Authorization failed: missing openid in token response');
@@ -186,52 +166,38 @@ class QQTest extends TestCase
         // Use reflection to test protected method
         $getUserByToken = new ReflectionMethod(QQ::class, 'getUserByToken');
         $getUserByToken->setAccessible(true);
-        $getUserByToken->invoke($mockProvider, 'test_token');
+        $getUserByToken->invoke($provider, 'test_token');
     }
 
     public function testThrowsExceptionWhenUserInfoReturnsFails()
     {
-        $mockProvider = $this->getMockBuilder(QQ::class)
-            ->setConstructorArgs([[
-                'client_id' => 'client_id',
-                'client_secret' => 'client_secret',
-                'redirect_url' => 'http://localhost/callback',
-            ]])
-            ->onlyMethods(['getHttpClient'])
-            ->getMock();
+        $provider = new QQ([
+            'client_id' => 'client_id',
+            'client_secret' => 'client_secret',
+            'redirect_url' => 'http://localhost/callback',
+        ]);
 
-        $mockHttpClient = m::mock();
-        $mockResponse1 = m::mock();
-        $mockResponse2 = m::mock();
+        $mock = new MockHandler([
+            // First call to get openid - success
+            new Response(200, [], '{"openid": "test_openid"}'),
+            // Second call to get user info - failure
+            new Response(200, [], '{"ret": 1, "msg": "parameter error"}'),
+        ]);
+
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
         
-        // First call to get openid - success
-        $mockHttpClient->shouldReceive('get')
-            ->once()
-            ->with('https://graph.qq.com/oauth2.0/me', m::any())
-            ->andReturn($mockResponse1);
-
-        $mockResponse1->shouldReceive('getBody')
-            ->once()
-            ->andReturn('{"openid": "test_openid"}');
-
-        // Second call to get user info - failure
-        $mockHttpClient->shouldReceive('get')
-            ->once()
-            ->with('https://graph.qq.com/user/get_user_info', m::any())
-            ->andReturn($mockResponse2);
-
-        $mockResponse2->shouldReceive('getBody')
-            ->once()
-            ->andReturn('{"ret": 1, "msg": "parameter error"}');
-
-        $mockProvider->method('getHttpClient')->willReturn($mockHttpClient);
+        $reflection = new \ReflectionObject($provider);
+        $httpClientProperty = $reflection->getProperty('httpClient');
+        $httpClientProperty->setAccessible(true);
+        $httpClientProperty->setValue($provider, $client);
 
         $this->expectException(AuthorizeFailedException::class);
 
         // Use reflection to test protected method
         $getUserByToken = new ReflectionMethod(QQ::class, 'getUserByToken');
         $getUserByToken->setAccessible(true);
-        $getUserByToken->invoke($mockProvider, 'test_token');
+        $getUserByToken->invoke($provider, 'test_token');
     }
 
     public function testMapUserToObject()
@@ -259,10 +225,5 @@ class QQTest extends TestCase
         $this->assertSame('Test User', $result->getNickname());
         $this->assertSame('test@example.com', $result->getEmail());
         $this->assertSame('http://avatar.url', $result->getAvatar());
-    }
-
-    protected function tearDown(): void
-    {
-        m::close();
     }
 }

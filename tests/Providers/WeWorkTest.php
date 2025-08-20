@@ -1,6 +1,9 @@
 <?php
 
-use Mockery as m;
+use GuzzleHttp\Client;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
 use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
 use Overtrue\Socialite\Exceptions\InvalidArgumentException;
 use Overtrue\Socialite\Exceptions\MethodDoesNotSupportException;
@@ -34,8 +37,8 @@ class WeWorkTest extends TestCase
         $response = $provider->withAgentId(1000)->asQrcode()->redirect();
 
         $this->assertStringStartsWith('https://open.work.weixin.qq.com/wwopen/sso/qrConnect', $response);
-        $this->assertStringContains('appid=CORPID', $response);
-        $this->assertStringContains('agentid=1000', $response);
+        $this->assertStringContainsString('appid=CORPID', $response);
+        $this->assertStringContainsString('agentid=1000', $response);
     }
 
     public function testWeWorkProviderConfiguration()
@@ -331,10 +334,5 @@ class WeWorkTest extends TestCase
         $result = $mapUserToObject->invoke($provider, $user);
 
         $this->assertSame('user123', $result->getId());
-    }
-
-    protected function tearDown(): void
-    {
-        m::close();
     }
 }

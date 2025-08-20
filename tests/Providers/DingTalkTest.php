@@ -2,7 +2,10 @@
 
 namespace Providers;
 
-use Mockery as m;
+use GuzzleHttp\Client;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
 use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
 use Overtrue\Socialite\Exceptions\BadRequestException;
 use Overtrue\Socialite\Providers\DingTalk;
@@ -22,8 +25,8 @@ class DingTalkTest extends TestCase
         $response = $provider->redirect();
 
         $this->assertStringStartsWith('https://oapi.dingtalk.com/connect/qrconnect', $response);
-        $this->assertStringContains('redirect_uri=http%3A%2F%2Flocalhost%2Fcallback', $response);
-        $this->assertStringContains('appid=client_id', $response);
+        $this->assertStringContainsString('redirect_uri=http%3A%2F%2Flocalhost%2Fcallback', $response);
+        $this->assertStringContainsString('appid=client_id', $response);
     }
 
     public function testDingTalkProviderConfiguration()
@@ -100,29 +103,25 @@ class DingTalkTest extends TestCase
 
     public function testUserFromCodeSuccess()
     {
-        $mockProvider = $this->getMockBuilder(DingTalk::class)
-            ->setConstructorArgs([[
-                'client_id' => 'client_id',
-                'client_secret' => 'client_secret',
-                'redirect_url' => 'http://localhost/callback',
-            ]])
-            ->onlyMethods(['getHttpClient'])
-            ->getMock();
+        $provider = new DingTalk([
+            'client_id' => 'client_id',
+            'client_secret' => 'client_secret',
+            'redirect_url' => 'http://localhost/callback',
+        ]);
 
-        $mockHttpClient = m::mock();
-        $mockResponse = m::mock();
+        $mock = new MockHandler([
+            new Response(200, [], '{"errcode": 0, "user_info": {"nick": "Test User", "open_id": "test_openid"}}'),
+        ]);
+
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
         
-        $mockHttpClient->shouldReceive('post')
-            ->once()
-            ->andReturn($mockResponse);
+        $reflection = new \ReflectionObject($provider);
+        $httpClientProperty = $reflection->getProperty('httpClient');
+        $httpClientProperty->setAccessible(true);
+        $httpClientProperty->setValue($provider, $client);
 
-        $mockResponse->shouldReceive('getBody')
-            ->once()
-            ->andReturn('{"errcode": 0, "user_info": {"nick": "Test User", "open_id": "test_openid"}}');
-
-        $mockProvider->method('getHttpClient')->willReturn($mockHttpClient);
-
-        $user = $mockProvider->userFromCode('test_code');
+        $user = $provider->userFromCode('test_code');
 
         $this->assertSame('Test User', $user->getName());
         $this->assertSame('Test User', $user->getNickname());
@@ -131,61 +130,53 @@ class DingTalkTest extends TestCase
 
     public function testThrowsExceptionWhenUserInfoMissing()
     {
-        $mockProvider = $this->getMockBuilder(DingTalk::class)
-            ->setConstructorArgs([[
-                'client_id' => 'client_id',
-                'client_secret' => 'client_secret',
-                'redirect_url' => 'http://localhost/callback',
-            ]])
-            ->onlyMethods(['getHttpClient'])
-            ->getMock();
+        $provider = new DingTalk([
+            'client_id' => 'client_id',
+            'client_secret' => 'client_secret',
+            'redirect_url' => 'http://localhost/callback',
+        ]);
 
-        $mockHttpClient = m::mock();
-        $mockResponse = m::mock();
+        $mock = new MockHandler([
+            new Response(200, [], '{"errcode": 0}'), // Missing user_info
+        ]);
+
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
         
-        $mockHttpClient->shouldReceive('post')
-            ->once()
-            ->andReturn($mockResponse);
-
-        $mockResponse->shouldReceive('getBody')
-            ->once()
-            ->andReturn('{"errcode": 0}'); // Missing user_info
-
-        $mockProvider->method('getHttpClient')->willReturn($mockHttpClient);
+        $reflection = new \ReflectionObject($provider);
+        $httpClientProperty = $reflection->getProperty('httpClient');
+        $httpClientProperty->setAccessible(true);
+        $httpClientProperty->setValue($provider, $client);
 
         $this->expectException(AuthorizeFailedException::class);
         $this->expectExceptionMessage('Authorization failed: missing user_info in response');
 
-        $mockProvider->userFromCode('test_code');
+        $provider->userFromCode('test_code');
     }
 
     public function testThrowsExceptionWhenErrorCodeNonZero()
     {
-        $mockProvider = $this->getMockBuilder(DingTalk::class)
-            ->setConstructorArgs([[
-                'client_id' => 'client_id',
-                'client_secret' => 'client_secret',
-                'redirect_url' => 'http://localhost/callback',
-            ]])
-            ->onlyMethods(['getHttpClient'])
-            ->getMock();
+        $provider = new DingTalk([
+            'client_id' => 'client_id',
+            'client_secret' => 'client_secret',
+            'redirect_url' => 'http://localhost/callback',
+        ]);
 
-        $mockHttpClient = m::mock();
-        $mockResponse = m::mock();
+        $mock = new MockHandler([
+            new Response(200, [], '{"errcode": 1, "errmsg": "Error message"}'),
+        ]);
+
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
         
-        $mockHttpClient->shouldReceive('post')
-            ->once()
-            ->andReturn($mockResponse);
-
-        $mockResponse->shouldReceive('getBody')
-            ->once()
-            ->andReturn('{"errcode": 1, "errmsg": "Error message"}');
-
-        $mockProvider->method('getHttpClient')->willReturn($mockHttpClient);
+        $reflection = new \ReflectionObject($provider);
+        $httpClientProperty = $reflection->getProperty('httpClient');
+        $httpClientProperty->setAccessible(true);
+        $httpClientProperty->setValue($provider, $client);
 
         $this->expectException(BadRequestException::class);
 
-        $mockProvider->userFromCode('test_code');
+        $provider->userFromCode('test_code');
     }
 
     public function testGetTokenUrlThrowsException()
@@ -243,10 +234,5 @@ class DingTalkTest extends TestCase
         $this->assertSame('Test User', $result->getNickname());
         $this->assertNull($result->getEmail());
         $this->assertNull($result->getAvatar());
-    }
-
-    protected function tearDown(): void
-    {
-        m::close();
     }
 }

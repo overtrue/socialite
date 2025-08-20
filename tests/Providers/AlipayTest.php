@@ -2,7 +2,10 @@
 
 namespace Providers;
 
-use Mockery as m;
+use GuzzleHttp\Client;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
 use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
 use Overtrue\Socialite\Exceptions\BadRequestException;
 use Overtrue\Socialite\Exceptions\InvalidArgumentException;
@@ -23,9 +26,9 @@ class AlipayTest extends TestCase
         $response = $provider->redirect();
 
         $this->assertStringStartsWith('https://openauth.alipay.com/oauth2/publicAppAuthorize.htm', $response);
-        $this->assertStringContains('redirect_uri=http%3A%2F%2Flocalhost%2Fcallback', $response);
-        $this->assertStringContains('app_id=client_id', $response);
-        $this->assertStringContains('scope=auth_user', $response);
+        $this->assertStringContainsString('redirect_uri=http%3A%2F%2Flocalhost%2Fcallback', $response);
+        $this->assertStringContainsString('app_id=client_id', $response);
+        $this->assertStringContainsString('scope=auth_user', $response);
     }
 
     public function testAlipayProviderSandboxMode()
@@ -144,7 +147,7 @@ class AlipayTest extends TestCase
         $this->assertSame('app_id=test_app_id&method=test.method&timestamp=2024-01-01 12:00:00', $result);
 
         $resultWithUrlencode = Alipay::buildParams($params, true);
-        $this->assertStringContains('timestamp=2024-01-01%2012%3A00%3A00', $resultWithUrlencode);
+        $this->assertStringContainsString('timestamp=2024-01-01%2012%3A00%3A00', $resultWithUrlencode);
     }
 
     public function testTokenFromCodeSuccess()
@@ -330,10 +333,5 @@ class AlipayTest extends TestCase
         $this->assertSame('Test User', $result->getName());
         $this->assertSame('http://avatar.url', $result->getAvatar());
         $this->assertSame('test@example.com', $result->getEmail());
-    }
-
-    protected function tearDown(): void
-    {
-        m::close();
     }
 }

@@ -2,7 +2,10 @@
 
 namespace Providers;
 
-use Mockery as m;
+use GuzzleHttp\Client;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
 use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
 use Overtrue\Socialite\Exceptions\InvalidArgumentException;
 use Overtrue\Socialite\Providers\DouYin;
@@ -22,10 +25,10 @@ class DouYinTest extends TestCase
         $response = $provider->redirect();
 
         $this->assertStringStartsWith('https://open.douyin.com/platform/oauth/connect/', $response);
-        $this->assertStringContains('redirect_uri=http%3A%2F%2Flocalhost%2Fcallback', $response);
-        $this->assertStringContains('client_key=client_id', $response);
-        $this->assertStringContains('response_type=code', $response);
-        $this->assertStringContains('scope=user_info', $response);
+        $this->assertStringContainsString('redirect_uri=http%3A%2F%2Flocalhost%2Fcallback', $response);
+        $this->assertStringContainsString('client_key=client_id', $response);
+        $this->assertStringContainsString('response_type=code', $response);
+        $this->assertStringContainsString('scope=user_info', $response);
     }
 
     public function testDouYinProviderUrlsAndFields()
@@ -270,10 +273,5 @@ class DouYinTest extends TestCase
         $this->assertSame('Test User', $result->getNickname());
         $this->assertSame('http://avatar.url', $result->getAvatar());
         $this->assertSame('test@example.com', $result->getEmail());
-    }
-
-    protected function tearDown(): void
-    {
-        m::close();
     }
 }
