@@ -161,21 +161,16 @@ class AlipayTest extends TestCase
             ->onlyMethods(['getHttpClient', 'generateSign'])
             ->getMock();
 
-        $mockHttpClient = m::mock();
-        $mockResponse = m::mock();
         
-        $mockHttpClient->shouldReceive('post')
-            ->once()
-            ->andReturn($mockResponse);
+        
+        
 
-        $mockResponse->shouldReceive('getBody')
-            ->once()
-            ->andReturn('{"alipay_system_oauth_token_response": {"access_token": "token123", "user_id": "user123"}}');
+        
 
-        $mockProvider->method('getHttpClient')->willReturn($mockHttpClient);
-        $mockProvider->method('generateSign')->willReturn('test_signature');
+        
+        $provider->method('generateSign')->willReturn('test_signature');
 
-        $token = $mockProvider->tokenFromCode('test_code');
+        $token = $provider->tokenFromCode('test_code');
         
         $this->assertArrayHasKey('access_token', $token);
         $this->assertSame('token123', $token['access_token']);
@@ -192,24 +187,19 @@ class AlipayTest extends TestCase
             ->onlyMethods(['getHttpClient', 'generateSign'])
             ->getMock();
 
-        $mockHttpClient = m::mock();
-        $mockResponse = m::mock();
         
-        $mockHttpClient->shouldReceive('post')
-            ->once()
-            ->andReturn($mockResponse);
+        
+        
 
-        $mockResponse->shouldReceive('getBody')
-            ->once()
-            ->andReturn('{"success": true}'); // Missing alipay_system_oauth_token_response
+         // Missing alipay_system_oauth_token_response
 
-        $mockProvider->method('getHttpClient')->willReturn($mockHttpClient);
-        $mockProvider->method('generateSign')->willReturn('test_signature');
+        
+        $provider->method('generateSign')->willReturn('test_signature');
 
         $this->expectException(AuthorizeFailedException::class);
         $this->expectExceptionMessage('Authorization failed: missing alipay_system_oauth_token_response in response');
 
-        $mockProvider->tokenFromCode('test_code');
+        $provider->tokenFromCode('test_code');
     }
 
     public function testThrowsExceptionWhenErrorResponse()
@@ -223,23 +213,18 @@ class AlipayTest extends TestCase
             ->onlyMethods(['getHttpClient', 'generateSign'])
             ->getMock();
 
-        $mockHttpClient = m::mock();
-        $mockResponse = m::mock();
         
-        $mockHttpClient->shouldReceive('post')
-            ->once()
-            ->andReturn($mockResponse);
+        
+        
 
-        $mockResponse->shouldReceive('getBody')
-            ->once()
-            ->andReturn('{"error_response": {"code": "40002", "msg": "Invalid parameter"}}');
+        
 
-        $mockProvider->method('getHttpClient')->willReturn($mockHttpClient);
-        $mockProvider->method('generateSign')->willReturn('test_signature');
+        
+        $provider->method('generateSign')->willReturn('test_signature');
 
         $this->expectException(BadRequestException::class);
 
-        $mockProvider->tokenFromCode('test_code');
+        $provider->tokenFromCode('test_code');
     }
 
     public function testGetUserByTokenSuccess()
@@ -253,19 +238,14 @@ class AlipayTest extends TestCase
             ->onlyMethods(['getHttpClient', 'generateSign'])
             ->getMock();
 
-        $mockHttpClient = m::mock();
-        $mockResponse = m::mock();
         
-        $mockHttpClient->shouldReceive('post')
-            ->once()
-            ->andReturn($mockResponse);
+        
+        
 
-        $mockResponse->shouldReceive('getBody')
-            ->once()
-            ->andReturn('{"alipay_user_info_share_response": {"user_id": "user123", "nick_name": "Test User", "avatar": "http://avatar.url"}}');
+        
 
-        $mockProvider->method('getHttpClient')->willReturn($mockHttpClient);
-        $mockProvider->method('generateSign')->willReturn('test_signature');
+        
+        $provider->method('generateSign')->willReturn('test_signature');
 
         $getUserByToken = new ReflectionMethod(Alipay::class, 'getUserByToken');
         $getUserByToken->setAccessible(true);
@@ -288,19 +268,14 @@ class AlipayTest extends TestCase
             ->onlyMethods(['getHttpClient', 'generateSign'])
             ->getMock();
 
-        $mockHttpClient = m::mock();
-        $mockResponse = m::mock();
         
-        $mockHttpClient->shouldReceive('post')
-            ->once()
-            ->andReturn($mockResponse);
+        
+        
 
-        $mockResponse->shouldReceive('getBody')
-            ->once()
-            ->andReturn('{"error_response": {"code": "40002", "msg": "Invalid parameter"}}');
+        
 
-        $mockProvider->method('getHttpClient')->willReturn($mockHttpClient);
-        $mockProvider->method('generateSign')->willReturn('test_signature');
+        
+        $provider->method('generateSign')->willReturn('test_signature');
 
         $this->expectException(BadRequestException::class);
 

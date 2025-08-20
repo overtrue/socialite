@@ -162,13 +162,13 @@ class OpenWeWorkTest extends TestCase
             ->onlyMethods(['getSuiteAccessToken', 'getUser'])
             ->getMock();
 
-        $mockProvider->method('getSuiteAccessToken')->willReturn('suite_token');
-        $mockProvider->method('getUser')->willReturn([
+        $provider->method('getSuiteAccessToken')->willReturn('suite_token');
+        $provider->method('getUser')->willReturn([
             'UserId' => 'user123',
             'openid' => 'openid123',
         ]);
 
-        $user = $mockProvider->userFromCode('test_code');
+        $user = $provider->userFromCode('test_code');
 
         $this->assertSame('user123', $user->getId());
     }
@@ -184,17 +184,17 @@ class OpenWeWorkTest extends TestCase
             ->onlyMethods(['getSuiteAccessToken', 'getUser', 'getUserByTicket'])
             ->getMock();
 
-        $mockProvider->method('getSuiteAccessToken')->willReturn('suite_token');
-        $mockProvider->method('getUser')->willReturn([
+        $provider->method('getSuiteAccessToken')->willReturn('suite_token');
+        $provider->method('getUser')->willReturn([
             'UserId' => 'user123',
             'user_ticket' => 'user_ticket_123',
         ]);
-        $mockProvider->method('getUserByTicket')->willReturn([
+        $provider->method('getUserByTicket')->willReturn([
             'userid' => 'user123',
             'name' => 'Test User',
         ]);
 
-        $user = $mockProvider->detailed()->userFromCode('test_code');
+        $user = $provider->detailed()->userFromCode('test_code');
 
         $this->assertSame('user123', $user->getId());
     }
@@ -229,8 +229,8 @@ class OpenWeWorkTest extends TestCase
         // Set detailed to true
         $detailedProperty->setValue($mockProvider, true);
 
-        $mockProvider->method('getSuiteAccessToken')->willReturn('suite_token');
-        $mockProvider->method('getUser')->willReturn([
+        $provider->method('getSuiteAccessToken')->willReturn('suite_token');
+        $provider->method('getUser')->willReturn([
             'UserId' => 'user123',
             // Missing user_ticket
         ]);
@@ -238,7 +238,7 @@ class OpenWeWorkTest extends TestCase
         $this->expectException(AuthorizeFailedException::class);
         $this->expectExceptionMessage('Authorization failed: missing user_ticket in response');
 
-        $mockProvider->userFromCode('test_code');
+        $provider->userFromCode('test_code');
     }
 
     public function testGetUserByTokenThrowsException()

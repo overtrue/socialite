@@ -77,29 +77,25 @@ class DouYinTest extends TestCase
 
     public function testTokenFromCodeSuccess()
     {
-        $mockProvider = $this->getMockBuilder(DouYin::class)
-            ->setConstructorArgs([[
-                'client_id' => 'client_id',
-                'client_secret' => 'client_secret',
-                'redirect_url' => 'http://localhost/callback',
-            ]])
-            ->onlyMethods(['getHttpClient'])
-            ->getMock();
+        $provider = new DouYin([
+            'client_id' => 'client_id',
+            'client_secret' => 'client_secret',
+            'redirect_url' => 'http://localhost/callback',
+        ]);
 
-        $mockHttpClient = m::mock();
-        $mockResponse = m::mock();
+        $mock = new MockHandler([
+            new Response(200, [], '{"data": {"error_code": 0, "access_token": "token123", "open_id": "openid123"}}'),
+        ]);
+
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
         
-        $mockHttpClient->shouldReceive('get')
-            ->once()
-            ->andReturn($mockResponse);
+        $reflection = new \ReflectionObject($provider);
+        $httpClientProperty = $reflection->getProperty('httpClient');
+        $httpClientProperty->setAccessible(true);
+        $httpClientProperty->setValue($provider, $client);
 
-        $mockResponse->shouldReceive('getBody')
-            ->once()
-            ->andReturn('{"data": {"error_code": 0, "access_token": "token123", "open_id": "openid123"}}');
-
-        $mockProvider->method('getHttpClient')->willReturn($mockHttpClient);
-
-        $token = $mockProvider->tokenFromCode('test_code');
+        $token = $provider->tokenFromCode('test_code');
         
         $this->assertArrayHasKey('access_token', $token);
         $this->assertSame('token123', $token['access_token']);
@@ -107,124 +103,108 @@ class DouYinTest extends TestCase
 
     public function testThrowsExceptionWhenOpenIdMissing()
     {
-        $mockProvider = $this->getMockBuilder(DouYin::class)
-            ->setConstructorArgs([[
-                'client_id' => 'client_id',
-                'client_secret' => 'client_secret',
-                'redirect_url' => 'http://localhost/callback',
-            ]])
-            ->onlyMethods(['getHttpClient'])
-            ->getMock();
+        $provider = new DouYin([
+            'client_id' => 'client_id',
+            'client_secret' => 'client_secret',
+            'redirect_url' => 'http://localhost/callback',
+        ]);
 
-        $mockHttpClient = m::mock();
-        $mockResponse = m::mock();
+        $mock = new MockHandler([
+            new Response(200, [], '{"data": {"error_code": 0, "access_token": "token123"}}'), // Missing open_id
+        ]);
+
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
         
-        $mockHttpClient->shouldReceive('get')
-            ->once()
-            ->andReturn($mockResponse);
-
-        $mockResponse->shouldReceive('getBody')
-            ->once()
-            ->andReturn('{"data": {"error_code": 0, "access_token": "token123"}}'); // Missing open_id
-
-        $mockProvider->method('getHttpClient')->willReturn($mockHttpClient);
+        $reflection = new \ReflectionObject($provider);
+        $httpClientProperty = $reflection->getProperty('httpClient');
+        $httpClientProperty->setAccessible(true);
+        $httpClientProperty->setValue($provider, $client);
 
         $this->expectException(AuthorizeFailedException::class);
         $this->expectExceptionMessage('Authorization failed: missing open_id in token response');
 
-        $mockProvider->tokenFromCode('test_code');
+        $provider->tokenFromCode('test_code');
     }
 
     public function testThrowsExceptionWhenDataMissing()
     {
-        $mockProvider = $this->getMockBuilder(DouYin::class)
-            ->setConstructorArgs([[
-                'client_id' => 'client_id',
-                'client_secret' => 'client_secret',
-                'redirect_url' => 'http://localhost/callback',
-            ]])
-            ->onlyMethods(['getHttpClient'])
-            ->getMock();
+        $provider = new DouYin([
+            'client_id' => 'client_id',
+            'client_secret' => 'client_secret',
+            'redirect_url' => 'http://localhost/callback',
+        ]);
 
-        $mockHttpClient = m::mock();
-        $mockResponse = m::mock();
+        $mock = new MockHandler([
+            new Response(200, [], '{"error": "missing data"}'), // Missing data
+        ]);
+
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
         
-        $mockHttpClient->shouldReceive('get')
-            ->once()
-            ->andReturn($mockResponse);
-
-        $mockResponse->shouldReceive('getBody')
-            ->once()
-            ->andReturn('{"error": "invalid_request"}'); // Missing data
-
-        $mockProvider->method('getHttpClient')->willReturn($mockHttpClient);
+        $reflection = new \ReflectionObject($provider);
+        $httpClientProperty = $reflection->getProperty('httpClient');
+        $httpClientProperty->setAccessible(true);
+        $httpClientProperty->setValue($provider, $client);
 
         $this->expectException(AuthorizeFailedException::class);
         $this->expectExceptionMessage('Invalid token response');
 
-        $mockProvider->tokenFromCode('test_code');
+        $provider->tokenFromCode('test_code');
     }
 
     public function testThrowsExceptionWhenErrorCodeNonZero()
     {
-        $mockProvider = $this->getMockBuilder(DouYin::class)
-            ->setConstructorArgs([[
-                'client_id' => 'client_id',
-                'client_secret' => 'client_secret',
-                'redirect_url' => 'http://localhost/callback',
-            ]])
-            ->onlyMethods(['getHttpClient'])
-            ->getMock();
+        $provider = new DouYin([
+            'client_id' => 'client_id',
+            'client_secret' => 'client_secret',
+            'redirect_url' => 'http://localhost/callback',
+        ]);
 
-        $mockHttpClient = m::mock();
-        $mockResponse = m::mock();
+        $mock = new MockHandler([
+            new Response(200, [], '{"data": {"error_code": 1, "description": "error occurred"}}'),
+        ]);
+
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
         
-        $mockHttpClient->shouldReceive('get')
-            ->once()
-            ->andReturn($mockResponse);
-
-        $mockResponse->shouldReceive('getBody')
-            ->once()
-            ->andReturn('{"data": {"error_code": 1, "description": "Error message"}}');
-
-        $mockProvider->method('getHttpClient')->willReturn($mockHttpClient);
+        $reflection = new \ReflectionObject($provider);
+        $httpClientProperty = $reflection->getProperty('httpClient');
+        $httpClientProperty->setAccessible(true);
+        $httpClientProperty->setValue($provider, $client);
 
         $this->expectException(AuthorizeFailedException::class);
         $this->expectExceptionMessage('Invalid token response');
 
-        $mockProvider->tokenFromCode('test_code');
+        $provider->tokenFromCode('test_code');
     }
 
     public function testGetUserByTokenSuccess()
     {
-        $mockProvider = $this->getMockBuilder(DouYin::class)
-            ->setConstructorArgs([[
-                'client_id' => 'client_id',
-                'client_secret' => 'client_secret',
-                'redirect_url' => 'http://localhost/callback',
-            ]])
-            ->onlyMethods(['getHttpClient'])
-            ->getMock();
+        $provider = new DouYin([
+            'client_id' => 'client_id',
+            'client_secret' => 'client_secret',
+            'redirect_url' => 'http://localhost/callback',
+        ]);
 
-        $mockHttpClient = m::mock();
-        $mockResponse = m::mock();
+        $mock = new MockHandler([
+            new Response(200, [], '{"data": {"nickname": "Test User", "avatar": "http://avatar.url", "open_id": "test_openid"}}'),
+        ]);
+
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
         
-        $mockHttpClient->shouldReceive('get')
-            ->once()
-            ->andReturn($mockResponse);
-
-        $mockResponse->shouldReceive('getBody')
-            ->once()
-            ->andReturn('{"data": {"open_id": "test_openid", "nickname": "Test User", "avatar": "http://avatar.url"}}');
-
-        $mockProvider->method('getHttpClient')->willReturn($mockHttpClient);
+        $reflection = new \ReflectionObject($provider);
+        $httpClientProperty = $reflection->getProperty('httpClient');
+        $httpClientProperty->setAccessible(true);
+        $httpClientProperty->setValue($provider, $client);
 
         // Set openId first
-        $mockProvider->withOpenId('test_openid');
+        $provider->withOpenId('test_openid');
 
         $getUserByToken = new ReflectionMethod(DouYin::class, 'getUserByToken');
         $getUserByToken->setAccessible(true);
-        $result = $getUserByToken->invoke($mockProvider, 'test_token');
+        $result = $getUserByToken->invoke($provider, 'test_token');
 
         $this->assertArrayHasKey('open_id', $result);
         $this->assertSame('test_openid', $result['open_id']);

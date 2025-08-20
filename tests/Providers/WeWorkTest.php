@@ -145,13 +145,13 @@ class WeWorkTest extends TestCase
             ->onlyMethods(['getApiAccessToken', 'getUser'])
             ->getMock();
 
-        $mockProvider->method('getApiAccessToken')->willReturn('api_token');
-        $mockProvider->method('getUser')->willReturn([
+        $provider->method('getApiAccessToken')->willReturn('api_token');
+        $provider->method('getUser')->willReturn([
             'UserId' => 'user123',
             'OpenId' => 'openid123',
         ]);
 
-        $user = $mockProvider->userFromCode('test_code');
+        $user = $provider->userFromCode('test_code');
 
         $this->assertSame('user123', $user->getId());
     }
@@ -167,17 +167,17 @@ class WeWorkTest extends TestCase
             ->onlyMethods(['getApiAccessToken', 'getUser', 'getUserById'])
             ->getMock();
 
-        $mockProvider->method('getApiAccessToken')->willReturn('api_token');
-        $mockProvider->method('getUser')->willReturn([
+        $provider->method('getApiAccessToken')->willReturn('api_token');
+        $provider->method('getUser')->willReturn([
             'UserId' => 'user123',
         ]);
-        $mockProvider->method('getUserById')->willReturn([
+        $provider->method('getUserById')->willReturn([
             'userid' => 'user123',
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
 
-        $user = $mockProvider->detailed()->userFromCode('test_code');
+        $user = $provider->detailed()->userFromCode('test_code');
 
         $this->assertSame('user123', $user->getId());
     }
@@ -212,8 +212,8 @@ class WeWorkTest extends TestCase
         // Set detailed to true
         $detailedProperty->setValue($mockProvider, true);
 
-        $mockProvider->method('getApiAccessToken')->willReturn('api_token');
-        $mockProvider->method('getUser')->willReturn([
+        $provider->method('getApiAccessToken')->willReturn('api_token');
+        $provider->method('getUser')->willReturn([
             'Name' => 'Test User',
             // Missing UserId
         ]);
@@ -221,7 +221,7 @@ class WeWorkTest extends TestCase
         $this->expectException(AuthorizeFailedException::class);
         $this->expectExceptionMessage('Authorization failed: missing UserId in user response');
 
-        $mockProvider->userFromCode('test_code');
+        $provider->userFromCode('test_code');
     }
 
     public function testThrowsExceptionWhenAccessTokenMissing()
@@ -235,29 +235,15 @@ class WeWorkTest extends TestCase
         ]);
 
         // Mock the getHttpClient method to return response without access_token
-        $mockProvider = $this->getMockBuilder(WeWork::class)
-            ->setConstructorArgs([[
-                'client_id' => 'client_id',
-                'client_secret' => 'client_secret',
-                'redirect_url' => 'http://localhost/callback',
-                'corp_id' => 'corp_id',
-                'corp_secret' => 'corp_secret',
-            ]])
-            ->onlyMethods(['getHttpClient'])
-            ->getMock();
-
-        $mockHttpClient = m::mock();
-        $mockResponse = m::mock();
         
-        $mockHttpClient->shouldReceive('get')
-            ->once()
-            ->andReturn($mockResponse);
 
-        $mockResponse->shouldReceive('getBody')
-            ->once()
-            ->andReturn('{"errcode": 0}'); // Missing access_token
+        
+        
+        
 
-        $mockProvider->method('getHttpClient')->willReturn($mockHttpClient);
+         // Missing access_token
+
+        
 
         $this->expectException(AuthorizeFailedException::class);
         $this->expectExceptionMessage('Authorization failed: missing access_token in response');
