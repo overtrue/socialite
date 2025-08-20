@@ -119,6 +119,10 @@ class WeChat extends Base
 
         $token = $this->tokenFromCode($code);
 
+        if (empty($token['openid'])) {
+            throw new Exceptions\AuthorizeFailedException('Authorization failed: missing openid in token response', $token);
+        }
+
         $this->withOpenid($token['openid']);
 
         $user = $this->userFromToken($token[$this->accessTokenKey]);
@@ -131,6 +135,15 @@ class WeChat extends Base
     protected function getSnsapiBaseUserFromCode(string $code): Contracts\UserInterface
     {
         $token = $this->fromJsonBody($this->getTokenFromCode($code));
+
+        if (empty($token['openid'])) {
+            throw new Exceptions\AuthorizeFailedException('Authorization failed: missing openid in token response', $token);
+        }
+
+        if (empty($token[$this->accessTokenKey])) {
+            throw new Exceptions\AuthorizeFailedException('Authorization failed: missing access_token in token response', $token);
+        }
+
         $user = [
             'openid' => $token['openid'],
         ];
