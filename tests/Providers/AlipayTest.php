@@ -152,23 +152,30 @@ class AlipayTest extends TestCase
 
     public function testTokenFromCodeSuccess()
     {
-        $mockProvider = $this->getMockBuilder(Alipay::class)
-            ->setConstructorArgs([[
-                'client_id' => 'client_id',
-                'rsa_private_key' => 'private_key',
-                'redirect_url' => 'http://localhost/callback',
-            ]])
-            ->onlyMethods(['getHttpClient', 'generateSign'])
-            ->getMock();
+        $provider = new Alipay([
+            'client_id' => 'client_id',
+            'rsa_private_key' => 'private_key',
+            'redirect_url' => 'http://localhost/callback',
+        ]);
 
-        
-        
-        
+        // Mock HTTP response
+        $mock = new MockHandler([
+            new Response(200, [], json_encode([
+                'alipay_system_oauth_token_response' => [
+                    'access_token' => 'token123',
+                    'user_id' => 'user123'
+                ]
+            ]))
+        ]);
 
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
         
-
-        
-        $provider->method('generateSign')->willReturn('test_signature');
+        // Use reflection to set the HTTP client
+        $reflection = new \ReflectionObject($provider);
+        $httpClientProperty = $reflection->getProperty('httpClient');
+        $httpClientProperty->setAccessible(true);
+        $httpClientProperty->setValue($provider, $client);
 
         $token = $provider->tokenFromCode('test_code');
         
@@ -178,49 +185,60 @@ class AlipayTest extends TestCase
 
     public function testThrowsExceptionWhenTokenResponseMissing()
     {
-        $mockProvider = $this->getMockBuilder(Alipay::class)
-            ->setConstructorArgs([[
-                'client_id' => 'client_id',
-                'rsa_private_key' => 'private_key',
-                'redirect_url' => 'http://localhost/callback',
-            ]])
-            ->onlyMethods(['getHttpClient', 'generateSign'])
-            ->getMock();
+        $provider = new Alipay([
+            'client_id' => 'client_id',
+            'rsa_private_key' => 'private_key',
+            'redirect_url' => 'http://localhost/callback',
+        ]);
 
-        
-        
-        
+        // Mock HTTP response without alipay_system_oauth_token_response
+        $mock = new MockHandler([
+            new Response(200, [], json_encode([
+                'some_other_field' => 'value'
+            ]))
+        ]);
 
-         // Missing alipay_system_oauth_token_response
-
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
         
-        $provider->method('generateSign')->willReturn('test_signature');
+        // Use reflection to set the HTTP client
+        $reflection = new \ReflectionObject($provider);
+        $httpClientProperty = $reflection->getProperty('httpClient');
+        $httpClientProperty->setAccessible(true);
+        $httpClientProperty->setValue($provider, $client);
 
         $this->expectException(AuthorizeFailedException::class);
         $this->expectExceptionMessage('Authorization failed: missing alipay_system_oauth_token_response in response');
-
+        
         $provider->tokenFromCode('test_code');
     }
 
     public function testThrowsExceptionWhenErrorResponse()
     {
-        $mockProvider = $this->getMockBuilder(Alipay::class)
-            ->setConstructorArgs([[
-                'client_id' => 'client_id',
-                'rsa_private_key' => 'private_key',
-                'redirect_url' => 'http://localhost/callback',
-            ]])
-            ->onlyMethods(['getHttpClient', 'generateSign'])
-            ->getMock();
+        $provider = new Alipay([
+            'client_id' => 'client_id',
+            'rsa_private_key' => 'private_key',
+            'redirect_url' => 'http://localhost/callback',
+        ]);
 
-        
-        
-        
+        // Mock HTTP response with error
+        $mock = new MockHandler([
+            new Response(200, [], json_encode([
+                'error_response' => [
+                    'code' => '20001',
+                    'msg' => 'Invalid parameters'
+                ]
+            ]))
+        ]);
 
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
         
-
-        
-        $provider->method('generateSign')->willReturn('test_signature');
+        // Use reflection to set the HTTP client
+        $reflection = new \ReflectionObject($provider);
+        $httpClientProperty = $reflection->getProperty('httpClient');
+        $httpClientProperty->setAccessible(true);
+        $httpClientProperty->setValue($provider, $client);
 
         $this->expectException(BadRequestException::class);
 
@@ -229,27 +247,34 @@ class AlipayTest extends TestCase
 
     public function testGetUserByTokenSuccess()
     {
-        $mockProvider = $this->getMockBuilder(Alipay::class)
-            ->setConstructorArgs([[
-                'client_id' => 'client_id',
-                'rsa_private_key' => 'private_key',
-                'redirect_url' => 'http://localhost/callback',
-            ]])
-            ->onlyMethods(['getHttpClient', 'generateSign'])
-            ->getMock();
+        $provider = new Alipay([
+            'client_id' => 'client_id',
+            'rsa_private_key' => 'private_key',
+            'redirect_url' => 'http://localhost/callback',
+        ]);
 
-        
-        
-        
+        // Mock HTTP response with user data
+        $mock = new MockHandler([
+            new Response(200, [], json_encode([
+                'alipay_user_info_share_response' => [
+                    'user_id' => 'user123',
+                    'nick_name' => 'Test User'
+                ]
+            ]))
+        ]);
 
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
         
-
-        
-        $provider->method('generateSign')->willReturn('test_signature');
+        // Use reflection to set the HTTP client
+        $reflection = new \ReflectionObject($provider);
+        $httpClientProperty = $reflection->getProperty('httpClient');
+        $httpClientProperty->setAccessible(true);
+        $httpClientProperty->setValue($provider, $client);
 
         $getUserByToken = new ReflectionMethod(Alipay::class, 'getUserByToken');
         $getUserByToken->setAccessible(true);
-        $result = $getUserByToken->invoke($mockProvider, 'test_token');
+        $result = $getUserByToken->invoke($provider, 'test_token');
 
         $this->assertArrayHasKey('user_id', $result);
         $this->assertSame('user123', $result['user_id']);
@@ -259,29 +284,36 @@ class AlipayTest extends TestCase
 
     public function testGetUserByTokenThrowsExceptionWhenErrorResponse()
     {
-        $mockProvider = $this->getMockBuilder(Alipay::class)
-            ->setConstructorArgs([[
-                'client_id' => 'client_id',
-                'rsa_private_key' => 'private_key',
-                'redirect_url' => 'http://localhost/callback',
-            ]])
-            ->onlyMethods(['getHttpClient', 'generateSign'])
-            ->getMock();
+        $provider = new Alipay([
+            'client_id' => 'client_id',
+            'rsa_private_key' => 'private_key',
+            'redirect_url' => 'http://localhost/callback',
+        ]);
 
-        
-        
-        
+        // Mock HTTP response with error
+        $mock = new MockHandler([
+            new Response(200, [], json_encode([
+                'error_response' => [
+                    'code' => '20001',
+                    'msg' => 'Invalid token'
+                ]
+            ]))
+        ]);
 
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
         
-
-        
-        $provider->method('generateSign')->willReturn('test_signature');
+        // Use reflection to set the HTTP client
+        $reflection = new \ReflectionObject($provider);
+        $httpClientProperty = $reflection->getProperty('httpClient');
+        $httpClientProperty->setAccessible(true);
+        $httpClientProperty->setValue($provider, $client);
 
         $this->expectException(BadRequestException::class);
 
         $getUserByToken = new ReflectionMethod(Alipay::class, 'getUserByToken');
         $getUserByToken->setAccessible(true);
-        $getUserByToken->invoke($mockProvider, 'test_token');
+        $getUserByToken->invoke($provider, 'test_token');
     }
 
     public function testMapUserToObject()

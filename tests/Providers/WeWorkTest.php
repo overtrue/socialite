@@ -145,13 +145,13 @@ class WeWorkTest extends TestCase
             ->onlyMethods(['getApiAccessToken', 'getUser'])
             ->getMock();
 
-        $provider->method('getApiAccessToken')->willReturn('api_token');
-        $provider->method('getUser')->willReturn([
+        $mockProvider->method('getApiAccessToken')->willReturn('api_token');
+        $mockProvider->method('getUser')->willReturn([
             'UserId' => 'user123',
             'OpenId' => 'openid123',
         ]);
 
-        $user = $provider->userFromCode('test_code');
+        $user = $mockProvider->userFromCode('test_code');
 
         $this->assertSame('user123', $user->getId());
     }
@@ -167,36 +167,23 @@ class WeWorkTest extends TestCase
             ->onlyMethods(['getApiAccessToken', 'getUser', 'getUserById'])
             ->getMock();
 
-        $provider->method('getApiAccessToken')->willReturn('api_token');
-        $provider->method('getUser')->willReturn([
+        $mockProvider->method('getApiAccessToken')->willReturn('api_token');
+        $mockProvider->method('getUser')->willReturn([
             'UserId' => 'user123',
         ]);
-        $provider->method('getUserById')->willReturn([
+        $mockProvider->method('getUserById')->willReturn([
             'userid' => 'user123',
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
 
-        $user = $provider->detailed()->userFromCode('test_code');
+        $user = $mockProvider->detailed()->userFromCode('test_code');
 
         $this->assertSame('user123', $user->getId());
     }
 
     public function testThrowsExceptionWhenUserIdMissing()
     {
-        $provider = new WeWork([
-            'client_id' => 'client_id',
-            'client_secret' => 'client_secret',
-            'redirect_url' => 'http://localhost/callback',
-            'corp_id' => 'corp_id',
-            'corp_secret' => 'corp_secret',
-        ]);
-
-        // Set detailed to true to trigger the UserId validation
-        $detailedProperty = new \ReflectionProperty(WeWork::class, 'detailed');
-        $detailedProperty->setAccessible(true);
-        $detailedProperty->setValue($provider, true);
-
         // Mock the methods
         $mockProvider = $this->getMockBuilder(WeWork::class)
             ->setConstructorArgs([[
@@ -209,11 +196,13 @@ class WeWorkTest extends TestCase
             ->onlyMethods(['getApiAccessToken', 'getUser'])
             ->getMock();
 
-        // Set detailed to true
+        // Set detailed to true to trigger the UserId validation
+        $detailedProperty = new \ReflectionProperty(WeWork::class, 'detailed');
+        $detailedProperty->setAccessible(true);
         $detailedProperty->setValue($mockProvider, true);
 
-        $provider->method('getApiAccessToken')->willReturn('api_token');
-        $provider->method('getUser')->willReturn([
+        $mockProvider->method('getApiAccessToken')->willReturn('api_token');
+        $mockProvider->method('getUser')->willReturn([
             'Name' => 'Test User',
             // Missing UserId
         ]);
@@ -221,7 +210,7 @@ class WeWorkTest extends TestCase
         $this->expectException(AuthorizeFailedException::class);
         $this->expectExceptionMessage('Authorization failed: missing UserId in user response');
 
-        $provider->userFromCode('test_code');
+        $mockProvider->userFromCode('test_code');
     }
 
     public function testThrowsExceptionWhenAccessTokenMissing()
@@ -234,16 +223,23 @@ class WeWorkTest extends TestCase
             'corp_secret' => 'corp_secret',
         ]);
 
-        // Mock the getHttpClient method to return response without access_token
-        
+        // Mock HTTP response without access_token
+        $mock = new MockHandler([
+            new Response(200, [], json_encode([
+                'errcode' => 0,  // Success error code
+                'some_other_field' => 'value'
+                // Missing access_token
+            ]))
+        ]);
 
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
         
-        
-        
-
-         // Missing access_token
-
-        
+        // Use reflection to set the HTTP client
+        $reflection = new \ReflectionObject($provider);
+        $httpClientProperty = $reflection->getProperty('httpClient');
+        $httpClientProperty->setAccessible(true);
+        $httpClientProperty->setValue($provider, $client);
 
         $this->expectException(AuthorizeFailedException::class);
         $this->expectExceptionMessage('Authorization failed: missing access_token in response');
@@ -251,7 +247,7 @@ class WeWorkTest extends TestCase
         // Use reflection to test protected method
         $requestApiAccessToken = new \ReflectionMethod(WeWork::class, 'requestApiAccessToken');
         $requestApiAccessToken->setAccessible(true);
-        $requestApiAccessToken->invoke($mockProvider);
+        $requestApiAccessToken->invoke($provider);
     }
 
     public function testGetUserByTokenThrowsException()
