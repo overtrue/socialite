@@ -98,7 +98,7 @@ class QQ extends Base
 
         return $user + [
             'unionid' => $me['unionid'] ?? null,
-            'openid' => $me['openid'] ?? null,
+            'openid' => $me['openid'],
         ];
     }
 
