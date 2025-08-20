@@ -114,10 +114,14 @@ class DingTalk extends Base
             throw new Exceptions\BadRequestException((string) $responseInstance->getBody());
         }
 
+        if (empty($response['user_info'])) {
+            throw new Exceptions\AuthorizeFailedException('Authorization failed: missing user_info in response', $response);
+        }
+
         return new User([
-            Contracts\ABNF_NAME => $response['user_info']['nick'],
-            Contracts\ABNF_NICKNAME => $response['user_info']['nick'],
-            Contracts\ABNF_ID => $response['user_info'][Contracts\ABNF_OPEN_ID],
+            Contracts\ABNF_NAME => $response['user_info']['nick'] ?? null,
+            Contracts\ABNF_NICKNAME => $response['user_info']['nick'] ?? null,
+            Contracts\ABNF_ID => $response['user_info'][Contracts\ABNF_OPEN_ID] ?? null,
         ]);
     }
 }

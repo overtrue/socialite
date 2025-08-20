@@ -110,6 +110,10 @@ class Alipay extends Base
             throw new Exceptions\BadRequestException((string) $responseInstance->getBody());
         }
 
+        if (empty($response['alipay_system_oauth_token_response'])) {
+            throw new Exceptions\AuthorizeFailedException('Authorization failed: missing alipay_system_oauth_token_response in response', $response);
+        }
+
         return $this->normalizeAccessTokenResponse($response['alipay_system_oauth_token_response']);
     }
 

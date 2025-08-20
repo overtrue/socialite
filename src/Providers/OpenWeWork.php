@@ -85,6 +85,9 @@ class OpenWeWork extends Base
         $user = $this->getUser($this->getSuiteAccessToken(), $code);
 
         if ($this->detailed) {
+            if (empty($user['user_ticket'])) {
+                throw new Exceptions\AuthorizeFailedException('Authorization failed: missing user_ticket in response', $user);
+            }
             $user = \array_merge($user, $this->getUserByTicket($user['user_ticket']));
         }
 

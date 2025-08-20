@@ -77,6 +77,10 @@ class QQ extends Base
 
         $me = $this->fromJsonBody($response);
 
+        if (empty($me['openid'])) {
+            throw new AuthorizeFailedException('Authorization failed: missing openid in token response', $me);
+        }
+
         $response = $this->getHttpClient()->get($this->baseUrl.'/user/get_user_info', [
             'query' => [
                 Contracts\RFC6749_ABNF_ACCESS_TOKEN => $token,

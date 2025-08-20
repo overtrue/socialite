@@ -66,6 +66,10 @@ class DouYin extends Base
             throw new Exceptions\AuthorizeFailedException('Invalid token response', $body);
         }
 
+        if (empty($body['data'][Contracts\ABNF_OPEN_ID] ?? null)) {
+            throw new Exceptions\AuthorizeFailedException('Authorization failed: missing open_id in token response', $body);
+        }
+
         $this->withOpenId($body['data'][Contracts\ABNF_OPEN_ID]);
 
         return $this->normalizeAccessTokenResponse($body['data']);
