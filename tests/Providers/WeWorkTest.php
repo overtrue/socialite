@@ -36,7 +36,7 @@ class WeWorkTest extends TestCase
 
         $response = $provider->withAgentId(1000)->asQrcode()->redirect();
 
-        $this->assertStringStartsWith('https://open.work.weixin.qq.com/wwopen/sso/qrConnect', $response);
+        $this->assertStringStartsWith('https://login.work.weixin.qq.com/wwlogin/sso/login', $response);
         $this->assertStringContainsString('appid=CORPID', $response);
         $this->assertStringContainsString('agentid=1000', $response);
     }
