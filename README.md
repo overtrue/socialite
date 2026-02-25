@@ -8,7 +8,7 @@ Socialite 是一个 [OAuth2](https://oauth.net/2/) 认证工具。 它的灵感�
 
 [![Sponsor me](https://github.com/overtrue/overtrue/blob/master/sponsor-me-button-s.svg?raw=true)](https://github.com/sponsors/overtrue)
 
-该工具现已支持平台有：Apple，Facebook，Github，Google，Linkedin，Outlook，QQ，TAPD，支付宝，淘宝，百度，钉钉，微博，微信，抖音，飞书，Lark，豆瓣，企业微信，腾讯云，Line，Gitee，Coding。
+该工具现已支持平台有：Apple，Facebook，Github，Google，Linkedin，Outlook，QQ，TAPD，支付宝，淘宝，百度，钉钉，微博，微信，抖音，飞书，Lark，豆瓣，企业微信，腾讯云，Line，Gitee，Coding，Twitter。
 
 如果你喜欢我的项目并想支持我，[点击这里 :heart:](https://github.com/sponsors/overtrue)
 
