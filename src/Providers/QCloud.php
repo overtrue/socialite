@@ -238,6 +238,6 @@ class QCloud extends Base
 
     protected function getServiceFromHost(string $host): string
     {
-        return \explode('.', $host)[0] ?? '';
+        return \explode('.', $host)[0];
     }
 }
