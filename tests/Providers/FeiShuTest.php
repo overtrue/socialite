@@ -95,6 +95,46 @@ class FeiShuTest extends TestCase
         $this->assertEquals('app_ticket', $f->getConfig()->get('app_ticket'));
     }
 
+    public function test_provider_with_app_access_token_work()
+    {
+        $config = [
+            'client_id' => 'xxxxx',
+            'client_secret' => 'yyyyy',
+        ];
+
+        $f = new FeiShu($config);
+        $f->withAppAccessToken('my_app_access_token');
+        $this->assertEquals('my_app_access_token', $f->getConfig()->get('app_access_token'));
+    }
+
+    public function test_config_app_access_token_skips_api_call_when_token_already_set()
+    {
+        $config = [
+            'client_id' => 'xxxxx',
+            'client_secret' => 'yyyyy',
+            'mode' => 'internal',
+        ];
+
+        $f = new FeiShu($config);
+        $f->withAppAccessToken('pre_fetched_token');
+
+        $fr = new \ReflectionObject($f);
+        $frClient = $fr->getProperty('httpClient');
+        $frClient->setAccessible(true);
+        $ff = new \ReflectionMethod(FeiShu::class, 'configAppAccessToken');
+        $ff->setAccessible(true);
+
+        // No HTTP responses needed - the API call should be skipped
+        $mock = new MockHandler([]);
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
+        $frClient->setValue($f, $client);
+
+        $ff->invoke($f);
+        // Token should remain unchanged
+        $this->assertEquals('pre_fetched_token', $f->getConfig()->get('app_access_token'));
+    }
+
     public function test_config_app_access_token_with_default_mode_no_app_ticket_work()
     {
         $config = [
