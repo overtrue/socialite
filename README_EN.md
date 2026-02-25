@@ -8,7 +8,7 @@ Socialite is an [OAuth2](https://oauth.net/2/)  Authentication tool. It is inspi
 
 [![Sponsor me](https://github.com/overtrue/overtrue/blob/master/sponsor-me-button-s.svg?raw=true)](https://github.com/sponsors/overtrue)
 
-This tool now supports platforms such as Facebook, GitHub, Google, Figma, LinkedIn, Outlook, QQ, Tapd, Alipay, Taobao, Baidu, DingTalk, Weibo, WeChat, Douyin, Feishu, Lark, Douban, WeWork, Tencent Cloud, Line, Gitee and Coding.
+This tool now supports platforms such as Apple, Facebook, GitHub, Google, Figma, LinkedIn, Outlook, QQ, Tapd, Alipay, Taobao, Baidu, DingTalk, Weibo, WeChat, Douyin, Feishu, Lark, Douban, WeWork, Tencent Cloud, Line, Gitee and Coding.
 
 如果你喜欢我的项目并想支持我，[点击这里 :heart:](https://github.com/sponsors/overtrue)
 
@@ -461,6 +461,24 @@ $config = [
 ];
 ```
 
+### [Apple](https://developer.apple.com/documentation/sign_in_with_apple/sign_in_with_apple_rest_api)
+
+Sign in with Apple requires creating a Service ID in the Apple Developer portal. You can provide a `client_secret` directly or let it be generated automatically from `team_id`, `key_id`, and `private_key` (recommended).
+
+> https://developer.apple.com/documentation/sign_in_with_apple/generate_and_validate_tokens
+
+```php
+$config = [
+    'apple' => [
+        'client_id'   => 'com.example.app',   // Service ID (Bundle ID)
+        'team_id'     => 'XXXXXXXXXX',         // Apple Developer Team ID
+        'key_id'      => 'XXXXXXXXXX',         // Key ID from Apple Developer
+        'private_key' => file_get_contents('/path/to/AuthKey_XXXXXXXXXX.p8'), // .p8 private key content
+        'redirect'    => 'https://example.com/auth/apple/callback',
+    ],
+];
+```
+
 
 
 ## Some Skill
@@ -648,6 +666,7 @@ $user = $socialite->userFromToken($accessToken);
 - [Line - OAuth 2.0](https://developers.line.biz/en/docs/line-login/integrate-line-login/)
 - [Gitee - OAuth文档](https://gitee.com/api/v5/oauth_doc#/)
 - [PayPal - OAuth文档](https://developer.paypal.com/docs/log-in-with-paypal/)
+- [Apple - Sign in with Apple REST API](https://developer.apple.com/documentation/sign_in_with_apple/sign_in_with_apple_rest_api)
 
 [![Sponsor me](https://github.com/overtrue/overtrue/blob/master/sponsor-me.svg?raw=true)](https://github.com/sponsors/overtrue)
 

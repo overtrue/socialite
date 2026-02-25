@@ -14,6 +14,7 @@ class SocialiteManager implements Contracts\FactoryInterface
     protected static array $customCreators = [];
 
     protected const PROVIDERS = [
+        Providers\Apple::NAME => Providers\Apple::class,
         Providers\Alipay::NAME => Providers\Alipay::class,
         Providers\Azure::NAME => Providers\Azure::class,
         Providers\Coding::NAME => Providers\Coding::class,

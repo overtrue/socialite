@@ -8,7 +8,7 @@ Socialite 是一个 [OAuth2](https://oauth.net/2/) 认证工具。 它的灵感�
 
 [![Sponsor me](https://github.com/overtrue/overtrue/blob/master/sponsor-me-button-s.svg?raw=true)](https://github.com/sponsors/overtrue)
 
-该工具现已支持平台有：Facebook，Github，Google，Linkedin，Outlook，QQ，TAPD，支付宝，淘宝，百度，钉钉，微博，微信，抖音，飞书，Lark，豆瓣，企业微信，腾讯云，Line，Gitee，Coding。
+该工具现已支持平台有：Apple，Facebook，Github，Google，Linkedin，Outlook，QQ，TAPD，支付宝，淘宝，百度，钉钉，微博，微信，抖音，飞书，Lark，豆瓣，企业微信，腾讯云，Line，Gitee，Coding。
 
 如果你喜欢我的项目并想支持我，[点击这里 :heart:](https://github.com/sponsors/overtrue)
 
@@ -477,6 +477,24 @@ $config = [
 ];
 ```
 
+### [Apple](https://developer.apple.com/documentation/sign_in_with_apple/sign_in_with_apple_rest_api)
+
+通过 Apple 登录需要在 Apple Developer 后台创建 Service ID，并配置好 Return URLs。client_secret 可以直接提供，也可以通过 `team_id`、`key_id` 和 `private_key` 自动生成（推荐）。
+
+> <https://developer.apple.com/documentation/sign_in_with_apple/generate_and_validate_tokens>
+
+```php
+$config = [
+    'apple' => [
+        'client_id'   => 'com.example.app',   // Service ID (Bundle ID)
+        'team_id'     => 'XXXXXXXXXX',         // Apple Developer Team ID
+        'key_id'      => 'XXXXXXXXXX',         // Key ID from Apple Developer
+        'private_key' => file_get_contents('/path/to/AuthKey_XXXXXXXXXX.p8'), // .p8 private key content
+        'redirect'    => 'https://example.com/auth/apple/callback',
+    ],
+];
+```
+
 ## 其他一些技巧
 
 ### Scopes
@@ -659,6 +677,7 @@ $user = $socialite->userFromToken($accessToken);
 - [Line - OAuth 2.0](https://developers.line.biz/en/docs/line-login/integrate-line-login/)
 - [Gitee - OAuth文档](https://gitee.com/api/v5/oauth_doc#/)
 - [PayPal - OAuth文档](https://developer.paypal.com/docs/log-in-with-paypal/)
+- [Apple - Sign in with Apple REST API](https://developer.apple.com/documentation/sign_in_with_apple/sign_in_with_apple_rest_api)
 
 ## PHP 扩展包开发
 
