@@ -42,15 +42,22 @@ class Twitter extends Base
     }
 
     #[ArrayShape([
-        Contracts\RFC6749_ABNF_CLIENT_ID => 'null|string',
-        Contracts\RFC6749_ABNF_CLIENT_SECRET => 'null|string',
         Contracts\RFC6749_ABNF_CODE => 'string',
         Contracts\RFC6749_ABNF_REDIRECT_URI => 'null|string',
         Contracts\RFC6749_ABNF_GRANT_TYPE => 'string',
     ])]
     protected function getTokenFields(string $code): array
     {
-        return parent::getTokenFields($code) + [Contracts\RFC6749_ABNF_GRANT_TYPE => Contracts\RFC6749_ABNF_AUTHORATION_CODE];
+        $fields = parent::getTokenFields($code);
+
+        unset(
+            $fields[Contracts\RFC6749_ABNF_CLIENT_ID],
+            $fields[Contracts\RFC6749_ABNF_CLIENT_SECRET]
+        );
+
+        $fields[Contracts\RFC6749_ABNF_GRANT_TYPE] = Contracts\RFC6749_ABNF_AUTHORATION_CODE;
+
+        return $fields;
     }
 
     protected function getUserByToken(string $token): array
