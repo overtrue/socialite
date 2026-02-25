@@ -8,7 +8,7 @@ Socialite is an [OAuth2](https://oauth.net/2/)  Authentication tool. It is inspi
 
 [![Sponsor me](https://github.com/overtrue/overtrue/blob/master/sponsor-me-button-s.svg?raw=true)](https://github.com/sponsors/overtrue)
 
-This tool now supports platforms such as Facebook, GitHub, Google, Figma, LinkedIn, Outlook, QQ, Tapd, Alipay, Taobao, Baidu, DingTalk, Weibo, WeChat, Douyin, Feishu, Lark, Douban, WeWork, Tencent Cloud, Line, Gitee and Coding.
+This tool now supports platforms such as Facebook, GitHub, Google, Figma, LinkedIn, Outlook, QQ, Tapd, Alipay, Taobao, Baidu, DingTalk, Weibo, WeChat, Douyin, Feishu, Lark, Douban, WeWork, Tencent Cloud, Line, Gitee, Coding and Twitter.
 
 如果你喜欢我的项目并想支持我，[点击这里 :heart:](https://github.com/sponsors/overtrue)
 

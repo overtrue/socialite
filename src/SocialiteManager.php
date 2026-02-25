@@ -41,6 +41,7 @@ class SocialiteManager implements Contracts\FactoryInterface
         Providers\Weibo::NAME => Providers\Weibo::class,
         Providers\XiGua::NAME => Providers\XiGua::class,
         Providers\PayPal::NAME => Providers\PayPal::class,
+        Providers\Twitter::NAME => Providers\Twitter::class,
     ];
 
     #[Pure]
