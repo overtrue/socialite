@@ -470,7 +470,7 @@ Sign in with Apple requires creating a Service ID in the Apple Developer portal.
 ```php
 $config = [
     'apple' => [
-        'client_id'   => 'com.example.app',   // Service ID (Bundle ID)
+        'client_id'   => 'com.example.app',   // Services ID
         'team_id'     => 'XXXXXXXXXX',         // Apple Developer Team ID
         'key_id'      => 'XXXXXXXXXX',         // Key ID from Apple Developer
         'private_key' => file_get_contents('/path/to/AuthKey_XXXXXXXXXX.p8'), // .p8 private key content
