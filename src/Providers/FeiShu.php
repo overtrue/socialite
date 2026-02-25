@@ -165,6 +165,16 @@ class FeiShu extends Base
     }
 
     /**
+     * set app_access_token directly in config (skip automatic fetching)
+     */
+    public function withAppAccessToken(string $appAccessToken): self
+    {
+        $this->config->set('app_access_token', $appAccessToken);
+
+        return $this;
+    }
+
+    /**
      * 设置 app_access_token 到 config 设置中
      * 应用维度授权凭证，开放平台可据此识别调用方的应用身份
      * 分内建和自建
@@ -174,6 +184,10 @@ class FeiShu extends Base
      */
     protected function configAppAccessToken(): self
     {
+        if ($this->config->has('app_access_token')) {
+            return $this;
+        }
+
         $url = $this->baseUrl.'/auth/v3/app_access_token/';
         $params = [
             'json' => [

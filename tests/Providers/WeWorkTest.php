@@ -182,6 +182,38 @@ class WeWorkTest extends TestCase
         $this->assertSame('user123', $user->getId());
     }
 
+    public function test_user_from_code_with_detailed_and_user_ticket()
+    {
+        $mockProvider = $this->getMockBuilder(WeWork::class)
+            ->setConstructorArgs([[
+                'client_id' => 'CORPID',
+                'client_secret' => 'client_secret',
+                'redirect' => 'REDIRECT_URI',
+            ]])
+            ->onlyMethods(['getApiAccessToken', 'getUser', 'getUserById', 'getUserDetail'])
+            ->getMock();
+
+        $mockProvider->method('getApiAccessToken')->willReturn('api_token');
+        $mockProvider->method('getUser')->willReturn([
+            'UserId' => 'user123',
+            'user_ticket' => 'ticket_abc',
+        ]);
+        $mockProvider->method('getUserById')->willReturn([
+            'userid' => 'user123',
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+        ]);
+        $mockProvider->method('getUserDetail')->with('ticket_abc')->willReturn([
+            'gender' => '1',
+            'mobile' => '13800138000',
+        ]);
+
+        $user = $mockProvider->detailed()->userFromCode('test_code');
+
+        $this->assertSame('user123', $user->getId());
+        $this->assertSame('13800138000', $user->getRaw()['mobile']);
+    }
+
     public function test_throws_exception_when_user_id_missing()
     {
         // Mock the methods
