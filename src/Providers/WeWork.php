@@ -51,7 +51,11 @@ class WeWork extends Base
             if (empty($user['UserId'])) {
                 throw new Exceptions\AuthorizeFailedException('Authorization failed: missing UserId in user response', $user);
             }
+            $userTicket = $user['user_ticket'] ?? '';
             $user = $this->getUserById($user['UserId']);
+            if ($userTicket) {
+                $user += $this->getUserDetail($userTicket);
+            }
         }
 
         return $this->mapUserToObject($user)->setProvider($this)->setRaw($user);
@@ -166,6 +170,29 @@ class WeWork extends Base
         $response = $this->fromJsonBody($responseInstance);
 
         if (($response['errcode'] ?? 1) > 0 || empty($response['userid'])) {
+            throw new Exceptions\AuthorizeFailedException((string) $responseInstance->getBody(), $response);
+        }
+
+        return $response;
+    }
+
+    /**
+     * @throws Exceptions\AuthorizeFailedException
+     */
+    protected function getUserDetail(string $userTicket): array
+    {
+        $responseInstance = $this->getHttpClient()->post($this->baseUrl.'/cgi-bin/auth/getuserdetail', [
+            'query' => [
+                Contracts\RFC6749_ABNF_ACCESS_TOKEN => $this->getApiAccessToken(),
+            ],
+            'json' => [
+                'user_ticket' => $userTicket,
+            ],
+        ]);
+
+        $response = $this->fromJsonBody($responseInstance);
+
+        if (($response['errcode'] ?? 1) > 0) {
             throw new Exceptions\AuthorizeFailedException((string) $responseInstance->getBody(), $response);
         }
 
