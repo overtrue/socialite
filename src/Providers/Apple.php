@@ -57,9 +57,9 @@ class Apple extends Base
             );
         }
 
-        $header = $this->base64UrlEncode(\json_encode(['kid' => $keyId, 'alg' => 'ES256']));
+        $header = $this->base64UrlEncode((string) \json_encode(['kid' => $keyId, 'alg' => 'ES256']));
         $now = \time();
-        $payload = $this->base64UrlEncode(\json_encode([
+        $payload = $this->base64UrlEncode((string) \json_encode([
             'iss' => $teamId,
             'iat' => $now,
             'exp' => $now + 86400 * 180,
@@ -190,21 +190,21 @@ class Apple extends Base
         if (($claims['iss'] ?? null) !== 'https://appleid.apple.com') {
             throw new Exceptions\InvalidTokenException(
                 'Invalid id_token issuer.',
-                \json_encode($claims)
+                (string) \json_encode($claims)
             );
         }
 
         if (($claims['aud'] ?? null) !== $this->getClientId()) {
             throw new Exceptions\InvalidTokenException(
                 'Invalid id_token audience.',
-                \json_encode($claims)
+                (string) \json_encode($claims)
             );
         }
 
         if (($claims['exp'] ?? 0) < \time()) {
             throw new Exceptions\InvalidTokenException(
                 'The id_token has expired.',
-                \json_encode($claims)
+                (string) \json_encode($claims)
             );
         }
     }
@@ -260,7 +260,7 @@ class Apple extends Base
 
         return "-----BEGIN PUBLIC KEY-----\n"
             .\chunk_split(\base64_encode($publicKeyInfo), 64, "\n")
-            ."-----END PUBLIC KEY-----";
+            .'-----END PUBLIC KEY-----';
     }
 
     protected function mapUserToObject(array $user): Contracts\UserInterface
