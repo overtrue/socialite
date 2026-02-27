@@ -166,7 +166,13 @@ class WeChat extends Base
             ]),
         ]);
 
-        return $this->fromJsonBody($response);
+        $response = $this->fromJsonBody($response);
+
+        if (! empty($response['errcode'])) {
+            throw new Exceptions\AuthorizeFailedException((string) ($response['errmsg'] ?? ''), $response);
+        }
+
+        return $response;
     }
 
     #[Pure]
