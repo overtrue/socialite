@@ -21,19 +21,6 @@ class Google extends Base
         'https://www.googleapis.com/auth/userinfo.profile',
     ];
 
-    public function __construct(array $config)
-    {
-        if (
-            !isset($config['redirect_url'])
-            && !isset($config['redirect'])
-            && isset($config[Contracts\RFC6749_ABNF_REDIRECT_URI])
-        ) {
-            $config['redirect_url'] = $config[Contracts\RFC6749_ABNF_REDIRECT_URI];
-        }
-
-        parent::__construct($config);
-    }
-
     protected function getAuthUrl(): string
     {
         return $this->buildAuthUrlFromBase('https://accounts.google.com/o/oauth2/v2/auth');

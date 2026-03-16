@@ -68,7 +68,10 @@ abstract class Base implements Contracts\ProviderInterface
 
         // normalize 'redirect_url'
         if (! $this->config->has('redirect_url')) {
-            $this->config->set('redirect_url', $this->config->get('redirect'));
+            $this->config->set(
+                'redirect_url',
+                $this->config->get('redirect') ?? $this->config->get(Contracts\RFC6749_ABNF_REDIRECT_URI)
+            );
         }
         $this->redirectUrl = $this->config->get('redirect_url');
     }
