@@ -2,10 +2,11 @@
 
 namespace Overtrue\Socialite\Providers;
 
+use GuzzleHttp\Exception\GuzzleException;
 use JetBrains\PhpStorm\ArrayShape;
 use JetBrains\PhpStorm\Pure;
 use Overtrue\Socialite\Contracts;
-use Overtrue\Socialite\Exceptions;
+use Overtrue\Socialite\Exceptions\BadRequestException;
 use Overtrue\Socialite\Exceptions\InvalidArgumentException;
 use Overtrue\Socialite\User;
 
@@ -66,8 +67,8 @@ class Coding extends Base
     }
 
     /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     * @throws \Overtrue\Socialite\Exceptions\BadRequestException
+     * @throws GuzzleException
+     * @throws BadRequestException
      */
     protected function getUserByToken(string $token): array
     {
@@ -83,7 +84,7 @@ class Coding extends Base
         $response = $this->fromJsonBody($responseInstance);
 
         if (empty($response[Contracts\ABNF_ID])) {
-            throw new Exceptions\BadRequestException((string) $responseInstance->getBody());
+            throw new BadRequestException((string) $responseInstance->getBody());
         }
 
         return $response;

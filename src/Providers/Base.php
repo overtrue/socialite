@@ -66,11 +66,20 @@ abstract class Base implements Contracts\ProviderInterface
             }
         }
 
-        // normalize 'redirect_url'
-        if (! $this->config->has('redirect_url')) {
-            $this->config->set('redirect_url', $this->config->get('redirect'));
+        // normalize redirect uri aliases to RFC6749_ABNF_REDIRECT_URI
+        if (! $this->config->has(Contracts\RFC6749_ABNF_REDIRECT_URI)) {
+            $this->config->set(
+                Contracts\RFC6749_ABNF_REDIRECT_URI,
+                $this->config->get('redirect') ?? $this->config->get('redirect_url')
+            );
         }
-        $this->redirectUrl = $this->config->get('redirect_url');
+
+        // keep legacy alias available for compatibility
+        if (! $this->config->has('redirect_url')) {
+            $this->config->set('redirect_url', $this->config->get(Contracts\RFC6749_ABNF_REDIRECT_URI));
+        }
+
+        $this->redirectUrl = $this->config->get(Contracts\RFC6749_ABNF_REDIRECT_URI);
     }
 
     abstract protected function getAuthUrl(): string;
@@ -133,6 +142,8 @@ abstract class Base implements Contracts\ProviderInterface
     public function withRedirectUrl(string $redirectUrl): Contracts\ProviderInterface
     {
         $this->redirectUrl = $redirectUrl;
+        $this->config->set(Contracts\RFC6749_ABNF_REDIRECT_URI, $redirectUrl);
+        $this->config->set('redirect_url', $redirectUrl);
 
         return $this;
     }

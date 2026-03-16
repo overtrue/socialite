@@ -46,7 +46,7 @@ $config = [
     'github' => [
         'client_id'     => 'your-app-id',
         'client_secret' => 'your-app-secret',
-        'redirect'      => 'http://localhost/socialite/callback.php',
+        'redirect_uri' => 'http://localhost/socialite/callback.php',
     ],
 ];
 
@@ -68,7 +68,7 @@ $config = [
     'github' => [
         'client_id' => 'your-app-id',
         'client_secret' => 'your-app-secret',
-        'redirect' => 'http://localhost/socialite/callback.php',
+        'redirect_uri' => 'http://localhost/socialite/callback.php',
     ],
 ];
 
@@ -88,7 +88,8 @@ $user->getEmail();     // "anzhengchao@gmail.com"
 
 ## 配置
 
-为每个平台设置相同的键值对后就能开箱即用：`client_id`, `client_secret`, `redirect`.
+为每个平台设置相同的键值对后就能开箱即用：`client_id`, `client_secret`, `redirect_uri`。
+同时兼容旧键名：`redirect`、`redirect_url`。
 
 示例：
 
@@ -97,12 +98,12 @@ $config = [
   'weibo' => [
     'client_id'     => 'your-app-id',
     'client_secret' => 'your-app-secret',
-    'redirect'      => 'http://localhost/socialite/callback.php',
+    'redirect_uri' => 'http://localhost/socialite/callback.php',
   ],
   'facebook' => [
     'client_id'     => 'your-app-id',
     'client_secret' => 'your-app-secret',
-    'redirect'      => 'http://localhost/socialite/callback.php',
+    'redirect_uri' => 'http://localhost/socialite/callback.php',
   ],
 ];
 ```
@@ -118,7 +119,7 @@ $config = [
         'provider'    => 'github',  // <-- provider name
         'client_id'   => 'your-app-id',
         'client_secret' => 'your-app-secret',
-        'redirect'    => 'http://localhost/socialite/callback.php',
+        'redirect_uri' => 'http://localhost/socialite/callback.php',
     ],
 
     // 另外一个名字叫做 bar 的 github 应用
@@ -126,7 +127,7 @@ $config = [
         'provider'    => 'github',  // <-- provider name
         'client_id'   => 'your-app-id',
         'client_secret' => 'your-app-secret',
-        'redirect'    => 'http://localhost/socialite/callback.php',
+        'redirect_uri' => 'http://localhost/socialite/callback.php',
     ],
 
     //...
@@ -152,7 +153,7 @@ $config = [
         'provider' => 'myprovider',  // <-- 一个工具还未支持的服务提供程序
         'client_id' => 'your-app-id',
         'client_secret' => 'your-app-secret',
-        'redirect' => 'http://localhost/socialite/callback.php',
+        'redirect_uri' => 'http://localhost/socialite/callback.php',
     ],
 ];
 
@@ -186,7 +187,7 @@ $config = [
         'provider'    => MyCustomProvider::class,  // <-- 类名
         'client_id'   => 'your-app-id',
         'client_secret' => 'your-app-secret',
-        'redirect'    => 'http://localhost/socialite/callback.php',
+        'redirect_uri' => 'http://localhost/socialite/callback.php',
     ],
 ];
 
@@ -215,8 +216,8 @@ $config = [
     'rsa_private_key' => 'your-rsa-private-key',
 
     // 确保这里的值与你在服务后台绑定的地址值一致
-    // 这个键名还能像官方文档那样叫做 'redirect_url'
-    'redirect' => 'http://localhost/socialite/callback.php',
+    // 推荐使用 'redirect_uri'，同时兼容 'redirect' 与 'redirect_url'
+    'redirect_uri' => 'http://localhost/socialite/callback.php',
 
     // 沙箱模式接入地址见 https://opendocs.alipay.com/open/220/105337#%E5%85%B3%E4%BA%8E%E6%B2%99%E7%AE%B1
     'sandbox' => false,
@@ -253,8 +254,8 @@ $config = [
       // or 'app_secret'
       'client_secret' => 'your app secret',
 
-      // or 'redirect_url'
-      'redirect' => 'redirect URL'
+      // 兼容旧键名：'redirect' 或 'redirect_url'
+      'redirect_uri' => 'redirect URL'
   ]
 ];
 
@@ -281,7 +282,7 @@ $config = [
 
       'client_secret' => 'your app secret',
 
-      'redirect' => 'redirect URL'
+      'redirect_uri' => 'redirect URL'
   ]
 ];
 
@@ -301,7 +302,7 @@ $config = [
   'toutiao' => [
     'client_id' => 'your app id',
     'client_secret' => 'your app secret',
-    'redirect' => 'redirect URL'
+    'redirect_uri' => 'redirect URL'
   ]
 ];
 
@@ -320,7 +321,7 @@ $config = [
   'xigua' => [
     'client_id' => 'your app id',
     'client_secret' => 'your app secret',
-    'redirect' => 'redirect URL'
+    'redirect_uri' => 'redirect URL'
   ]
 ];
 
@@ -361,8 +362,8 @@ $config = [
         // or 'app_secret'
         'client_secret' => 'your app secret',
 
-        // or 'redirect_url'
-        'redirect' => 'redirect URL',
+        // 兼容旧键名：'redirect' 或 'redirect_url'
+        'redirect_uri' => 'redirect URL',
 
         // 如果你想使用使用内部应用的方式获取 app_access_token
         // 对这个键设置了 'internal' 值那么你已经开启了内部应用模式
@@ -391,8 +392,8 @@ $config = [
         // or 'app_secret'
         'client_secret' => 'your app secret',
 
-        // or 'redirect_url'
-        'redirect' => 'redirect URL',
+        // 兼容旧键名：'redirect' 或 'redirect_url'
+        'redirect_uri' => 'redirect URL',
 
         // 如果你想使用使用内部应用的方式获取 app_access_token
         // 对这个键设置了 'internal' 值那么你已经开启了内部应用模式
@@ -431,7 +432,7 @@ $authUrl = $socialite->create('taobao')->withView('wap')->redirect();
         [
             'client_id'   => 'client_id',
             'client_secret' => 'client_secret',
-            'redirect'    => 'redirect-url',
+            'redirect_uri' => 'redirect-url',
 
             // 开放平台 - 第三方平台所需
             'component' => [
@@ -455,7 +456,7 @@ $config = [
         'team_url' => 'https://{your-team}.coding.net',
         'client_id' => 'your app id',
         'client_secret' => 'your app secret',
-        'redirect' => 'redirect URL',
+        'redirect_uri' => 'redirect URL',
     ]
 ];
 ```
@@ -472,7 +473,7 @@ $config = [
         'client_id'     => 'AT******************',
         'client_secret' => 'EK**************',
         'sandbox'      => false,
-        'redirect_url'=>"nativexo://paypalpay",
+        'redirect_uri' => "nativexo://paypalpay",
     ],
 ];
 ```
@@ -490,7 +491,7 @@ $config = [
         'team_id'     => 'XXXXXXXXXX',         // Apple Developer Team ID
         'key_id'      => 'XXXXXXXXXX',         // Key ID from Apple Developer
         'private_key' => file_get_contents('/path/to/AuthKey_XXXXXXXXXX.p8'), // .p8 private key content
-        'redirect'    => 'https://example.com/auth/apple/callback',
+        'redirect_uri' => 'https://example.com/auth/apple/callback',
     ],
 ];
 ```
@@ -508,7 +509,7 @@ $response = $socialite->create('github')
 
 ### Redirect URL
 
-你也可以动态设置' redirect_uri '，你可以使用以下方法来改变 `redirect_uri` URL:
+你也可以动态设置 `redirect_uri`，你可以使用以下方法来改变 `redirect_uri` URL:
 
 ```php
 $url = 'your callback url.';

@@ -38,13 +38,13 @@ class QQTest extends TestCase
             'redirect_url' => 'http://localhost/callback',
         ]);
 
-        $getTokenUrl = new \ReflectionMethod(QQ::class, 'getTokenUrl');
+        $getTokenUrl = new ReflectionMethod(QQ::class, 'getTokenUrl');
         $getTokenUrl->setAccessible(true);
 
-        $getTokenFields = new \ReflectionMethod(QQ::class, 'getTokenFields');
+        $getTokenFields = new ReflectionMethod(QQ::class, 'getTokenFields');
         $getTokenFields->setAccessible(true);
 
-        $getCodeFields = new \ReflectionMethod(QQ::class, 'getCodeFields');
+        $getCodeFields = new ReflectionMethod(QQ::class, 'getCodeFields');
         $getCodeFields->setAccessible(true);
 
         $this->assertSame('https://graph.qq.com/oauth2.0/token', $getTokenUrl->invoke($provider));

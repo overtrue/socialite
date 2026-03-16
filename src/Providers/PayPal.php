@@ -2,8 +2,10 @@
 
 namespace Overtrue\Socialite\Providers;
 
+use GuzzleHttp\Exception\GuzzleException;
 use JetBrains\PhpStorm\Pure;
 use Overtrue\Socialite\Contracts;
+use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
 use Overtrue\Socialite\User;
 
 /**
@@ -93,8 +95,8 @@ class PayPal extends Base
     }
 
     /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     * @throws GuzzleException
+     * @throws AuthorizeFailedException
      *
      * @see https://developer.paypal.com/docs/log-in-with-paypal/integrate/#link-getaccesstoken
      */
@@ -118,7 +120,7 @@ class PayPal extends Base
     }
 
     /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      *
      * @see https://developer.paypal.com/docs/api/identity/v1/#userinfo_get
      */
