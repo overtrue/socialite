@@ -229,7 +229,7 @@ class WeWorkTest extends TestCase
             ->getMock();
 
         // Set detailed to true to trigger the UserId validation
-        $detailedProperty = new \ReflectionProperty(WeWork::class, 'detailed');
+        $detailedProperty = new ReflectionProperty(WeWork::class, 'detailed');
         $detailedProperty->setAccessible(true);
         $detailedProperty->setValue($mockProvider, true);
 
@@ -268,7 +268,7 @@ class WeWorkTest extends TestCase
         $client = new Client(['handler' => $handler]);
 
         // Use reflection to set the HTTP client
-        $reflection = new \ReflectionObject($provider);
+        $reflection = new ReflectionObject($provider);
         $httpClientProperty = $reflection->getProperty('httpClient');
         $httpClientProperty->setAccessible(true);
         $httpClientProperty->setValue($provider, $client);
@@ -277,7 +277,7 @@ class WeWorkTest extends TestCase
         $this->expectExceptionMessage('Authorization failed: missing access_token in response');
 
         // Use reflection to test protected method
-        $requestApiAccessToken = new \ReflectionMethod(WeWork::class, 'requestApiAccessToken');
+        $requestApiAccessToken = new ReflectionMethod(WeWork::class, 'requestApiAccessToken');
         $requestApiAccessToken->setAccessible(true);
         $requestApiAccessToken->invoke($provider);
     }
@@ -293,7 +293,7 @@ class WeWorkTest extends TestCase
         $this->expectException(MethodDoesNotSupportException::class);
         $this->expectExceptionMessage('WeWork doesn\'t support access_token mode');
 
-        $getUserByToken = new \ReflectionMethod(WeWork::class, 'getUserByToken');
+        $getUserByToken = new ReflectionMethod(WeWork::class, 'getUserByToken');
         $getUserByToken->setAccessible(true);
         $getUserByToken->invoke($provider, 'test_token');
     }
@@ -307,11 +307,11 @@ class WeWorkTest extends TestCase
         ]);
 
         // Set detailed to true
-        $detailedProperty = new \ReflectionProperty(WeWork::class, 'detailed');
+        $detailedProperty = new ReflectionProperty(WeWork::class, 'detailed');
         $detailedProperty->setAccessible(true);
         $detailedProperty->setValue($provider, true);
 
-        $mapUserToObject = new \ReflectionMethod(WeWork::class, 'mapUserToObject');
+        $mapUserToObject = new ReflectionMethod(WeWork::class, 'mapUserToObject');
         $mapUserToObject->setAccessible(true);
 
         $user = [
@@ -337,7 +337,7 @@ class WeWorkTest extends TestCase
             'redirect' => 'REDIRECT_URI',
         ]);
 
-        $mapUserToObject = new \ReflectionMethod(WeWork::class, 'mapUserToObject');
+        $mapUserToObject = new ReflectionMethod(WeWork::class, 'mapUserToObject');
         $mapUserToObject->setAccessible(true);
 
         $user = [

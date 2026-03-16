@@ -1,9 +1,12 @@
 <?php
 
+use GuzzleHttp\Client;
 use Mockery as m;
 use Overtrue\Socialite\Providers\Base;
 use Overtrue\Socialite\User;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 
 class OAuthTest extends TestCase
 {
@@ -100,8 +103,8 @@ class OAuthTest extends TestCase
             'client_secret' => 'fake_client_secret',
         ];
         $provider = new OAuthTestProviderStub($config);
-        $response = m::mock(\Psr\Http\Message\ResponseInterface::class);
-        $stream = m::mock(\Psr\Http\Message\StreamInterface::class);
+        $response = m::mock(ResponseInterface::class);
+        $stream = m::mock(StreamInterface::class);
 
         $stream->shouldReceive('__toString')->andReturn(\json_encode([
             'access_token' => 'fake_access_token',
@@ -152,8 +155,8 @@ class OAuthTest extends TestCase
         ];
         $provider = new OAuthTestProviderStub($config);
 
-        $response = m::mock(\Psr\Http\Message\ResponseInterface::class);
-        $stream = m::mock(\Psr\Http\Message\StreamInterface::class);
+        $response = m::mock(ResponseInterface::class);
+        $stream = m::mock(StreamInterface::class);
 
         $stream->shouldReceive('__toString')->andReturn(\json_encode([
             'access_token' => 'fake_access_token',
@@ -227,12 +230,12 @@ class OAuthTestProviderStub extends Base
     /**
      * Get a fresh instance of the Guzzle HTTP client.
      */
-    public function getHttpClient(): GuzzleHttp\Client
+    public function getHttpClient(): Client
     {
         if ($this->http) {
             return $this->http;
         }
 
-        return $this->http = m::mock(\GuzzleHttp\Client::class);
+        return $this->http = m::mock(Client::class);
     }
 }

@@ -8,6 +8,7 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Overtrue\Socialite\Exceptions\AuthorizeFailedException;
 use Overtrue\Socialite\Exceptions\BadRequestException;
+use Overtrue\Socialite\Exceptions\InvalidArgumentException;
 use Overtrue\Socialite\Providers\DingTalk;
 use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
@@ -187,7 +188,7 @@ class DingTalkTest extends TestCase
             'redirect_url' => 'http://localhost/callback',
         ]);
 
-        $this->expectException(\Overtrue\Socialite\Exceptions\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('not supported to get access token.');
 
         $getTokenUrl = new ReflectionMethod(DingTalk::class, 'getTokenUrl');
@@ -203,7 +204,7 @@ class DingTalkTest extends TestCase
             'redirect_url' => 'http://localhost/callback',
         ]);
 
-        $this->expectException(\Overtrue\Socialite\Exceptions\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Unable to use token get User.');
 
         $getUserByToken = new ReflectionMethod(DingTalk::class, 'getUserByToken');

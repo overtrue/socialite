@@ -2,6 +2,7 @@
 
 namespace Overtrue\Socialite\Providers;
 
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Utils;
 use JetBrains\PhpStorm\ArrayShape;
 use JetBrains\PhpStorm\Pure;
@@ -63,8 +64,8 @@ class QQ extends Base
     }
 
     /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     * @throws \Overtrue\Socialite\Exceptions\AuthorizeFailedException
+     * @throws GuzzleException
+     * @throws AuthorizeFailedException
      */
     protected function getUserByToken(string $token): array
     {
