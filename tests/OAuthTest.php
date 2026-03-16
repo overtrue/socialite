@@ -38,7 +38,7 @@ class OAuthTest extends TestCase
         $config += ['redirect_url' => 'fake_redirect'];
         $provider = new OAuthTestProviderStub($config);
 
-        $this->assertSame('http://auth.url?client_id=fake_client_id&redirect_uri=fake_redirect&scope=info&response_type=code', $provider->redirect('fake_redirect'));
+        $this->assertSame('http://auth.url?client_id=fake_client_id&redirect_uri=fake_redirect&scope=info&response_type=code', $provider->redirect());
     }
 
     public function test_it_can_get_auth_url_with_redirect_uri_config_alias()
@@ -47,6 +47,18 @@ class OAuthTest extends TestCase
             'client_id' => 'fake_client_id',
             'client_secret' => 'fake_client_secret',
             'redirect_uri' => 'fake_redirect',
+        ];
+        $provider = new OAuthTestProviderStub($config);
+
+        $this->assertSame('http://auth.url?client_id=fake_client_id&redirect_uri=fake_redirect&scope=info&response_type=code', $provider->redirect());
+    }
+
+    public function test_it_can_get_auth_url_with_redirect_config_alias()
+    {
+        $config = [
+            'client_id' => 'fake_client_id',
+            'client_secret' => 'fake_client_secret',
+            'redirect' => 'fake_redirect',
         ];
         $provider = new OAuthTestProviderStub($config);
 
