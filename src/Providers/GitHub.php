@@ -36,7 +36,7 @@ class GitHub extends Base
 
         $user = $this->fromJsonBody($response);
 
-        if (\in_array('user:email', $this->scopes)) {
+        if (\in_array('user:email', $this->scopes) || str_contains($this->scopes[0] ?? '', 'user:email')) {
             $user[Contracts\ABNF_EMAIL] = $this->getEmailByToken($token);
         }
 
