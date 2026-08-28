@@ -98,6 +98,12 @@ class QCloud extends Base
     }
 
     /**
+     * @param  non-empty-string  $method
+     * @param  non-empty-string  $host
+     * @param  non-empty-string  $action
+     * @param  non-empty-string  $version
+     * @param  array{headers?: array<array-key, non-empty-string|non-empty-array<array-key, non-empty-string>>, query?: array<array-key, mixed>}  $options
+     *
      * @throws Exceptions\AuthorizeFailedException
      */
     public function performRequest(string $method, string $host, string $action, string $version, array $options = [], ?string $secretId = null, ?string $secretKey = null): array
@@ -109,7 +115,7 @@ class QCloud extends Base
             $options['headers'] ?? [],
             [
                 'X-TC-Action' => $action,
-                'X-TC-Timestamp' => $timestamp,
+                'X-TC-Timestamp' => (string) $timestamp,
                 'X-TC-Version' => $version,
                 'Content-Type' => 'application/x-www-form-urlencoded; charset=utf-8',
             ]

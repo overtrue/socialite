@@ -3,7 +3,6 @@
 namespace Overtrue\Socialite\Providers;
 
 use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Utils;
 use JetBrains\PhpStorm\ArrayShape;
 use Overtrue\Socialite\Config;
 use Overtrue\Socialite\Contracts;
@@ -266,7 +265,7 @@ abstract class Base implements Contracts\ProviderInterface
         }
 
         if (\is_string($response)) {
-            $response = Utils::jsonDecode($response, true);
+            $response = \json_decode($response, true, 512, \JSON_THROW_ON_ERROR);
         }
 
         if (! \is_array($response)) {
@@ -274,7 +273,7 @@ abstract class Base implements Contracts\ProviderInterface
         }
 
         if (empty($response[$this->accessTokenKey])) {
-            throw new Exceptions\AuthorizeFailedException('Authorize Failed: '.Utils::jsonEncode($response, \JSON_UNESCAPED_UNICODE), $response);
+            throw new Exceptions\AuthorizeFailedException('Authorize Failed: '.\json_encode($response, \JSON_UNESCAPED_UNICODE | \JSON_THROW_ON_ERROR), $response);
         }
 
         return $response + [
@@ -286,7 +285,7 @@ abstract class Base implements Contracts\ProviderInterface
 
     protected function fromJsonBody(MessageInterface $response): array
     {
-        $result = Utils::jsonDecode((string) $response->getBody(), true);
+        $result = \json_decode((string) $response->getBody(), true, 512, \JSON_THROW_ON_ERROR);
 
         \is_array($result) || throw new Exceptions\InvalidArgumentException('Decoded the given response payload failed.');
 
