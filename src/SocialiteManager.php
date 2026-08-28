@@ -58,6 +58,9 @@ class SocialiteManager implements Contracts\FactoryInterface
         return $this;
     }
 
+    /**
+     * @return ($name is 'qq' ? Providers\QQ : Contracts\ProviderInterface)
+     */
     public function create(string $name): Contracts\ProviderInterface
     {
         $name = \strtolower($name);
