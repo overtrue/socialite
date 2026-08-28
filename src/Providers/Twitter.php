@@ -32,7 +32,7 @@ class Twitter extends Base
     {
         $response = $this->getHttpClient()->post($this->getTokenUrl(), [
             'form_params' => $this->getTokenFields($code),
-            'auth' => [$this->getClientId(), $this->getClientSecret()],
+            'auth' => [(string) $this->getClientId(), (string) $this->getClientSecret()],
             'headers' => [
                 'Accept' => 'application/json',
             ],

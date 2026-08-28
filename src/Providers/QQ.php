@@ -3,7 +3,6 @@
 namespace Overtrue\Socialite\Providers;
 
 use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Utils;
 use JetBrains\PhpStorm\ArrayShape;
 use JetBrains\PhpStorm\Pure;
 use Overtrue\Socialite\Contracts;
@@ -94,7 +93,7 @@ class QQ extends Base
         $user = $this->fromJsonBody($response);
 
         if (! array_key_exists('ret', $user) || $user['ret'] !== 0) {
-            throw new AuthorizeFailedException('Authorize Failed: '.Utils::jsonEncode($user, \JSON_UNESCAPED_UNICODE), $user);
+            throw new AuthorizeFailedException('Authorize Failed: '.\json_encode($user, \JSON_UNESCAPED_UNICODE | \JSON_THROW_ON_ERROR), $user);
         }
 
         return $user + [
