@@ -15,6 +15,15 @@ use ReflectionMethod;
 
 class AlipayTest extends TestCase
 {
+    private function makePrivateKey(): string
+    {
+        $key = \openssl_pkey_new(['private_key_type' => OPENSSL_KEYTYPE_RSA, 'private_key_bits' => 2048]);
+        $this->assertNotFalse($key);
+        $this->assertTrue(\openssl_pkey_export($key, $pem));
+
+        return \preg_replace('/-----[^-]+-----|\\s/', '', $pem);
+    }
+
     public function test_alipay_provider_has_correct_redirect_response()
     {
         $provider = new Alipay([
@@ -154,7 +163,7 @@ class AlipayTest extends TestCase
     {
         $provider = new Alipay([
             'client_id' => 'client_id',
-            'rsa_private_key' => 'private_key',
+            'rsa_private_key' => $this->makePrivateKey(),
             'redirect_url' => 'http://localhost/callback',
         ]);
 
@@ -187,7 +196,7 @@ class AlipayTest extends TestCase
     {
         $provider = new Alipay([
             'client_id' => 'client_id',
-            'rsa_private_key' => 'private_key',
+            'rsa_private_key' => $this->makePrivateKey(),
             'redirect_url' => 'http://localhost/callback',
         ]);
 
@@ -217,7 +226,7 @@ class AlipayTest extends TestCase
     {
         $provider = new Alipay([
             'client_id' => 'client_id',
-            'rsa_private_key' => 'private_key',
+            'rsa_private_key' => $this->makePrivateKey(),
             'redirect_url' => 'http://localhost/callback',
         ]);
 
@@ -249,7 +258,7 @@ class AlipayTest extends TestCase
     {
         $provider = new Alipay([
             'client_id' => 'client_id',
-            'rsa_private_key' => 'private_key',
+            'rsa_private_key' => $this->makePrivateKey(),
             'redirect_url' => 'http://localhost/callback',
         ]);
 
@@ -286,7 +295,7 @@ class AlipayTest extends TestCase
     {
         $provider = new Alipay([
             'client_id' => 'client_id',
-            'rsa_private_key' => 'private_key',
+            'rsa_private_key' => $this->makePrivateKey(),
             'redirect_url' => 'http://localhost/callback',
         ]);
 
