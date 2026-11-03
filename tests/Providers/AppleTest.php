@@ -79,6 +79,85 @@ class AppleTest extends TestCase
         $httpClientProp->setValue($provider, $client);
     }
 
+    public function test_asn1_length_encodes_der_boundaries()
+    {
+        $provider = $this->makeProvider();
+        $method = new ReflectionMethod(Apple::class, 'encodeAsn1Length');
+        if (PHP_VERSION_ID < 80100) {
+            $method->setAccessible(true);
+        }
+
+        $cases = [0 => '00', 1 => '01', 127 => '7f', 128 => '8180', 255 => '81ff', 256 => '820100', 65535 => '82ffff', 65536 => '83010000', 0xFFFFFF => '83ffffff', 0x1000000 => '8401000000', 0x7FFFFFFF => '847fffffff'];
+        if (PHP_INT_SIZE >= 8) {
+            $cases[0x80000000] = '8480000000';
+            $cases[0xFFFFFFFF] = '84ffffffff';
+        }
+
+        foreach ($cases as $length => $hex) {
+            $this->assertSame($hex, \bin2hex($method->invoke($provider, $length)));
+        }
+    }
+
+    public function test_asn1_length_rejects_negative_values()
+    {
+        $method = new ReflectionMethod(Apple::class, 'encodeAsn1Length');
+        if (PHP_VERSION_ID < 80100) {
+            $method->setAccessible(true);
+        }
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('ASN.1 length must be between 0 and 4294967295.');
+        $method->invoke($this->makeProvider(), -1);
+    }
+
+    public function test_asn1_length_rejects_values_above_32_bits()
+    {
+        if (PHP_INT_SIZE < 8) {
+            $this->markTestSkipped('Lengths above 32 bits cannot be represented as integers on this platform.');
+        }
+
+        $method = new ReflectionMethod(Apple::class, 'encodeAsn1Length');
+        if (PHP_VERSION_ID < 80100) {
+            $method->setAccessible(true);
+        }
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('ASN.1 length must be between 0 and 4294967295.');
+        $method->invoke($this->makeProvider(), 0x100000000);
+    }
+
+    public function test_rsa_key_conversion_preserves_openssl_and_jwt_verification()
+    {
+        $provider = $this->makeProvider();
+        $method = new ReflectionMethod(Apple::class, 'buildRsaPublicKey');
+        if (PHP_VERSION_ID < 80100) {
+            $method->setAccessible(true);
+        }
+
+        foreach ([2048, 4096] as $bits) {
+            $privateKey = \openssl_pkey_new(['private_key_type' => OPENSSL_KEYTYPE_RSA, 'private_key_bits' => $bits]);
+            $this->assertNotFalse($privateKey);
+            $details = \openssl_pkey_get_details($privateKey);
+            $this->assertIsArray($details);
+            $pem = $method->invoke($provider, $details['rsa']['n'], $details['rsa']['e']);
+            $publicKey = \openssl_pkey_get_public($pem);
+            $this->assertNotFalse($publicKey);
+            $decoded = \openssl_pkey_get_details($publicKey);
+            $this->assertSame($details['rsa']['n'], $decoded['rsa']['n']);
+            $this->assertSame($details['rsa']['e'], $decoded['rsa']['e']);
+            $this->assertTrue(\openssl_sign('ASN.1 boundary regression', $signature, $privateKey, OPENSSL_ALGO_SHA256));
+            $this->assertSame(1, \openssl_verify('ASN.1 boundary regression', $signature, $publicKey, OPENSSL_ALGO_SHA256));
+            $this->assertSame(0, \openssl_verify('tampered payload', $signature, $publicKey, OPENSSL_ALGO_SHA256));
+
+            $signed = $this->makeSignedIdToken([], $privateKey);
+            $this->setHttpClient($provider, new Client(['handler' => HandlerStack::create(new MockHandler([
+                new Response(200, [], \json_encode($signed['jwks'])),
+            ]))]));
+            $user = $provider->userFromToken($signed['token']);
+            $this->assertSame('apple-user-id', $user->getId());
+        }
+    }
+
     public function test_apple_provider_redirect_url()
     {
         $provider = $this->makeProvider();

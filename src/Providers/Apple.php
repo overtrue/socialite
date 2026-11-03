@@ -324,12 +324,21 @@ class Apple extends Base
 
     private function encodeAsn1Length(int $length): string
     {
+        if ($length < 0 || $length > 0xFFFFFFFF) {
+            throw new Exceptions\InvalidArgumentException('ASN.1 length must be between 0 and 4294967295.');
+        }
+
         if ($length < 0x80) {
             return \chr($length);
         }
 
         $temp = \ltrim(\pack('N', $length), "\x00");
 
-        return \chr(0x80 | \strlen($temp)).$temp;
+        $byteCount = \strlen($temp);
+        if ($byteCount < 1 || $byteCount > 4) {
+            throw new Exceptions\InvalidArgumentException('Invalid ASN.1 length encoding.');
+        }
+
+        return \chr(0x80 | $byteCount).$temp;
     }
 }
